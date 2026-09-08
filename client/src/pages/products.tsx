@@ -1,14 +1,11 @@
 import { motion } from "framer-motion";
-import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout";
+import HomeProductCard from "@/components/home-product-card";
 import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
   fetchStorefrontProductInventory,
-  getProductImage,
-  formatProductPrice,
-  formatProductPriceRange,
   mergeInventory,
   searchStorefrontProducts,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
@@ -31,10 +28,9 @@ function ProductCard({ product, index }: { product: StorefrontProduct; index: nu
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
   const merged = mergeInventory(product, inventory?.inventory) ?? product;
-  const image = getProductImage(merged);
 
   return (
-    <motion.article
+    <motion.div
       key={merged.slug}
       initial="hidden"
       whileInView="visible"
@@ -43,36 +39,8 @@ function ProductCard({ product, index }: { product: StorefrontProduct; index: nu
       transition={{ ...transition, delay: Math.min(index * 0.04, 0.3) }}
       className="group"
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
-        <Link href={`/product/${merged.slug}`} className="block h-full">
-          {image ? (
-            <img
-              src={image}
-              alt={merged.name}
-              loading="lazy"
-              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[#ededed] text-[10px] uppercase tracking-[0.3em] text-black/30">
-              No image
-            </div>
-          )}
-          {merged.available === false && (
-            <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-              Sold out
-            </span>
-          )}
-        </Link>
-      </div>
-      <Link href={`/product/${merged.slug}`} className="block pb-2 pt-5 text-black md:pt-7">
-        <h3 className="text-base font-medium uppercase leading-tight tracking-[0.04em] md:text-xl md:tracking-[0.06em]">
-          {merged.name}
-        </h3>
-        <p className="mt-3 text-lg font-normal tracking-[0.01em] text-black md:text-xl">
-          {formatProductPriceRange(merged)}
-        </p>
-      </Link>
-    </motion.article>
+      <HomeProductCard product={merged} />
+    </motion.div>
   );
 }
 
