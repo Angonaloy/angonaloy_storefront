@@ -1,9 +1,7 @@
 import Layout from "@/components/layout";
+import HomeProductCard from "@/components/home-product-card";
 import {
   fetchStorefrontProducts,
-  formatProductPriceRange,
-  getProductImage,
-  getProductNumericId,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
 } from "@/lib/storefront-products";
@@ -12,13 +10,6 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
-import { useCart } from "@/contexts/cart-context";
-import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
-
-function formatCardAmount(value: unknown) {
-  const amount = Number(value);
-  return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
-}
 
 function HighlightedWord({
   children,
@@ -80,7 +71,6 @@ function useReveal() {
 }
 
 export default function Home() {
-  const { addToCart } = useCart();
   const {
     data: catalogProducts = [],
     isError: isCatalogError,
@@ -93,10 +83,10 @@ export default function Home() {
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
-  const topSellingProducts = catalogProducts.map((product) => {
+  const homepageProducts = catalogProducts.map((product) => {
     const snapshotProduct = generatedStorefrontProducts.find((snapshot) => snapshot.slug === product.slug);
     return product.compare_at_price == null && snapshotProduct?.compare_at_price != null
-      ? { ...product, compare_at_price: product.compare_at_price ?? snapshotProduct.compare_at_price }
+      ? { ...product, compare_at_price: snapshotProduct.compare_at_price }
       : product;
   });
 
@@ -343,92 +333,7 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : topSellingProducts.slice(0, 6).map((product) => {
-                    const image = getProductImage(product);
-                    const firstVariant = product.variants?.[0];
-                    const currentPrice = Number(firstVariant?.price ?? product.price);
-                    const compareAtPrice = Number(product.compare_at_price);
-                    const hasDiscount = Number.isFinite(currentPrice) && Number.isFinite(compareAtPrice) && compareAtPrice > currentPrice;
-
-                    return (
-                      <motion.article
-                        key={product.id || product.slug}
-                        variants={reveal}
-                        transition={transition}
-                        className="group flex min-w-0 flex-col"
-                      >
-                        <Link href={`/product/${product.slug}`} className="block flex-1">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
-                            {image ? (
-                              <img
-                                src={image}
-                                alt={product.name}
-                                loading="lazy"
-                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
-                                No image
-                              </div>
-                            )}
-                            {product.available === false && (
-                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-                                Sold out
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="space-y-2 pl-0 pr-0 pb-4 pt-3 md:pl-0 md:pr-0 md:pb-5">
-                            <h3 className="line-clamp-1 min-h-[1.2em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[1.2em] md:text-base md:tracking-[0.08em]">
-                              {product.name}
-                            </h3>
-                            <div className="mt-2 flex flex-nowrap items-center gap-x-1">
-                              <span className="shrink-0 text-lg font-bold text-[#f26b4f] md:text-2xl">
-                                {formatCardAmount(currentPrice)}
-                              </span>
-                              {hasDiscount ? (
-                                <span className="shrink-0 text-sm text-black/75 line-through md:text-base">
-                                  {formatCardAmount(compareAtPrice)}
-                                </span>
-                              ) : null}
-                              {hasDiscount ? (
-                                <span className="ml-1 inline-flex shrink-0 whitespace-nowrap rounded-full bg-[#FBBB14]/35 px-2.5 py-1 text-[10px] font-medium text-black">
-                                  Save {formatCardAmount(compareAtPrice - currentPrice)}
-                                </span>
-                              ) : null}
-                            </div>
-                          </div>
-                        </Link>
-                        <button
-                          type="button"
-                          disabled={product.available === false}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            addToCart(
-                              {
-                                id: getProductNumericId(product),
-                                title: product.name,
-                                price: formatCardAmount(currentPrice),
-                                image,
-                                analyticsItem: toGoogleAnalyticsItem({
-                                  id: product.id ?? product.slug,
-                                  name: product.name,
-                                  variant: "Default",
-                                  price: currentPrice,
-                                  quantity: 1,
-                                }),
-                              },
-                              "Default",
-                            );
-                          }}
-                          className="mt-auto w-full border border-black/15 bg-[#FBBB14] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          Add to Cart
-                        </button>
-                      </motion.article>
-                    );
-                  })}
+                : homepageProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
           </motion.div>
         </motion.div>
       </section>
@@ -481,48 +386,7 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : catalogProducts.slice(0, 4).map((product) => {
-                    const image = getProductImage(product);
-
-                    return (
-                      <motion.article
-                        key={product.id || product.slug}
-                        variants={reveal}
-                        transition={transition}
-                        className="group min-w-0"
-                      >
-                        <Link href={`/product/${product.slug}`} className="block h-full">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
-                            {image ? (
-                              <img
-                                src={image}
-                                alt={product.name}
-                                loading="lazy"
-                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
-                                No image
-                              </div>
-                            )}
-                            {product.available === false && (
-                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-                                Sold out
-                              </span>
-                            )}
-                          </div>
-                          <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
-                            <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
-                              {product.name}
-                            </h3>
-                            <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">
-                              {formatProductPriceRange(product)}
-                            </p>
-                          </div>
-                        </Link>
-                      </motion.article>
-                    );
-                  })}
+                : homepageProducts.slice(0, 4).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
           </motion.div>
         </motion.div>
       </section>
@@ -576,49 +440,13 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : catalogProducts.slice(0, 4).map((product) => {
-                    const image = getProductImage(product);
-
-                    return (
-                      <motion.article
-                        key={product.id || product.slug}
-                        variants={reveal}
-                        transition={transition}
-                        className="group min-w-[58vw] snap-start snap-always md:min-w-0"
-                      >
-                        <Link href={`/product/${product.slug}`} className="block h-full">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
-                            {image ? (
-                              <img
-                                src={image}
-                                alt={product.name}
-                                loading="lazy"
-                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
-                                No image
-                              </div>
-                            )}
-                            {product.available === false && (
-                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-                                Sold out
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="px-0 pb-2 pt-5 text-black md:pt-7">
-                            <h3 className="truncate whitespace-nowrap text-base font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-xl md:tracking-[0.08em]">
-                              {product.name}
-                            </h3>
-                            <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">
-                              {formatProductPriceRange(product)}
-                            </p>
-                          </div>
-                        </Link>
-                      </motion.article>
-                    );
-                  })}
+                : homepageProducts.slice(0, 4).map((product) => (
+                    <HomeProductCard
+                      key={product.id || product.slug}
+                      product={product}
+                      className="min-w-[58vw] snap-start snap-always md:min-w-0"
+                    />
+                  ))}
           </motion.div>
         </motion.div>
       </section>
@@ -776,49 +604,13 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : catalogProducts.slice(0, 3).map((product) => {
-                    const image = getProductImage(product);
-
-                    return (
-                      <motion.article
-                        key={product.id || product.slug}
-                        variants={reveal}
-                        transition={transition}
-                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
-                      >
-                        <Link href={`/product/${product.slug}`} className="block h-full">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
-                            {image ? (
-                              <img
-                                src={image}
-                                alt={product.name}
-                                loading="lazy"
-                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
-                                No image
-                              </div>
-                            )}
-                            {product.available === false && (
-                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-                                Sold out
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="px-0 pb-2 pt-5 text-center text-black md:pt-7">
-                            <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:text-xl md:tracking-[0.08em]">
-                              {product.name}
-                            </h3>
-                            <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">
-                              {formatProductPriceRange(product)}
-                            </p>
-                          </div>
-                        </Link>
-                      </motion.article>
-                    );
-                  })}
+                : homepageProducts.slice(0, 3).map((product) => (
+                    <HomeProductCard
+                      key={product.id || product.slug}
+                      product={product}
+                      className="min-w-[78vw] snap-start snap-always md:min-w-0"
+                    />
+                  ))}
           </motion.div>
         </motion.div>
       </section>
