@@ -1,5 +1,4 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { randomInt } from "crypto";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const WEBHOOK_TIMEOUT_MS = 10_000;
@@ -47,7 +46,6 @@ type OrderServiceDependencies = {
   fetchImpl?: typeof fetch;
   merchantSuiteUrl?: string;
   apiKey?: string;
-  createOrderRef?: () => string;
   timeoutSignal?: () => AbortSignal;
 };
 
@@ -169,12 +167,6 @@ export function validateOrder(body: unknown): OrderRequest {
   };
 }
 
-function createOrderRef() {
-  const timestamp = Date.now().toString().slice(-8);
-  const suffix = randomInt(100, 1000).toString();
-  return `#${timestamp}${suffix}`;
-}
-
 function getCanonicalOrderRef(value: unknown) {
   if (typeof value === "string") return value.trim() || null;
   if (typeof value === "number" && Number.isFinite(value)) return String(value);
@@ -192,8 +184,6 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       : process.env.MERCHANT_SUITE_URL)
     ?? "").replace(/\/$/, "");
   const fetchImpl = dependencies.fetchImpl ?? fetch;
-  const fallbackRef = dependencies.createOrderRef ?? createOrderRef;
-
   try {
     if (!merchantSuiteUrl) throw new Error("Missing Merchant-Suite configuration");
     const response = await fetchImpl(`${merchantSuiteUrl}/api/custom-orders/webhook`, {
@@ -220,8 +210,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     if (!orderRef) throw new Error("Missing canonical order ID");
     return { orderRef };
   } catch {
-    if (order.trackingMode === "google_only") throw new OrderUpstreamError();
-    return { orderRef: fallbackRef() };
+    throw new OrderUpstreamError();
   }
 }
 

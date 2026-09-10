@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { randomInt } from "crypto";
 
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
@@ -35,13 +34,6 @@ export const orderRequestSchema = z.object({
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
-function createOrderRef() {
-  const timestamp = Date.now().toString().slice(-8);
-  const suffix = randomInt(100, 1000).toString();
-
-  return `#${timestamp}${suffix}`;
-}
-
 export class OrderUpstreamError extends Error {
   constructor() {
     super("Merchant-Suite did not confirm the order");
@@ -53,7 +45,6 @@ type OrderServiceDependencies = {
   fetchImpl?: typeof fetch;
   merchantSuiteUrl?: string;
   apiKey?: string;
-  createOrderRef?: () => string;
   timeoutSignal?: () => AbortSignal;
 };
 
@@ -74,8 +65,6 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       : process.env.MERCHANT_SUITE_URL)
     ?? "").replace(/\/$/, "");
   const fetchImpl = dependencies.fetchImpl ?? fetch;
-  const fallbackRef = dependencies.createOrderRef ?? createOrderRef;
-
   try {
     if (!configuredMerchantSuiteUrl) throw new Error("Missing Merchant-Suite configuration");
     const response = await fetchImpl(`${configuredMerchantSuiteUrl}/api/custom-orders/webhook`, {
@@ -106,7 +95,6 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     if (!orderRef) throw new Error("Missing canonical order ID");
     return { orderRef };
   } catch {
-    if (order.trackingMode === "google_only") throw new OrderUpstreamError();
-    return { orderRef: fallbackRef() };
+    throw new OrderUpstreamError();
   }
 }

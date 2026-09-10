@@ -42,7 +42,6 @@ test("rejects invalid quantities", () => {
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
   apiKey: "test-api-key",
-  createOrderRef: () => "#fallback",
   timeoutSignal: () => new AbortController().signal,
 };
 
@@ -101,11 +100,11 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
     ...dependencies,
     fetchImpl: async (_input, init) => {
       outboundBody = JSON.parse(String(init?.body));
-      return new Response(JSON.stringify({ order_id: "ORD-321" }), { status: 200 });
+      return new Response(JSON.stringify({ order_id: "ML-150000" }), { status: 200 });
     },
   });
 
-  assert.deepEqual(result, { orderRef: "ORD-321" });
+  assert.deepEqual(result, { orderRef: "ML-150000" });
   assert.deepEqual(outboundBody, {
     customer_name: "Test Customer",
     phone: "01712345678",
@@ -132,7 +131,7 @@ test("requires a canonical Merchant-Suite ID for Google-only orders", async () =
   }
 });
 
-test("retains fallback references for every default-order webhook failure", async () => {
+test("rejects every default-order webhook failure without a fake reference", async () => {
   const order = validateOrder(validOrder);
   const failures = [
     async () => new Response("failure", { status: 503 }),
@@ -142,7 +141,10 @@ test("retains fallback references for every default-order webhook failure", asyn
     async () => new Response("{}", { status: 200 }),
   ];
   for (const fetchImpl of failures) {
-    assert.deepEqual(await processOrder(order, { ...dependencies, fetchImpl }), { orderRef: "#fallback" });
+    await assert.rejects(
+      () => processOrder(order, { ...dependencies, fetchImpl }),
+      OrderUpstreamError,
+    );
   }
 });
 
