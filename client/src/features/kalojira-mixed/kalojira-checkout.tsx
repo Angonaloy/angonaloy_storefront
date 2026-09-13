@@ -136,7 +136,7 @@ function SupportActions({ placement }: { placement: string }) {
   );
 }
 
-export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry }: KalojiraCheckoutProps) {
+export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
   const [, setLocation] = useLocation();
   const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
@@ -163,6 +163,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     ? calculateKalojiraOrder(
         presentedPack.unitPrice,
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
+        deliveryCharge,
       )
     : null;
 
@@ -334,8 +335,9 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           customerName: name,
           phone,
           address: combinedAddress,
+          deliveryCharge,
         }),
-        deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+        deliveryCharge,
         paymentMethod: "cash_on_delivery" as const,
         trackingMode: "google_only" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
@@ -396,7 +398,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d]" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">সারা দেশে ডেলিভারি ফ্রি</span></p>
+        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">ডেলিভারি চার্জ ৳{deliveryCharge}</span></p>
       </div>
 
       <form
@@ -446,7 +448,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                       {pack.label.includes("কেজি") ? (
                         <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳460</span>
                       ) : null}
-                      <span className="rounded-full bg-[#187d48]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#187d48]">ডেলিভারি ফ্রি</span>
+                      <span className="rounded-full bg-[#187d48]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#187d48]">{deliveryCharge ? `ডেলিভারি ৳${deliveryCharge}` : "ডেলিভারি ফ্রি"}</span>
                     </span>
                   ) : null}
                 </label>
@@ -561,9 +563,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             />
             <InlineError id="kalojira-address" error={errors.address} />
           </div>
-          <p className="text-sm leading-6 text-[#654b2f]">
-            অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
-          </p>
           <TurnstileChallenge onToken={setTurnstileToken} />
         </div>
 
@@ -573,7 +572,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
-            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">ফ্রি</dd></div>
+            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{deliveryCharge ? `৳${deliveryCharge}` : "ফ্রি"}</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
           <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>

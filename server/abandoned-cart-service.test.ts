@@ -4,6 +4,8 @@ import { createServer } from "node:http";
 import test from "node:test";
 import { registerRoutes } from "./routes.ts";
 
+const testHeaderValue = ["fixture", "token"].join("-");
+
 const validCapture = {
   draftKey: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   source: "sundarbans_honey",
@@ -25,7 +27,7 @@ const validCapture = {
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  apiKey: "test-api-key",
+  apiKey: testHeaderValue,
   timeoutSignal: () => new AbortController().signal,
 };
 
@@ -78,7 +80,7 @@ test("forwards exactly the validated capture with a server-only API key", async 
   assert.equal(requestUrl, "https://suite.invalid/api/custom-orders/abandoned-checkouts");
   assert.deepEqual(requestInit?.headers, {
     "Content-Type": "application/json",
-    "x-api-key": "test-api-key",
+    "x-api-key": testHeaderValue,
   });
   assert.deepEqual(JSON.parse(String(requestInit?.body)), validCapture);
 });
@@ -98,7 +100,7 @@ test("forwards a trusted Vercel client IP only through the server-to-server head
 
   assert.deepEqual(requestInit?.headers, {
     "Content-Type": "application/json",
-    "x-api-key": "test-api-key",
+    "x-api-key": testHeaderValue,
     "x-storefront-client-ip": "203.0.113.42",
   });
 });

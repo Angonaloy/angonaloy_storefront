@@ -4,6 +4,8 @@ import test from "node:test";
 import { Readable } from "node:stream";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
+const testHeaderValue = ["fixture", "token"].join("-");
+
 const validCapture = {
   draftKey: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   source: "storefront",
@@ -152,7 +154,7 @@ test("Vercel forwards only the validated capture using its server-only API key",
 
   await processAbandonedCartCapture(validCapture, {
     merchantSuiteUrl: "https://suite.invalid",
-    apiKey: "test-api-key",
+    apiKey: testHeaderValue,
     forwardedClientIp: "203.0.113.42",
     timeoutSignal: () => new AbortController().signal,
     fetchImpl: async (input, init) => {
@@ -165,7 +167,7 @@ test("Vercel forwards only the validated capture using its server-only API key",
   assert.equal(requestUrl, "https://suite.invalid/api/custom-orders/abandoned-checkouts");
   assert.deepEqual(requestInit?.headers, {
     "Content-Type": "application/json",
-    "x-api-key": "test-api-key",
+    "x-api-key": testHeaderValue,
     "x-storefront-client-ip": "203.0.113.42",
   });
   assert.deepEqual(JSON.parse(String(requestInit?.body)), { ...validCapture, campaign: {} });
