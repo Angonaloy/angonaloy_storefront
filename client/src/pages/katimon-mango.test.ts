@@ -84,6 +84,14 @@ test("the payment note and order confirmation message center on mobile", () => {
   assert.match(checkoutSource, /<div className="mt-5 min-h-6 text-center text-sm sm:text-left" aria-live="polite" aria-atomic="true">/);
 });
 
+test("checkout form controls use compact four-pixel corners", () => {
+  assert.match(checkoutSource, /className="relative flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-\[4px\] border/);
+  assert.match(checkoutSource, /<div className="flex w-fit items-center overflow-hidden rounded-\[4px\] border/);
+  assert.match(checkoutSource, /id="kalojira-name"[\s\S]*className="min-h-11 w-full rounded-\[4px\] border/);
+  assert.match(checkoutSource, /id="kalojira-phone"[\s\S]*className="min-h-11 w-full rounded-\[4px\] border/);
+  assert.match(checkoutSource, /id="kalojira-address"[\s\S]*className="min-h-24 w-full rounded-\[4px\] border/);
+});
+
 test("availability recovery uses the brand WhatsApp icon and compact button corners", () => {
   assert.match(checkoutSource, /import \{ WhatsAppBrandIcon \} from "\.\/campaign-layout";/);
   assert.doesNotMatch(checkoutSource, /MessageCircle/);
@@ -129,7 +137,7 @@ test("the Katimon nutritionist section matches the gallery side gap on mobile", 
 });
 
 test("the Katimon footer credits Arc Labs with quoted title casing", () => {
-  assert.match(pageSource, /className="mt-2 inline-flex normal-case text-\[9px\][^"]*">Designed &amp; Developed by &quot;Arc Labs Corporation&quot;/);
+  assert.match(pageSource, /className="mt-2 inline-flex normal-case text-\[11px\][^"]*">Designed &amp; Developed by &quot;Arc Labs Corporation&quot;/);
 });
 
 test("the Katimon page reuses the mobile order dock with its checkout target", () => {
