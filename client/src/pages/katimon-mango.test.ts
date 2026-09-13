@@ -34,3 +34,10 @@ test("the document background stays white behind the Katimon page", () => {
 test("long Katimon package features can wrap without truncation", () => {
   assert.match(globalCssSource, /section\[aria-labelledby="katimon-packages"\] article span\.whitespace-nowrap\s*\{[\s\S]*white-space: normal;[\s\S]*overflow: visible;[\s\S]*text-overflow: clip;/);
 });
+
+test("the Katimon description image fills the mobile section width", () => {
+  assert.match(
+    globalCssSource,
+    /section\.mx-auto\.max-w-4xl\.px-5\.pb-8\.text-center > img\[src="\/katimon-description-v2\.webp"\]\s*\{[\s\S]*margin-left: -1\.25rem;[\s\S]*margin-right: -1\.25rem;[\s\S]*width: calc\(100% \+ 2\.5rem\);[\s\S]*max-width: none;/,
+  );
+});
