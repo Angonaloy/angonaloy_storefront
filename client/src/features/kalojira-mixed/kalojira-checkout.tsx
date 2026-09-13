@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { LoaderCircle, MessageCircle, Minus, Phone, Plus } from "lucide-react";
+import { LoaderCircle, Minus, Phone, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,7 @@ import {
   type KalojiraPackOption,
 } from "./order";
 import { trackKalojiraCampaignEvent } from "./tracking";
+import { WhatsAppBrandIcon } from "./campaign-layout";
 
 const PHONE_NUMBER = KALOJIRA_CAMPAIGN_PHONE_NUMBER;
 const PHONE_HREF = KALOJIRA_CAMPAIGN_PHONE_HREF;
@@ -118,7 +119,7 @@ function SupportActions({ placement, whatsappHref }: { placement: string; whatsa
       <a
         href={PHONE_HREF}
         onClick={() => trackKalojiraCampaignEvent("phone_click", { placement })}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       >
         <Phone className="size-4" aria-hidden="true" />
         কল করুন: {PHONE_NUMBER}
@@ -128,9 +129,9 @@ function SupportActions({ placement, whatsappHref }: { placement: string; whatsa
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackKalojiraCampaignEvent("whatsapp_click", { placement })}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
       >
-        <MessageCircle className="size-4" aria-hidden="true" />
+        <WhatsAppBrandIcon className="size-4" />
         WhatsApp
       </a>
     </div>
@@ -397,10 +398,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   return (
     <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="kalojira-checkout-heading">
       <div className="max-w-2xl">
-        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d] focus:outline-none" tabIndex={-1}>
+        <h2 id="kalojira-checkout-heading" className="whitespace-nowrap text-center text-xl font-extrabold text-[#19382d] focus:outline-none sm:text-2xl sm:text-left" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">ডেলিভারি চার্জ ৳{deliveryCharge}</span></p>
+        <p className="mt-2 whitespace-nowrap text-center text-sm leading-6 text-[#654b2f] sm:text-left">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
       </div>
 
       <form
@@ -419,7 +420,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               {packs.map((pack) => (
                 <label
                   key={pack.variantId}
-                    className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
+                    className="relative flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -450,7 +451,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                       {pack.label.includes("কেজি") ? (
                         <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳460</span>
                       ) : null}
-                      <span className="rounded-full bg-[#187d48]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#187d48]">{deliveryCharge ? `ডেলিভারি ৳${deliveryCharge}` : "ডেলিভারি ফ্রি"}</span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="rounded-[4px] bg-[#fcc435] px-2.5 py-0.5 text-[11px] font-bold text-black">{deliveryCharge ? `ডেলিভারি ৳${deliveryCharge}` : "ডেলিভারি ফ্রি"}</span>
+                        {pack.label.includes("10") ? <span className="whitespace-nowrap rounded-[4px] border border-[#b98500]/35 bg-gradient-to-r from-[#fcc435] to-[#ffd968] px-2.5 py-0.5 text-[11px] font-bold tracking-[0.02em] text-black shadow-[0_2px_6px_rgba(185,133,0,0.18)]">গ্রাহকের পছন্দ</span> : null}
+                      </span>
                     </span>
                   ) : null}
                 </label>
@@ -463,7 +467,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                   <button
                     type="button"
                     onClick={onRetry}
-                    className="min-h-11 rounded-full bg-[#19382d] px-5 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className="min-h-11 rounded-[4px] bg-[#19382d] px-5 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
                     আবার চেষ্টা করুন
                   </button>
@@ -577,9 +581,9 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{deliveryCharge ? `৳${deliveryCharge}` : "ফ্রি"}</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
-          <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
+          <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-sm font-bold leading-6 sm:text-left">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
 
-          <div className="mt-5 min-h-6 text-sm" aria-live="polite" aria-atomic="true">
+          <div className="mt-5 min-h-6 text-center text-sm sm:text-left" aria-live="polite" aria-atomic="true">
             {announcement}
           </div>
 

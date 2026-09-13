@@ -26,11 +26,14 @@ export function resolveKalojiraCheckoutStatus(input: {
   inventoryIsFetched: boolean;
   hasInventory: boolean;
 }): KalojiraCheckoutStatus {
-  if (input.productIsError || input.inventoryIsError) return "error";
+  if (input.productIsError) return "error";
   if (input.productIsPending && !input.hasProduct) return "loading";
   if (!input.hasProduct) return "unavailable";
-  if (input.inventoryIsFetched && !input.hasInventory) return "unavailable";
   if (!input.hasOrderablePacks) return "unavailable";
+
+  // A missing inventory payload is an unknown sync state, not proof that a
+  // catalog product is sold out. The submit handler revalidates the selected
+  // variant against the live inventory feed before creating an order.
   return "ready";
 }
 
