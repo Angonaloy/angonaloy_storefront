@@ -24,6 +24,7 @@ import {
   KALOJIRA_CAMPAIGN_PHONE_NUMBER,
   KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
+import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "./katimon-content";
 
 import {
   getFirstKalojiraInvalidField,
@@ -111,7 +112,7 @@ function InlineError({ id, error }: { id: string; error?: string }) {
   ) : null;
 }
 
-function SupportActions({ placement }: { placement: string }) {
+function SupportActions({ placement, whatsappHref }: { placement: string; whatsappHref: string }) {
   return (
     <div className="flex flex-wrap gap-3">
       <a
@@ -123,7 +124,7 @@ function SupportActions({ placement }: { placement: string }) {
         কল করুন: {PHONE_NUMBER}
       </a>
       <a
-        href={WHATSAPP_HREF}
+        href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackKalojiraCampaignEvent("whatsapp_click", { placement })}
@@ -138,6 +139,7 @@ function SupportActions({ placement }: { placement: string }) {
 
 export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
   const [, setLocation] = useLocation();
+  const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
   const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
@@ -395,7 +397,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   return (
     <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="kalojira-checkout-heading">
       <div className="max-w-2xl">
-        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d]" tabIndex={-1}>
+        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d] focus:outline-none" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
         <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">ডেলিভারি চার্জ ৳{deliveryCharge}</span></p>
@@ -465,7 +467,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                   >
                     আবার চেষ্টা করুন
                   </button>
-                  <SupportActions placement="checkout_availability_error" />
+                  <SupportActions placement="checkout_availability_error" whatsappHref={whatsappHref} />
                 </div>
               </div>
             ) : null}
@@ -586,7 +588,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
-              <SupportActions placement="checkout_network_error" />
+              <SupportActions placement="checkout_network_error" whatsappHref={whatsappHref} />
             </div>
           ) : null}
 

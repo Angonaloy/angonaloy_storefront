@@ -2,17 +2,21 @@ import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
+import { motion } from "framer-motion";
 import { Phone } from "lucide-react";
 import { TextHighlighter } from "@/components/ui/text-highlighter";
 import { ShiningText } from "@/components/ui/shining-text";
 
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
 import { WhatsAppBrandIcon } from "@/features/kalojira-mixed/campaign-layout";
-import { KALOJIRA_CAMPAIGN_PHONE_HREF, KALOJIRA_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/content";
+import { KALOJIRA_CAMPAIGN_PHONE_HREF } from "@/features/kalojira-mixed/content";
+import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/katimon-content";
 import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { resolveKalojiraCheckoutStatus } from "@/features/kalojira-mixed/checkout-state";
 import { getKalojiraPackOptions } from "@/features/kalojira-mixed/order";
 import { fetchStorefrontProduct, fetchStorefrontProductInventory, getProductGallery, mergeInventory } from "@/lib/storefront-products";
+
+const KALOJIRA_CAMPAIGN_WHATSAPP_HREF = KATIMON_CAMPAIGN_WHATSAPP_HREF;
 
 export default function KatimonMangoPage() {
   const slug = "katimon-mango";
@@ -33,6 +37,11 @@ export default function KatimonMangoPage() {
   }, [galleryApi]);
   const status = resolveKalojiraCheckoutStatus({ hasProduct: Boolean(product), hasOrderablePacks: product ? getKalojiraPackOptions(product).length > 0 : false, productIsPending: productQuery.isPending, productIsError: productQuery.isError, inventoryIsError: inventoryQuery.isError, inventoryIsFetched: inventoryQuery.isFetched, hasInventory: Boolean(inventoryQuery.data?.inventory) });
   const handleOrderClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.currentTarget.className.includes("border-[#25d366]")) {
+      event.preventDefault();
+      window.open(KATIMON_CAMPAIGN_WHATSAPP_HREF, "_blank", "noopener,noreferrer");
+      return;
+    }
     event.preventDefault();
     const target = document.getElementById("order");
     const heading = document.getElementById("kalojira-checkout-heading");
@@ -45,7 +54,7 @@ export default function KatimonMangoPage() {
   if (productQuery.isPending) return <div className="flex min-h-screen items-center justify-center bg-white" aria-busy="true"><span className="sr-only">পণ্য লোড হচ্ছে…</span><span aria-hidden="true" className="size-8 animate-pulse rounded-full bg-[#eab308]/50" /></div>;
   if (!product) return <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white px-6 text-center"><h1 className="text-2xl font-bold">পণ্যটি পাওয়া যায়নি</h1><Link href="/products" className="rounded-full bg-black px-5 py-3 text-sm text-white">সব পণ্য দেখুন</Link></div>;
 
-  return <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white text-[#19382d]">
+  return <motion.div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white text-[#19382d]" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}>
     <header className="sticky top-0 z-40 border-b border-black/10 bg-white/95 backdrop-blur"><div className="relative mx-auto flex h-[68px] max-w-6xl items-center justify-between px-4 sm:h-[76px] sm:px-6"><Link href="/step/katimon-mango" aria-label="ম্যাংগো লাভার কাটিমন আম পেজ" className="absolute left-1/2 flex -translate-x-1/2 items-center"><img src={mangoLoverLogo} alt="ম্যাংগো লাভার" className="h-8 w-auto sm:h-9" decoding="async" /></Link><a href={KALOJIRA_CAMPAIGN_PHONE_HREF} aria-label="ফোনে অর্ডার করুন" className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-[4px] border border-black/15 bg-white px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-black transition-colors hover:bg-black hover:text-white"><Phone className="size-4" strokeWidth={2} aria-hidden="true" /><span className="hidden sm:inline">কল করুন</span></a><nav aria-label="যোগাযোগ" className="ml-auto flex items-center"><a href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF} aria-label="WhatsApp-এ অর্ডার করুন" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-[4px] border border-[#25d366]/50 bg-[#f4fff7] px-3 text-[10px] font-bold uppercase tracking-[0.16em] text-[#168a45] transition-colors hover:bg-[#25d366] hover:text-white"><WhatsAppBrandIcon className="size-4" /><span className="hidden sm:inline">WhatsApp</span></a></nav></div></header>
     <main className="w-full max-w-full overflow-x-hidden">
       <section className="mx-auto grid max-w-6xl gap-8 px-0 pb-16 pt-0 md:grid-cols-2 md:items-center md:px-5 md:pt-16">
@@ -63,5 +72,5 @@ export default function KatimonMangoPage() {
       <section id="order" className="mx-auto max-w-4xl scroll-mt-24 px-5 pb-20"><KalojiraCheckout product={product} status={status} productQuery={productQuery} inventoryQuery={inventoryQuery} deliveryCharge={100} onRetry={() => void Promise.all([productQuery.refetch(), inventoryQuery.refetch()])} /></section>
     </main>
     <footer className="relative overflow-hidden border-t border-black/10 bg-white text-black/70"><div className="absolute inset-0 hidden bg-cover bg-center bg-no-repeat opacity-25 md:block" style={{ backgroundImage: "url('/footer-bg.webp')" }} /><div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 md:hidden" style={{ backgroundImage: "url('/footer-bg-mobile-v2.webp')" }} /><div className="absolute inset-0 bg-white/75" /><div className="relative z-10 mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12"><div className="grid gap-7 md:grid-cols-[1.1fr_0.9fr_0.9fr]"><div><img src={mangoLoverLogo} alt="ম্যাংগো লাভার" className="h-9 w-auto" /><p className="mt-3 max-w-sm text-sm leading-6 text-black/60">প্রকৃতির স্বাদ, যত্নের সঙ্গে পৌঁছে দিই আপনার ঘরে।</p><div className="mt-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-black/45"><span className="tracking-normal">ক্যাশ অন ডেলিভারি</span><span>·</span><span className="tracking-normal">সারা বাংলাদেশে</span></div></div><div><p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#b98500]">যোগাযোগ</p><div className="mt-3 flex flex-row gap-2"><a href={KALOJIRA_CAMPAIGN_PHONE_HREF} className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[4px] border border-black/15 bg-white px-2 py-2 text-sm transition-colors hover:bg-black hover:text-white md:w-auto"><Phone className="size-4" />কল করুন</a><a href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[4px] border border-[#25d366]/50 bg-[#f4fff7] px-2 py-2 text-sm text-[#168a45] transition-colors hover:bg-[#25d366] hover:text-white md:w-auto"><WhatsAppBrandIcon className="size-4" />হোয়াটসঅ্যাপ করুন</a></div></div><div><p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#b98500]">ম্যাংগো লাভার</p><p className="mt-3 text-sm leading-6 text-black/60">পুষ্টিবিদ মুরাদ পারভেজ পরিচালিত একটি ই-কমার্স প্ল্যাটফর্ম, যার লক্ষ্য প্রতিটি ঘরে ভেজালমুক্ত ও নিরাপদ খাবার পৌঁছে দেয়া।</p></div></div><div className="mt-7 flex flex-col items-center gap-3 border-t border-black/10 pt-5 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-black/45 md:flex-row md:justify-center"><div><p>© ২০২৬ ম্যাংগো লাভার · <a href="https://www.bing.com/maps/default.aspx?v=2&pc=FACEBK&mid=8100&where1=Nowhata%2C%20Paba%2C%20Rajshahi%2C%20Bangladesh%2C%206213&FORM=FBKPL1&mkt=en-GB" target="_blank" rel="noopener noreferrer" className="hover:text-black">নওহাটা, পবা, রাজশাহী, বাংলাদেশ, ৬২১৩</a></p><a href="https://api.whatsapp.com/send/?phone=8801733670129" target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex text-[9px] tracking-[0.08em] underline decoration-[#FBBB14] decoration-2 underline-offset-4 hover:text-black">Designed &amp; Developed by Arc Labs Corporation</a></div><nav aria-label="নীতিমালা" className="flex flex-nowrap justify-center gap-x-3 whitespace-nowrap text-[9px] md:gap-x-4 md:text-[10px]"><Link href="/privacy-policy">• Privacy Policy</Link><Link href="/refund-and-return-policy">• Refund &amp; Return</Link><Link href="/terms-and-conditions">• Terms &amp; Conditions</Link></nav></div></div><div className="relative z-10 h-1 bg-[#FBBB14]" /></footer>
-  </div>;
+  </motion.div>;
 }
