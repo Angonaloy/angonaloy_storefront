@@ -15,7 +15,7 @@ type TextHighlighterProps = {
 };
 
 export const TextHighlighter = forwardRef<TextHighlighterRef, TextHighlighterProps>(
-  ({ children, className, highlightColor = "#f5d76e" }, ref) => {
+  ({ children, className, highlightColor = "#b7ff3c" }, ref) => {
     const elementRef = useRef<HTMLSpanElement>(null);
     const [manualAnimation, setManualAnimation] = useState(false);
     const inView = useInView(elementRef, { once: true, amount: 0.1 });
@@ -30,17 +30,17 @@ export const TextHighlighter = forwardRef<TextHighlighterRef, TextHighlighterPro
     return (
       <motion.span
         ref={elementRef}
-        className={cn("inline rounded-[3px] px-1 font-semibold", className)}
+        className={cn("inline font-semibold", className)}
         style={{
           backgroundImage: `linear-gradient(${highlightColor}, ${highlightColor})`,
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "0 88%",
-          backgroundSize: active ? "100% 42%" : "0% 42%",
+          backgroundPosition: "0 0",
+          backgroundSize: active ? "100% 100%" : "0% 100%",
           boxDecorationBreak: "clone",
           WebkitBoxDecorationBreak: "clone",
         }}
-        initial={{ backgroundSize: "0% 42%" }}
-        animate={{ backgroundSize: active ? "100% 42%" : "0% 42%" }}
+        initial={{ backgroundSize: "0% 100%" }}
+        animate={{ backgroundSize: active ? "100% 100%" : "0% 100%" }}
         transition={{ duration: 0.7, ease: "easeOut" }}
       >
         {children}
