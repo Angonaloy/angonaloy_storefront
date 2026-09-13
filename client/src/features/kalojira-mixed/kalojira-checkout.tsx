@@ -420,7 +420,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               {packs.map((pack) => (
                 <label
                   key={pack.variantId}
-                    className="relative flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
+                    className="relative flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[4px] border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -479,7 +479,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
 
           <div className="space-y-2">
             <label htmlFor="kalojira-quantity" className="block font-semibold text-[#19382d]">পরিমাণ</label>
-            <div className="flex w-fit items-center overflow-hidden rounded-xl border border-[#c8b98f] bg-white">
+            <div className="flex w-fit items-center overflow-hidden rounded-[4px] border border-[#c8b98f] bg-white">
               <button
                 type="button"
                 className="grid min-h-11 min-w-11 place-items-center text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-[-3px]"
@@ -529,7 +529,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               maxLength={120}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-11 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-name", errors.name)}
             />
             <InlineError id="kalojira-name" error={errors.name} />
@@ -548,7 +548,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               placeholder="01XXXXXXXXX"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-11 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-phone", errors.phone)}
             />
             <InlineError id="kalojira-phone" error={errors.phone} />
@@ -564,7 +564,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               maxLength={300}
               value={address}
               onChange={(event) => setAddress(event.target.value)}
-              className="min-h-24 w-full rounded-xl border border-[#c8b98f] bg-white px-4 py-3 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-24 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 py-3 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-address", errors.address)}
             />
             <InlineError id="kalojira-address" error={errors.address} />
