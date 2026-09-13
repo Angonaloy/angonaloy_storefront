@@ -82,6 +82,12 @@
   @apply border-border;
 }
 
+#katimon-packages article span.whitespace-nowrap {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 .text-minimal {
   @apply uppercase tracking-[0.2em] font-medium;
 }

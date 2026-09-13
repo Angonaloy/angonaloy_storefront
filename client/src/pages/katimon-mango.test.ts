@@ -30,3 +30,7 @@ test("the document background stays white behind the Katimon page", () => {
   assert.match(globalCssSource, /html,\s*body\s*\{\s*background-color: #fff;\s*\}/);
   assert.doesNotMatch(globalCssSource, /html,\s*body\s*\{\s*background-color: #FBBB14;/);
 });
+
+test("long Katimon package features can wrap without truncation", () => {
+  assert.match(globalCssSource, /#katimon-packages article span\.whitespace-nowrap\s*\{[\s\S]*white-space: normal;[\s\S]*overflow: visible;[\s\S]*text-overflow: clip;/);
+});
