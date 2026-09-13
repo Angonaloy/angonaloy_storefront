@@ -58,3 +58,10 @@ test("the Katimon page uses its generated product snapshot for first paint", () 
   assert.match(pageSource, /initialData: generatedProduct \?\? undefined/);
   assert.match(pageSource, /refetchInterval: STOREFRONT_POLL_INTERVAL_MS/);
 });
+
+test("the Katimon hero copy matches the mobile gallery side gap", () => {
+  assert.match(
+    globalCssSource,
+    /@media \(max-width: 767px\)\s*\{[\s\S]*section\.mx-auto\.grid\.max-w-6xl\.gap-8 > div\.order-2\.px-5\.text-center\s*\{[\s\S]*padding-left: 10px;[\s\S]*padding-right: 10px;/,
+  );
+});
