@@ -397,7 +397,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   return (
     <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="kalojira-checkout-heading">
       <div className="max-w-2xl">
-        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d]" tabIndex={-1}>
+        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d] focus:outline-none" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
         <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">ডেলিভারি চার্জ ৳{deliveryCharge}</span></p>
