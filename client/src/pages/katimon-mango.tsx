@@ -14,14 +14,16 @@ import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/katimo
 import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { resolveKalojiraCheckoutStatus } from "@/features/kalojira-mixed/checkout-state";
 import { getKalojiraPackOptions } from "@/features/kalojira-mixed/order";
-import { fetchStorefrontProduct, fetchStorefrontProductInventory, getProductGallery, mergeInventory } from "@/lib/storefront-products";
+import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { STOREFRONT_POLL_INTERVAL_MS, fetchStorefrontProduct, fetchStorefrontProductInventory, findGeneratedStorefrontProduct, getProductGallery, mergeInventory } from "@/lib/storefront-products";
 
 const KALOJIRA_CAMPAIGN_WHATSAPP_HREF = KATIMON_CAMPAIGN_WHATSAPP_HREF;
 
 export default function KatimonMangoPage() {
   const slug = "katimon-mango";
-  const productQuery = useQuery({ queryKey: ["merchant-suite-product", slug], queryFn: () => fetchStorefrontProduct(slug), refetchInterval: 8000 });
-  const inventoryQuery = useQuery({ queryKey: ["merchant-suite-inventory", slug], queryFn: () => fetchStorefrontProductInventory(slug), refetchInterval: 8000 });
+  const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug);
+  const productQuery = useQuery({ queryKey: ["merchant-suite-product", slug], queryFn: () => fetchStorefrontProduct(slug), initialData: generatedProduct ?? undefined, refetchInterval: STOREFRONT_POLL_INTERVAL_MS });
+  const inventoryQuery = useQuery({ queryKey: ["merchant-suite-inventory", slug], queryFn: () => fetchStorefrontProductInventory(slug), refetchInterval: STOREFRONT_POLL_INTERVAL_MS });
   const [activeImage, setActiveImage] = useState(0);
   const [galleryRef, galleryApi] = useEmblaCarousel({ align: "start", loop: false });
   const product = mergeInventory(productQuery.data, inventoryQuery.data?.inventory);

@@ -51,3 +51,10 @@ test("the Katimon page has a single homepage-style entrance reveal", () => {
 test("the checkout heading focus does not show a browser outline after scrolling", () => {
   assert.match(checkoutSource, /id="kalojira-checkout-heading" className="[^"]*focus:outline-none[^"]*"/);
 });
+
+test("the Katimon page uses its generated product snapshot for first paint", () => {
+  assert.match(pageSource, /generatedStorefrontProducts/);
+  assert.match(pageSource, /findGeneratedStorefrontProduct\(generatedStorefrontProducts, slug\)/);
+  assert.match(pageSource, /initialData: generatedProduct \?\? undefined/);
+  assert.match(pageSource, /refetchInterval: STOREFRONT_POLL_INTERVAL_MS/);
+});
