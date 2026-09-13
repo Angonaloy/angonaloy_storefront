@@ -65,3 +65,10 @@ test("the Katimon hero copy matches the mobile gallery side gap", () => {
     /@media \(max-width: 767px\)\s*\{[\s\S]*section\.mx-auto\.grid\.max-w-6xl\.gap-8 > div\.order-2\.px-5\.text-center\s*\{[\s\S]*padding-left: 10px;[\s\S]*padding-right: 10px;/,
   );
 });
+
+test("the Katimon mobile navbar matches the gallery side gap", () => {
+  assert.match(
+    globalCssSource,
+    /@media \(max-width: 767px\)[\s\S]*header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*padding-left: 10px;[\s\S]*padding-right: 10px;/,
+  );
+});
