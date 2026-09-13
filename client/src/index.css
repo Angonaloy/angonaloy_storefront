@@ -102,7 +102,7 @@ section.mx-auto.max-w-4xl.px-5.pb-8.text-center > img[src="/katimon-description-
   }
 
   header.sticky.top-0.z-40 > div.relative.mx-auto {
-    height: 60px;
+    height: 56px;
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -110,7 +110,7 @@ section.mx-auto.max-w-4xl.px-5.pb-8.text-center > img[src="/katimon-description-
 
 @media (min-width: 640px) {
   header.sticky.top-0.z-40 > div.relative.mx-auto {
-    height: 68px;
+    height: 64px;
   }
 }
 

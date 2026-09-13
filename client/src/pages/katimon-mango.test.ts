@@ -67,8 +67,8 @@ test("the Katimon hero copy matches the mobile gallery side gap", () => {
 });
 
 test("the Katimon navbar uses compact mobile and desktop heights", () => {
-  assert.match(globalCssSource, /header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*height: 60px;/);
-  assert.match(globalCssSource, /@media \(min-width: 640px\)[\s\S]*header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*height: 68px;/);
+  assert.match(globalCssSource, /header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*height: 56px;/);
+  assert.match(globalCssSource, /@media \(min-width: 640px\)[\s\S]*header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*height: 64px;/);
 });
 
 test("the Katimon navbar buttons use compact controls", () => {
