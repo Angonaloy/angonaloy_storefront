@@ -41,3 +41,9 @@ test("the Katimon description image fills the mobile section width", () => {
     /section\.mx-auto\.max-w-4xl\.px-5\.pb-8\.text-center > img\[src="\/katimon-description-v2\.webp"\]\s*\{[\s\S]*margin-left: -1\.25rem;[\s\S]*margin-right: -1\.25rem;[\s\S]*width: calc\(100% \+ 2\.5rem\);[\s\S]*max-width: none;/,
   );
 });
+
+test("the Katimon page has a single homepage-style entrance reveal", () => {
+  assert.match(pageSource, /import \{ motion \} from "framer-motion";/);
+  assert.match(pageSource, /return <motion\.div className="min-h-screen[^"]*" initial=\{\{ opacity: 0, y: 12 \}\} animate=\{\{ opacity: 1, y: 0 \}\}/);
+  assert.match(pageSource, /transition=\{\{ duration: 1, ease: \[0\.25, 0\.1, 0\.25, 1\] \}\}/);
+});
