@@ -4,6 +4,7 @@ import test from "node:test";
 
 const pageSource = readFileSync(new URL("./katimon-mango.tsx", import.meta.url), "utf8");
 const checkoutSource = readFileSync(new URL("../features/kalojira-mixed/kalojira-checkout.tsx", import.meta.url), "utf8");
+const mobileOrderBarSource = readFileSync(new URL("../features/kalojira-mixed/mobile-order-bar.tsx", import.meta.url), "utf8");
 const contentSource = readFileSync(new URL("../features/kalojira-mixed/katimon-content.ts", import.meta.url), "utf8");
 const globalCssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
@@ -129,4 +130,12 @@ test("the Katimon nutritionist section matches the gallery side gap on mobile", 
 
 test("the Katimon footer credits Arc Labs with quoted title casing", () => {
   assert.match(pageSource, /className="mt-2 inline-flex normal-case text-\[9px\][^"]*">Designed &amp; Developed by &quot;Arc Labs Corporation&quot;/);
+});
+
+test("the Katimon page reuses the mobile order dock with its checkout target", () => {
+  assert.match(pageSource, /import \{ MobileOrderBar \} from "@\/features\/kalojira-mixed\/mobile-order-bar";/);
+  assert.match(pageSource, /<MobileOrderBar checkoutId="order" whatsappHref=\{KATIMON_CAMPAIGN_WHATSAPP_HREF\}/);
+  assert.match(mobileOrderBarSource, /checkoutId = "kalojira-checkout"/);
+  assert.match(mobileOrderBarSource, /const target = document\.getElementById\(checkoutId\)/);
+  assert.match(mobileOrderBarSource, /href=\{whatsappHref\}/);
 });
