@@ -82,6 +82,91 @@
   @apply border-border;
 }
 
+.katimon-hero-button {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  font: inherit;
+  vertical-align: middle;
+}
+
+.katimon-hero-button__shadow,
+.katimon-hero-button__edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.katimon-hero-button__shadow {
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.katimon-hero-button__edge {
+  background: linear-gradient(
+    to left,
+    hsl(340deg 100% 16%) 0%,
+    hsl(340deg 100% 32%) 8%,
+    hsl(340deg 100% 32%) 92%,
+    hsl(340deg 100% 16%) 100%
+  );
+}
+
+.katimon-hero-button__front {
+  display: block;
+  position: relative;
+  padding: 6px 27px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: inherit;
+  line-height: 1.2;
+  color: white;
+  background: #fcc435;
+  white-space: nowrap;
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.katimon-hero-button:hover {
+  filter: brightness(110%);
+}
+
+.katimon-hero-button:hover .katimon-hero-button__front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.katimon-hero-button:active .katimon-hero-button__front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.katimon-hero-button:hover .katimon-hero-button__shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.katimon-hero-button:active .katimon-hero-button__shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.katimon-hero-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
 section[aria-labelledby="katimon-packages"] article span.whitespace-nowrap {
   white-space: normal;
   overflow: visible;
