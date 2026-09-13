@@ -282,19 +282,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "1ac50c09-7c7b-4e61-80e2-4b364221f2f5",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 800,
-        "available": true
-      },
-      {
         "id": "52de41bc-4bdb-4113-bd5c-61108a6da886",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 450,
+        "available": true
+      },
+      {
+        "id": "1ac50c09-7c7b-4e61-80e2-4b364221f2f5",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 800,
         "available": true
       }
     ]
@@ -439,19 +439,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "c59602da-9a1a-4023-bc7e-0b94e394caa1",
-        "attributes": {
-          "size": "২ কেজি"
-        },
-        "price": 1300,
-        "available": true
-      },
-      {
         "id": "9ba95dbe-5e3e-43bc-a479-2d64ff86db3b",
         "attributes": {
           "size": "১ কেজি"
         },
         "price": 700,
+        "available": true
+      },
+      {
+        "id": "c59602da-9a1a-4023-bc7e-0b94e394caa1",
+        "attributes": {
+          "size": "২ কেজি"
+        },
+        "price": 1300,
         "available": true
       }
     ]
@@ -532,19 +532,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "available": true
       },
       {
-        "id": "b9d03045-2485-47fa-8e19-a6e568c22903",
-        "attributes": {
-          "size": "৫ লিটার"
-        },
-        "price": 1650,
-        "available": true
-      },
-      {
         "id": "823862e1-56f9-4594-9191-a50c43a0f75d",
         "attributes": {
           "size": "১ লিটার"
         },
         "price": 350,
+        "available": true
+      },
+      {
+        "id": "b9d03045-2485-47fa-8e19-a6e568c22903",
+        "attributes": {
+          "size": "৫ লিটার"
+        },
+        "price": 1650,
         "available": true
       }
     ]
@@ -668,19 +668,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "dc4e8fb0-f7e3-40fb-b1cf-a45127fd3182",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 800,
-        "available": true
-      },
-      {
         "id": "7e440bd7-6a44-432c-8085-41c47f2f1d09",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 400,
+        "available": true
+      },
+      {
+        "id": "dc4e8fb0-f7e3-40fb-b1cf-a45127fd3182",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 800,
         "available": true
       }
     ]
@@ -817,19 +817,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "951b1cf2-d402-46e2-8e94-4dcbc3cd5ec8",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 1600,
-        "available": true
-      },
-      {
         "id": "2829e356-b0c2-41a4-bc76-1da64cd59bce",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 990,
+        "available": true
+      },
+      {
+        "id": "951b1cf2-d402-46e2-8e94-4dcbc3cd5ec8",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 1600,
         "available": true
       }
     ]
@@ -1051,19 +1051,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "e29a06b3-a32b-4f54-81f1-c37f439c1e2d",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 1600,
-        "available": true
-      },
-      {
         "id": "9acd9651-155f-44ab-86bd-f3a978b10035",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 850,
+        "available": true
+      },
+      {
+        "id": "e29a06b3-a32b-4f54-81f1-c37f439c1e2d",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 1600,
         "available": true
       }
     ]

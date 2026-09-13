@@ -111,6 +111,12 @@ test("curates detailed source content for regular products", () => {
       expected: ["সুন্দরবনের", "প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট", "দানা তৈরি"],
       minimumCharacters: 1250,
     },
+    {
+      slug: "katimon-mango",
+      labels: ["বিবরণ", "বৈশিষ্ট্য", "সম্ভাব্য উপকারিতা", "খাওয়ার সময় ও নিয়ম", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
+      expected: ["কাটিমন", "অফসিজন", "কৃত্রিমভাবে পাকানো নয়"],
+      minimumCharacters: 1700,
+    },
   ];
 
   for (const { slug, labels, expected, minimumCharacters } of cases) {

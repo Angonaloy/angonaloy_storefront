@@ -3,6 +3,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { OrderProtectionError } from "@/lib/order-protection-errors";
+import { useCheckoutProtectionSignals } from "@/lib/order-protection";
+import { OrderProtectionMessage } from "@/components/order-protection-message";
+import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
+import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
@@ -30,6 +36,8 @@ export type OrderDialogBundle = {
   unitPrice?: number;
   images: { src: string; alt: string }[];
   analyticsItems?: GoogleAnalyticsItem[];
+  captureItems?: AbandonedCartItem[];
+  items?: Array<{ productId: string; variantId: string; quantity: number }>;
 };
 
 function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
@@ -64,11 +72,47 @@ export default function OrderDialog({
   const [orderError, setOrderError] = useState("");
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
+  const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
+  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
+  const formRef = useRef<HTMLFormElement>(null);
+  const capture = useAbandonedCartCapture("storefront");
   const bundleQuantity = bundle?.quantity ?? 1;
   const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
   const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold;
+
+  const getCaptureSnapshot = (form: HTMLFormElement | null = formRef.current) => {
+    if (!bundle || deliveryCharge === null) return null;
+    const formData = form ? new FormData(form) : null;
+    return {
+      customerName: String(formData?.get("name") || ""),
+      phone: String(formData?.get("phone") || ""),
+      address: String(formData?.get("address") || ""),
+      items: bundle.captureItems?.length
+        ? bundle.captureItems
+        : [{
+          productName: bundle.title,
+          variantName: bundle.details,
+          quantity: bundleQuantity,
+          unitPrice: bundleUnitPrice,
+        }],
+      subtotal: bundle.price,
+      deliveryRate: deliveryCharge,
+      total: bundle.price + deliveryCharge,
+      campaign: typeof window === "undefined" ? {} : readAbandonedCartCampaign(window.location.search),
+    };
+  };
+
+  const updateCapture = (form?: HTMLFormElement | null) => {
+    const snapshot = getCaptureSnapshot(form);
+    return snapshot ? capture.capture(snapshot) : null;
+  };
+
+  const flushCapture = (form?: HTMLFormElement | null) => {
+    const snapshot = getCaptureSnapshot(form);
+    if (snapshot) void capture.flush(snapshot);
+  };
 
   useEffect(() => {
     if (!previousOpen.current && open) {
@@ -107,6 +151,10 @@ export default function OrderDialog({
   }, [open, qualifiesForFreeDelivery]);
 
   useEffect(() => {
+    if (open) updateCapture();
+  }, [open, bundle, bundleQuantity, bundleUnitPrice, deliveryCharge]);
+
+  useEffect(() => {
     if (orderSubmitted) {
       trackMerchantSuiteEvent("purchased");
     }
@@ -114,6 +162,7 @@ export default function OrderDialog({
 
   const resetDialog = (nextOpen: boolean) => {
     if (!nextOpen) {
+      void capture.finalize();
       setOrderClosing(true);
       onOpenChange(false);
       return;
@@ -126,6 +175,7 @@ export default function OrderDialog({
     setOrderSubmitting(false);
     setOrderError("");
     setOrderRef("");
+    setProtectionDecision(null);
     setPaymentMethod(null);
   };
 
@@ -175,8 +225,11 @@ export default function OrderDialog({
 
     const selectedDeliveryCharge = deliveryCharge;
     const selectedPaymentMethod = paymentMethod;
+    const draftKey = updateCapture(event.currentTarget);
+    flushCapture(event.currentTarget);
     setOrderSubmitting(true);
     setOrderError("");
+    setProtectionDecision(null);
 
     try {
       const response = await apiRequest("POST", "/api/orders", {
@@ -190,16 +243,32 @@ export default function OrderDialog({
          address,
         paymentMethod: selectedPaymentMethod,
         metaEventId: eventId,
+        items: bundle.items,
+        website: String(formData.get("website") || ""),
+        turnstileToken,
+        clientSessionId,
+        checkoutStartedAt,
+        ...(draftKey ? { draftKey } : {}),
       });
-      const result = await response.json();
-      setOrderRef(result.orderRef || "");
+      const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
+      if (response.status === 202 && result.decision === "review") {
+        setProtectionDecision("review");
+        setOrderError("");
+        capture.clear();
+        return;
+      }
+      if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
+        throw new Error("Could not confirm order. Please try again.");
+      }
+      capture.clear();
+      setOrderRef(result.orderRef);
       setOrderSubmitted(true);
       onSuccess?.();
       trackGoogleEcommerceEvent("purchase", {
         pageType: "thank_you",
         value: bundle.price + selectedDeliveryCharge,
         items: getBundleAnalyticsItems(bundle),
-        transactionId: result.orderRef || result.order_id,
+        transactionId: result.orderRef,
         tax: 0,
         shipping: selectedDeliveryCharge,
         coupon: "",
@@ -217,6 +286,11 @@ export default function OrderDialog({
         },
       });
     } catch (error) {
+      if (error instanceof OrderProtectionError) {
+        setProtectionDecision("block");
+        setOrderError("");
+        return;
+      }
       setOrderError(
         error instanceof Error
           ? error.message
@@ -283,6 +357,7 @@ export default function OrderDialog({
                   }}
                   className="flex w-full flex-1 flex-col items-center justify-center px-2 py-12 text-center font-sans md:py-16"
                 >
+                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <motion.span
                     variants={{
                       hidden: { opacity: 0, scaleX: 0 },
@@ -352,7 +427,14 @@ export default function OrderDialog({
                   </motion.div>
                 </motion.div>
               ) : (
-                <form onSubmit={placeOrder} className="mt-6 space-y-6" noValidate>
+                <form
+                  ref={formRef}
+                  onSubmit={placeOrder}
+                  onInput={() => { updateCapture(); }}
+                  onBlurCapture={() => { flushCapture(); }}
+                  className="mt-6 space-y-6"
+                  noValidate
+                >
                   <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
                     <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
                       <img
@@ -497,6 +579,9 @@ export default function OrderDialog({
                       {orderError}
                     </div>
                   )}
+
+                  {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
+                  <TurnstileChallenge onToken={setTurnstileToken} />
 
                   <div className="bg-black/5 rounded-[12px] p-5">
                     <div className="flex justify-between text-[11px] text-black/60 font-medium">

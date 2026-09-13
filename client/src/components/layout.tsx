@@ -1,11 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, ArrowRight, Globe, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Globe, ShieldCheck, X } from "lucide-react";
 import { Box as ReiconBox, MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
@@ -22,12 +22,15 @@ function BagIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 5000 5000"
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
       fill="currentColor"
       className={className}
       aria-hidden="true"
     >
-      <path d="m3712.8 3701.7c0 133.5-111.3 244.8-244.8 244.8h-1958.3c-133.5 0-244.8-111.3-244.8-244.8v-1758c0-111.3 111.3-222.5 244.8-222.5h1980.5c133.5 0 244.8 111.3 244.8 244.8v1735.8l-22.2-0.1zm-1223.9-2648.2c267 0 467.3 200.3 511.8 445.1h-1023.7c44.6-244.8 244.8-445.1 511.9-445.1zm979.1 445.1h-244.8c-44.5-378.3-356.1-667.6-734.4-667.6s-689.9 289.3-734.4 667.6h-244.8c-267 0-467.3 200.3-467.3 467.3v1758c0 244.8 200.3 445.1 467.3 445.1h1980.5c244.8 0 467.3-200.3 467.3-467.3v-1758c-22.1-244.8-222.3-445.1-489.4-445.1z" />
+      <path fill="currentColor" d="M16 9a1 1 0 1 1-2 0a1 1 0 0 1 2 0m-6 0a1 1 0 1 1-2 0a1 1 0 0 1 2 0" />
+      <path fill="currentColor" fillRule="evenodd" d="M12 2.75A2.25 2.25 0 0 0 9.75 5v.254q.626-.005 1.355-.004h1.79q.73-.001 1.355.004V5A2.25 2.25 0 0 0 12 2.75m3.75 2.557V5a3.75 3.75 0 0 0-7.5 0v.307q-.202.014-.391.035c-.878.095-1.613.293-2.265.74a5 5 0 0 0-.63.516c-.566.552-.905 1.234-1.17 2.076c-.257.819-.465 1.859-.727 3.166l-.019.095c-.376 1.883-.673 3.367-.758 4.549c-.088 1.208.034 2.223.606 3.104q.288.442.664.81c.752.734 1.724 1.052 2.925 1.204c1.176.148 2.69.148 4.61.148h1.81c1.921 0 3.434 0 4.61-.148c1.201-.152 2.174-.47 2.925-1.204a4.8 4.8 0 0 0 .664-.81c.572-.88.694-1.896.607-3.104c-.086-1.182-.382-2.666-.76-4.549l-.018-.095c-.261-1.307-.47-2.347-.727-3.166c-.265-.842-.604-1.524-1.17-2.076a5 5 0 0 0-.63-.516c-.652-.447-1.387-.645-2.265-.74a11 11 0 0 0-.39-.035M8.02 6.833c-.747.08-1.208.233-1.578.486a3.3 3.3 0 0 0-.431.354c-.321.313-.56.735-.786 1.451c-.23.733-.424 1.693-.695 3.052c-.39 1.948-.667 3.34-.744 4.416c-.077 1.062.052 1.693.368 2.179q.196.302.454.554c.415.405 1.008.655 2.065.789c1.07.135 2.49.136 4.476.136h1.703c1.986 0 3.404-.001 4.475-.136c1.057-.134 1.65-.384 2.065-.789a3.3 3.3 0 0 0 .454-.554c.316-.486.445-1.117.369-2.18c-.078-1.076-.355-2.467-.744-4.415c-.272-1.359-.465-2.32-.696-3.052c-.225-.716-.465-1.138-.786-1.451a3 3 0 0 0-.43-.354c-.37-.253-.832-.405-1.579-.486c-.763-.082-1.743-.083-3.129-.083H11.15c-1.386 0-2.366.001-3.13.083" clipRule="evenodd" />
     </svg>
   );
 }
@@ -127,6 +130,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuPage, setMobileMenuPage] = useState<"main" | "collections">("main");
   const [time, setTime] = useState('');
+  const [isAtPageBottom, setIsAtPageBottom] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const { setIsOpen: setCartOpen, itemCount } = useCart();
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
@@ -178,6 +183,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    const updatePageBottom = () => {
+      const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+      setIsAtPageBottom(window.innerHeight + window.scrollY >= documentHeight - 24);
+    };
+
+    updatePageBottom();
+    window.addEventListener("scroll", updatePageBottom, { passive: true });
+    window.addEventListener("resize", updatePageBottom);
+    return () => {
+      window.removeEventListener("scroll", updatePageBottom);
+      window.removeEventListener("resize", updatePageBottom);
+    };
+  }, [location]);
 
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
@@ -246,7 +266,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               variant="ghost"
               onClick={() => setCartOpen(true)}
               aria-label="Cart"
-              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
+              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-6 md:h-12 md:px-3"
             >
               <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               {itemCount > 0 && (
@@ -260,8 +280,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Mobile bottom navigation */}
-      <nav
+      <motion.nav
         aria-label="Mobile navigation"
+        initial={false}
+        animate={{ y: isAtPageBottom ? "110%" : 0 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/10 bg-neutral-500/60 px-2 text-white shadow-2xl backdrop-blur-md md:hidden"
       >
         <Link href="/">
@@ -309,7 +332,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <MenuLinesIcon className="!h-5 !w-5 scale-125 opacity-70" />
           <span>Menu</span>
         </Button>
-      </nav>
+      </motion.nav>
 
       <AnimatePresence>
         {isSearchOpen && (
@@ -318,7 +341,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsSearchOpen(false)}
-            className="fixed inset-0 z-[100] flex items-start justify-center bg-black/15 px-4 pt-[12vh] backdrop-blur-md md:pt-[16vh]"
+            className="fixed inset-0 z-[100] flex items-start justify-center bg-black/10 p-3 sm:p-4 md:px-4 md:pt-[16vh] md:backdrop-blur-md"
           >
             <motion.div
             initial={{ opacity: 0, y: -28, scale: 0.94 }}
@@ -326,16 +349,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             exit={{ opacity: 0, y: -18, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 360, damping: 28, mass: 0.7 }}
               onClick={(event) => event.stopPropagation()}
-              className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/60 bg-white/55 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-2xl backdrop-saturate-150"
+              className="relative h-auto max-h-[70dvh] w-full max-w-none overflow-y-auto rounded-[12px] bg-white px-5 pb-8 pt-5 md:h-auto md:max-h-none md:max-w-xl md:overflow-hidden md:rounded-2xl md:border md:border-black/10 md:p-3 md:shadow-2xl"
             >
-              <form onSubmit={submitSearch} className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/45 px-4 py-3">
+              <form onSubmit={submitSearch} className="flex items-center justify-start gap-3 border-b border-black/10 px-0 py-4 md:rounded-xl md:border md:bg-[#fafafa] md:px-4 md:py-3">
                 <SearchIcon className="h-5 w-5 shrink-0 text-black/60" />
-                <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search products" aria-label="Search products" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-black/40" />
+                <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search products" aria-label="Search products" className="min-w-0 flex-1 bg-transparent text-left text-base outline-none placeholder:text-black/40" />
                 <button type="button" onClick={() => setIsSearchOpen(false)} aria-label="Close search" className="rounded-full p-1 text-black/50 transition-colors hover:bg-black/5 hover:text-black">
                   <X size={19} strokeWidth={1.5} />
                 </button>
               </form>
-              <div className="px-2 pb-2 pt-5">
+              <div className="px-0 pb-2 pt-5 md:px-2">
                 <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.3em] text-black/45">
                   {searchQuery ? "Suggestions" : "Popular searches"}
                 </p>

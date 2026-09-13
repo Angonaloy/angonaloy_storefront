@@ -12,13 +12,13 @@ import {
 
 test("defines the nine homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
+    "fresh-mango",
     "homemade",
     "functional-food",
     "honey",
     "oil-and-ghee",
     "jaggery",
     "semai",
-    "fresh-mango",
     "dates",
     "nuts-and-seeds",
   ]);
@@ -37,6 +37,7 @@ test("assigns every current product to exactly one collection", () => {
     "kalojira-mixed",
     "honey-nut",
     "chia-seed",
+    "katimon-mango",
     "pure-ghee",
     "sundarbans-natural-honey",
     "black-seed-flower-honey",
@@ -97,6 +98,16 @@ test("assigns both sugarcane products to the visible Jaggery category", () => {
   );
 });
 
+test("makes Fresh Mango visible for Katimon Mango", () => {
+  const freshMango = getFeaturedCollection("fresh-mango");
+  const katimonMango = { slug: "katimon-mango", name: "কাটিমন আম | Katimon Mango" };
+
+  assert.ok(freshMango);
+  assert.equal(freshMango.label, "Fresh Mango-ফ্রেশ আম");
+  assert.deepEqual(getProductsForCollection([katimonMango], freshMango), [katimonMango]);
+  assert.deepEqual(getVisibleFeaturedCollections([katimonMango]).map(({ slug }) => slug), ["fresh-mango"]);
+});
+
 test("filters a catalog by assigned slugs and ignores missing products", () => {
   const products = [
     { slug: "honey-nut", name: "Honey Nut" },
@@ -139,10 +150,12 @@ test("orders Top Selling Products with the three hero products first", () => {
     { slug: "seed-mixed", name: "Seed Mixed" },
     { slug: "kalojira-mixed", name: "Kalojira Mixed" },
     { slug: "sundarbans-natural-honey", name: "Sundarbans Natural Honey" },
+    { slug: "katimon-mango", name: "Katimon Mango" },
   ];
   assert.deepEqual(
     getTopSellingProducts(products).slice(0, 6).map(({ slug }) => slug),
     [
+      "katimon-mango",
       "honey-nut",
       "sundarbans-natural-honey",
       "kalojira-mixed",

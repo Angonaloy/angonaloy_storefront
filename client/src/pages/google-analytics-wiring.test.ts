@@ -42,7 +42,8 @@ test("cart checkout preserves every item for checkout and purchase analytics", (
 test("order dialog sends begin_checkout and purchase after a successful order", () => {
   assert.match(orderDialog, /trackGoogleEcommerceEvent\("begin_checkout"/);
   assert.match(orderDialog, /trackGoogleEcommerceEvent\("purchase"/);
-  assert.match(orderDialog, /transactionId: result\.orderRef \|\| result\.order_id/);
+  assert.match(orderDialog, /transactionId: result\.orderRef,/);
+  assert.doesNotMatch(orderDialog, /result\.order_id/);
 });
 
 test("direct checkout analytics preserve selected quantity and unit price", () => {

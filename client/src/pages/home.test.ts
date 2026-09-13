@@ -28,10 +28,11 @@ test("renders a What's New section after the hero", () => {
   assert.match(homeSource, /WHAT'S NEW/);
 });
 
-test("uses the English Featured Categories heading", () => {
-  assert.match(homeSource, /Featured[\s\S]*Categories/);
-  assert.doesNotMatch(homeSource, /আমাদের[\s\S]*ক্যাটাগরিসমূহ/);
-  assert.match(homeSource, /className="relative inline-block font-garet font-bold/);
+test("uses only the highlighted Bengali Featured Categories heading", () => {
+  assert.doesNotMatch(homeSource, /FEATURED CATEGORIES/);
+  assert.match(homeSource, /আমাদের ক্যাটাগরিসমূহ/);
+  assert.match(homeSource, /<HighlightedWord className="font-display italic text-\[1\.65rem\]/);
+  assert.match(homeSource, /highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ/);
 });
 
 test("removes the requested homepage sections while keeping the editorial features", () => {
@@ -144,7 +145,7 @@ test("labels the product section Top Selling Products without a purchase CTA", (
     homeSource.indexOf("Latest Drop Section"),
   );
 
-  assert.match(whatsNewSource, /TOP SELLING[\s\S]*PRODUCTS/);
+  assert.match(whatsNewSource, /BEST SELLERS/);
   assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
   assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
 });
@@ -156,9 +157,12 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   );
 
   assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
-  assert.match(whatsNewSource, /TOP SELLING[\s\S]*PRODUCTS/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.5rem,4vw,2\.4rem\)\]/);
-  assert.match(whatsNewSource, /className="ml-1 text-\[1\.85rem\] leading-none md:ml-0 md:text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]"/);
+  assert.match(whatsNewSource, /BEST SELLERS/);
+  assert.match(whatsNewSource, /সবচেয়ে জনপ্রিয়/);
+  assert.match(whatsNewSource, /font-display italic[\s\S]*highlightColor="#FBBB14"/);
+  assert.match(whatsNewSource, /className="block md:inline">BEST SELLERS<\/span>/);
+  assert.match(whatsNewSource, /className="mt-1 block md:ml-1 md:mt-0 md:inline"/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\]/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /<svg/);
@@ -172,6 +176,34 @@ test("styles Latest Drop header like the Just arrived header", () => {
   assert.equal(latestDropContainer, true);
   assert.equal(latestDropHeading, true);
   assert.equal(discoverMoreLink, true);
+});
+
+test("renders the Newly Added bilingual title with Bengali highlight", () => {
+  const latestDropSource = homeSource.slice(
+    homeSource.indexOf("Latest Drop Section"),
+    homeSource.indexOf("Category Section: Homemade"),
+  );
+
+  assert.match(latestDropSource, /className="block md:inline">NEWLY ADDED<\/span>/);
+  assert.match(latestDropSource, /আমাদের নতুন পণ্য/);
+  assert.match(latestDropSource, /font-display italic/);
+  assert.match(latestDropSource, /highlightColor="#FBBB14"/);
+  assert.match(latestDropSource, /className="mt-1 block md:ml-1 md:mt-0 md:inline"/);
+});
+
+test("styles Bengali homepage highlights with the italic display font", () => {
+  assert.match(homeSource, /<HighlightedWord className="font-display italic" highlightColor="#FBBB14">\{bengaliLabel\}<\/HighlightedWord>/);
+  assert.match(homeSource, /সবচেয়ে জনপ্রিয়/);
+  assert.match(homeSource, /আমাদের নতুন পণ্য/);
+});
+
+test("uses a reduced type scale across homepage section headings", () => {
+  const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
+
+  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 6);
+  assert.match(homeSource, /text-\[1\.65rem\] leading-none md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/);
+  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
+  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
 });
 
 test("loads every homepage product section from the public catalog", () => {
@@ -260,9 +292,10 @@ test("renders a full-bleed editorial hero", () => {
   assert.doesNotMatch(homeSource, /Discover New Arrival/);
 });
 
-test("uses reveal-style Framer animations on homepage sections", () => {
-  assert.match(homeSource, /filter: "blur\(10px\)", transform: "translateY\(20%\)", opacity: 0/);
-  assert.match(homeSource, /filter: "blur\(0\)", transform: "translateY\(0\)", opacity: 1/);
+test("uses subtle fade-and-lift Framer animations on homepage sections", () => {
+  assert.match(homeSource, /transform: "translateY\(12px\)", opacity: 0/);
+  assert.match(homeSource, /transform: "translateY\(0\)", opacity: 1/);
+  assert.doesNotMatch(homeSource, /filter: "blur/);
   assert.match(homeSource, /useReveal/);
   assert.match(homeSource, /animate=\{[^}]*InView \? "visible" : "hidden"\}/);
   assert.match(homeSource, /staggerChildren/);

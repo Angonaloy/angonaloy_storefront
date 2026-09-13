@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "../server/meta-capi";
+import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "../server/meta-capi.js";
 
 type MetaEventRequest = {
   event_name: string;

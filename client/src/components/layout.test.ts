@@ -11,6 +11,45 @@ test("uses a compact announcement bar on mobile and restores desktop spacing", (
   );
 });
 
+test("hides the mobile navigation dock at the document bottom with Framer Motion", () => {
+  assert.match(layoutSource, /useReducedMotion/);
+  assert.match(layoutSource, /window\.innerHeight \+ window\.scrollY >= documentHeight - 24/);
+  assert.match(layoutSource, /<motion\.nav/);
+  assert.match(layoutSource, /animate=\{\{ y: isAtPageBottom \? "110%" : 0 \}\}/);
+  assert.match(layoutSource, /className="fixed inset-x-3 bottom-3[^\"]*md:hidden"/);
+});
+
+test("uses the Solar cart icon in both desktop and mobile navigation", () => {
+  assert.match(layoutSource, /viewBox="0 0 24 24"/);
+  assert.match(layoutSource, /M16 9a1 1 0 1 1-2 0/);
+  assert.equal((layoutSource.match(/<BagIcon /g) ?? []).length, 2);
+});
+
+test("keeps header cart icons balanced without changing the mobile dock", () => {
+  assert.match(layoutSource, /\[&_svg\]:size-6/);
+  assert.match(layoutSource, /<BagIcon className="!h-8 !w-8" \/>/);
+  assert.match(layoutSource, /<SearchIcon className="opacity-70/);
+});
+
+test("uses the mobile menu white treatment for the shared search overlay", () => {
+  assert.match(layoutSource, /className="fixed inset-0 z-\[100\][^"]*bg-black\/10/);
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*rounded-\[12px\][^"]*bg-white[^"]*md:max-w-xl/);
+});
+
+test("keeps search typing aligned to the left", () => {
+  assert.match(layoutSource, /<form onSubmit=\{submitSearch\} className="[^"]*justify-start/);
+  assert.match(layoutSource, /className="min-w-0 flex-1 bg-transparent text-left/);
+});
+
+test("matches the mobile menu inset shell around dock search", () => {
+  assert.match(layoutSource, /className="fixed inset-0 z-\[100\][^"]*p-3 sm:p-4/);
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*rounded-\[12px\][^"]*bg-white/);
+});
+
+test("keeps the mobile dock search panel compact", () => {
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*md:h-auto/);
+});
+
 test("reserves desktop width for the logo before category navigation", () => {
   assert.match(layoutSource, /md:flex-none md:basis-64/);
   assert.match(layoutSource, /<div className="md:hidden">/);

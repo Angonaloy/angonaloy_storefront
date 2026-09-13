@@ -45,10 +45,10 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                     <div className="flex justify-between items-center">
                         <div className="space-y-1">
                             <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-black block">
-                                Your Cart <span className="font-normal tracking-normal text-black/45">/ আপনার কার্ট</span>
+                                Your Cart
                             </span>
                             <span className="text-[9px] uppercase tracking-[0.3em] font-medium text-black">
-                                {itemCount} {itemCount === 1 ? 'Item' : 'Items'} <span className="tracking-normal text-black/45">/ {itemCount === 1 ? 'আইটেম' : 'আইটেমসমূহ'}</span>
+                                {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
                             </span>
                         </div>
                         <Button
@@ -75,17 +75,18 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                             >
                                 <div className="space-y-3">
                                         <h3 className="text-sm font-sans font-medium uppercase tracking-[0.2em] text-black">
-                                        Your cart is empty <span className="tracking-normal">/ আপনার কার্ট খালি</span>
+                                        Your cart is empty
                                     </h3>
                                     <p className="mx-auto max-w-[220px] text-[10px] uppercase tracking-[0.28em] leading-6 font-medium text-black/35">
-                                        Discover our curated collection <span className="tracking-normal">/ আমাদের নির্বাচিত পণ্য দেখুন</span>
+                                        Discover our curated collection
                                     </p>
                                 </div>
                                 <Button
+                                    variant="ghost"
                                     onClick={() => setIsOpen(false)}
-                                    className="h-auto rounded-[8px] border-b border-black bg-transparent px-0 py-2 text-[10px] uppercase font-bold tracking-[0.35em] text-black shadow-none hover:bg-transparent hover:border-brand-gold hover:text-brand-gold"
+                                    className="h-auto whitespace-nowrap rounded-none border-0 border-b border-black bg-transparent px-0 py-2 text-[10px] uppercase font-bold tracking-[0.35em] text-black shadow-none hover:bg-transparent hover:border-brand-gold hover:text-brand-gold"
                                 >
-                                    Continue Shopping <span className="tracking-normal">/ কেনাকাটা চালিয়ে যান</span>
+                                    Continue Shopping
                                 </Button>
                             </motion.div>
                         ) : (
@@ -121,7 +122,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                                         {item.title}
                                                     </h3>
                                                      <div className="flex items-center gap-4 text-[9px] font-medium uppercase tracking-[0.3em] text-black/40">
-                                                        <span>Size <span className="tracking-normal">/ সাইজ</span>: {item.size}</span>
+                                                        <span>Size: {item.size}</span>
                                                     </div>
                                                      <span className="text-sm font-sans font-medium text-black">
                                                         {item.price}
@@ -153,7 +154,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                                         onClick={() => removeFromCart(item.id)}
                                                          className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-black transition-colors hover:text-red-600"
                                                     >
-                                                        Remove <span className="tracking-normal">/ মুছে ফেলুন</span>
+                                                        Remove
                                                     </button>
                                                 </div>
                                             </div>
@@ -175,7 +176,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                         <div className="space-y-2 md:space-y-3">
                             <div className="flex items-baseline justify-between border-b border-black/5 pb-2 md:pb-3">
                                 <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/40 md:text-[10px] md:tracking-[0.4em]">
-                                    Subtotal <span className="tracking-normal">/ মোট</span>
+                                    Subtotal
                                 </span>
                                 {subtotal > 0 ? (
                                     <span className="font-garet text-xl font-bold text-black md:text-2xl">
@@ -188,7 +189,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                 )}
                             </div>
                             <p className="text-center text-[8px] font-medium uppercase tracking-[0.22em] text-black/30 md:text-[9px] md:tracking-[0.3em]">
-                                Shipping and taxes calculated at checkout <span className="tracking-normal">/ ডেলিভারি ও ট্যাক্স চেকআউটে হিসাব হবে</span>
+                                Shipping and taxes calculated at checkout
                             </p>
                         </div>
 
@@ -197,15 +198,15 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                             onClick={openCheckout}
                             className="group flex h-12 w-full items-center justify-center gap-3 rounded-[8px] bg-black text-[9px] font-bold uppercase tracking-[0.26em] text-white transition-all hover:bg-brand-gold md:h-14 md:text-[10px] md:tracking-[0.4em]"
                         >
-                            Proceed to Checkout <span className="tracking-normal">/ চেকআউটে যান</span>
+                            Proceed to Checkout
                             <ArrowDownRight className="w-4 h-4 md:w-5 md:h-5 stroke-[1px] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                         </Button>
 
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="w-full text-[8px] font-bold uppercase tracking-[0.28em] text-black/40 transition-colors hover:text-black md:text-[9px] md:tracking-[0.4em]"
+                            className="w-full whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.28em] text-black/40 transition-colors hover:text-black md:text-[9px] md:tracking-[0.4em]"
                         >
-                            Continue Shopping <span className="tracking-normal">/ কেনাকাটা চালিয়ে যান</span>
+                            Continue Shopping
                         </button>
                     </motion.div>
                 )}
@@ -255,6 +256,15 @@ export default function CartDrawer() {
                     price: parseCurrencyAmount(item.price),
                     quantity: item.quantity,
                 })),
+            captureItems: items.map((item) => ({
+                productName: item.title,
+                variantName: item.size,
+                quantity: item.quantity,
+                unitPrice: parseCurrencyAmount(item.price),
+            })),
+            items: items.every((item) => item.productUuid && item.variantId)
+                ? items.map((item) => ({ productId: item.productUuid!, variantId: item.variantId!, quantity: item.quantity }))
+                : undefined,
         };
     }, [items]);
 

@@ -8,6 +8,7 @@ export type FeaturedCollection = {
 };
 
 export const TOP_SELLING_PRODUCT_SLUGS = [
+  "katimon-mango",
   "honey-nut",
   "sundarbans-natural-honey",
   "kalojira-mixed",
@@ -31,6 +32,12 @@ export const TOP_SELLING_COLLECTION = {
 } as const;
 
 export const FEATURED_COLLECTIONS = [
+  {
+    slug: "fresh-mango",
+    label: "Fresh Mango-ফ্রেশ আম",
+    image: "/categories/mango-1-320.webp",
+    productSlugs: ["katimon-mango"],
+  },
   {
     slug: "homemade",
     label: "Homemade-হোমমেড",
@@ -70,12 +77,6 @@ export const FEATURED_COLLECTIONS = [
     label: "Semai-সেমাই",
     image: "/categories/lachcha-1-320.webp",
     productSlugs: ["lachcha-semai"],
-  },
-  {
-    slug: "fresh-mango",
-    label: "Fresh Mango-ফ্রেশ আম",
-    image: "/categories/mango-1-320.webp",
-    productSlugs: [],
   },
   {
     slug: "dates",

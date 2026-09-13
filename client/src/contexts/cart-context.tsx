@@ -6,6 +6,8 @@ import { trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/googl
 export interface CartItem {
     id: string;
     productId: number;
+    productUuid?: string;
+    variantId?: string;
     title: string;
     price: string;
     image: string;
@@ -16,7 +18,7 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem }, size: string, quantity?: number) => void;
+    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string }, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
     clearCart: () => void;
@@ -50,7 +52,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }, [items]);
 
     const addToCart = (
-        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem },
+        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string },
         size: string,
         quantity: number = 1
     ) => {

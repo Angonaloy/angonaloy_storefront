@@ -3,6 +3,7 @@ import express from "express";
 import { createServer } from "node:http";
 import test from "node:test";
 import {
+  OrderProtectionError,
   OrderUpstreamError,
   orderRequestSchema,
   processOrder,
@@ -26,8 +27,15 @@ const validEnglishOrder = { ...validOrder, phone: "01712345678" };
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
   apiKey: "test-api-key",
+  storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
+
+const canonicalItems = [{
+  productId: "11111111-1111-4111-8111-111111111111",
+  variantId: "22222222-2222-4222-8222-222222222222",
+  quantity: 2,
+}];
 
 test("accepts exactly 11 English phone digits", () => {
   const order = orderRequestSchema.parse(validEnglishOrder);
@@ -64,6 +72,28 @@ test("normalizes the tracking policy and rejects unknown modes", () => {
   assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "unknown" }));
   assert.equal(shouldSendMetaPurchase({ trackingMode: "default" }), true);
   assert.equal(shouldSendMetaPurchase({ trackingMode: "google_only" }), false);
+});
+
+test("accepts an optional checkout draft key only when it is a UUID", () => {
+  assert.equal(
+    orderRequestSchema.parse({ ...validEnglishOrder, draftKey: "7CB13B8E-B576-4FAA-B238-CC8B73059772" }).draftKey,
+    "7cb13b8e-b576-4faa-b238-cc8b73059772",
+  );
+  assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, draftKey: "not-a-draft" }));
+});
+
+test("accepts optional protection signals and canonical items", () => {
+  const order = orderRequestSchema.parse({
+    ...validEnglishOrder,
+    website: "",
+    turnstileToken: "turnstile-token",
+    clientSessionId: "session-123",
+    checkoutStartedAt: "2026-09-12T10:00:00.000Z",
+    items: canonicalItems,
+    shippingZoneId: "inside-dhaka",
+  });
+  assert.deepEqual(order.items, canonicalItems);
+  assert.equal(order.shippingZoneId, "inside-dhaka");
 });
 
 test("enforces the reviewed bounded order contract", () => {
@@ -123,17 +153,89 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
     },
   });
 
-  assert.deepEqual(result, { orderRef: "ML-150000" });
+  assert.deepEqual(result, { orderRef: "ML-150000", decision: "allow" });
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test bundle - Test details",
-    quantity: 2,
-    price: 500,
-    delivery_rate: 100,
+    notes: "Test bundle - Test details",
   });
   assert.ok(outboundSignal);
+});
+
+test("uses the public storefront handle endpoint and forwards protection signals", async () => {
+  let outboundUrl = "";
+  let outboundBody: Record<string, unknown> | undefined;
+  let outboundHeaders: Record<string, string> | undefined;
+  const order = orderRequestSchema.parse({
+    ...validEnglishOrder,
+    items: canonicalItems,
+    shippingZoneId: "inside-dhaka",
+    website: "",
+    turnstileToken: "turnstile-token",
+    clientSessionId: "session-123",
+    checkoutStartedAt: "2026-09-12T10:00:00.000Z",
+  });
+  const result = await processOrder(order, {
+    ...dependencies,
+    fetchImpl: async (input, init) => {
+      outboundUrl = String(input);
+      outboundHeaders = init?.headers as Record<string, string>;
+      outboundBody = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ orderRef: "ML-150002", decision: "allow" }), { status: 201 });
+    },
+  });
+  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
+  assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
+  assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
+  assert.equal(outboundBody?.customerName, "Test Customer");
+  assert.equal((outboundBody?.items as typeof canonicalItems)[0].variantId, canonicalItems[0].variantId);
+  assert.equal(outboundBody?.shippingZoneId, "inside-dhaka");
+  assert.equal(outboundBody?.turnstileToken, "turnstile-token");
+});
+
+test("keeps a held review as a normal checkout outcome", async () => {
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, items: canonicalItems });
+  const result = await processOrder(order, {
+    ...dependencies,
+    fetchImpl: async () => new Response(JSON.stringify({ decision: "review", review_id: "review-1" }), { status: 202 }),
+  });
+  assert.deepEqual(result, { decision: "review", reviewId: "review-1" });
+});
+
+test("raises a typed error for a blocked checkout", async () => {
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, items: canonicalItems });
+  await assert.rejects(
+    () => processOrder(order, {
+      ...dependencies,
+      fetchImpl: async () => new Response(JSON.stringify({ decision: "block", retryable: true }), { status: 403 }),
+    }),
+    (error: unknown) => error instanceof OrderProtectionError && error.decision === "block" && error.retryable,
+  );
+});
+
+test("forwards a validated checkout draft key only through the secret-backed order path", async () => {
+  let outboundBody: unknown;
+  const order = orderRequestSchema.parse({
+    ...validEnglishOrder,
+    draftKey: "7cb13b8e-b576-4faa-b238-cc8b73059772",
+  });
+
+  await processOrder(order, {
+    ...dependencies,
+    fetchImpl: async (_input, init) => {
+      outboundBody = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ order_id: "ML-150001" }), { status: 200 });
+    },
+  });
+
+  assert.deepEqual(outboundBody, {
+    customerName: "Test Customer",
+    phone: "01712345678",
+    address: "House 1 Road 2 Dhaka",
+    notes: "Test bundle - Test details",
+    abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
+  });
 });
 
 test("requires a canonical Merchant-Suite ID for Google-only orders", async () => {
@@ -211,7 +313,7 @@ test("local handler skips the entire Meta preparation path for Google-only succe
       sendMetaCapiEvent: async () => { metaCalls += 1; },
     },
   );
-  assert.deepEqual(response, { status: 201, body: { orderRef: "ORD-123" } });
+  assert.deepEqual(response, { status: 201, body: { orderRef: "ORD-123", decision: "allow" } });
   assert.equal(userDataCalls, 0);
   assert.equal(metaCalls, 0);
   assert.equal(JSON.stringify(response).includes("Test Customer"), false);
@@ -225,8 +327,37 @@ test("local handler retains one non-blocking Meta attempt for default orders", a
     getMetaUserDataFromRequest: () => ({}),
     sendMetaCapiEvent: async () => { metaCalls += 1; },
   });
-  assert.deepEqual(response, { status: 201, body: { orderRef: "#fallback" } });
+  assert.deepEqual(response, { status: 201, body: { orderRef: "#fallback", decision: "allow" } });
   assert.equal(metaCalls, 1);
+});
+
+test("local handler returns a hold response without a Purchase event", async () => {
+  let metaCalls = 0;
+  const response = await invokeLocalOrder(validEnglishOrder, {
+    processOrder: async () => ({ decision: "review", reviewId: "review-1" }),
+    getMetaUserDataFromRequest: () => ({}),
+    sendMetaCapiEvent: async () => { metaCalls += 1; },
+  });
+  assert.deepEqual(response, { status: 202, body: { decision: "review", reviewId: "review-1" } });
+  assert.equal(metaCalls, 0);
+});
+
+test("local handler maps a typed block without a Purchase event", async () => {
+  let metaCalls = 0;
+  const response = await invokeLocalOrder(validEnglishOrder, {
+    processOrder: async () => { throw new OrderProtectionError("block", false); },
+    getMetaUserDataFromRequest: () => ({}),
+    sendMetaCapiEvent: async () => { metaCalls += 1; },
+  });
+  assert.deepEqual(response, {
+    status: 403,
+    body: {
+      message: "Could not place the order. Please check your details and try again.",
+      decision: "block",
+      retryable: false,
+    },
+  });
+  assert.equal(metaCalls, 0);
 });
 
 test("local handler rejects validation before webhook or Meta side effects", async () => {
