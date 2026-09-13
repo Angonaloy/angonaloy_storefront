@@ -32,5 +32,5 @@ test("the document background stays white behind the Katimon page", () => {
 });
 
 test("long Katimon package features can wrap without truncation", () => {
-  assert.match(globalCssSource, /#katimon-packages article span\.whitespace-nowrap\s*\{[\s\S]*white-space: normal;[\s\S]*overflow: visible;[\s\S]*text-overflow: clip;/);
+  assert.match(globalCssSource, /section\[aria-labelledby="katimon-packages"\] article span\.whitespace-nowrap\s*\{[\s\S]*white-space: normal;[\s\S]*overflow: visible;[\s\S]*text-overflow: clip;/);
 });

@@ -82,7 +82,7 @@
   @apply border-border;
 }
 
-#katimon-packages article span.whitespace-nowrap {
+section[aria-labelledby="katimon-packages"] article span.whitespace-nowrap {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
