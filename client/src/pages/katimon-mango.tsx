@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import useEmblaCarousel from "embla-carousel-react";
 import { Phone } from "lucide-react";
 import { TextHighlighter } from "@/components/ui/text-highlighter";
 
@@ -9,13 +11,25 @@ import { KALOJIRA_CAMPAIGN_PHONE_HREF, KALOJIRA_CAMPAIGN_WHATSAPP_HREF } from "@
 import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { resolveKalojiraCheckoutStatus } from "@/features/kalojira-mixed/checkout-state";
 import { getKalojiraPackOptions } from "@/features/kalojira-mixed/order";
-import { fetchStorefrontProduct, fetchStorefrontProductInventory, mergeInventory } from "@/lib/storefront-products";
+import { fetchStorefrontProduct, fetchStorefrontProductInventory, getProductGallery, mergeInventory } from "@/lib/storefront-products";
 
 export default function KatimonMangoPage() {
   const slug = "katimon-mango";
   const productQuery = useQuery({ queryKey: ["merchant-suite-product", slug], queryFn: () => fetchStorefrontProduct(slug), refetchInterval: 8000 });
   const inventoryQuery = useQuery({ queryKey: ["merchant-suite-inventory", slug], queryFn: () => fetchStorefrontProductInventory(slug), refetchInterval: 8000 });
+  const [activeImage, setActiveImage] = useState(0);
+  const [galleryRef, galleryApi] = useEmblaCarousel({ align: "start", loop: false });
   const product = mergeInventory(productQuery.data, inventoryQuery.data?.inventory);
+  const gallery = product ? getProductGallery(product) : [];
+  const displayGallery = gallery.length ? gallery : ["/katimon-mango-hero.webp"];
+  useEffect(() => {
+    if (!galleryApi) return;
+    const syncActiveImage = () => setActiveImage(galleryApi.selectedScrollSnap());
+    galleryApi.on("select", syncActiveImage);
+    return () => {
+      galleryApi.off("select", syncActiveImage);
+    };
+  }, [galleryApi]);
   const status = resolveKalojiraCheckoutStatus({ hasProduct: Boolean(product), hasOrderablePacks: product ? getKalojiraPackOptions(product).length > 0 : false, productIsPending: productQuery.isPending, productIsError: productQuery.isError, inventoryIsError: inventoryQuery.isError, inventoryIsFetched: inventoryQuery.isFetched, hasInventory: Boolean(inventoryQuery.data?.inventory) });
 
   if (productQuery.isPending) return <div className="flex min-h-screen items-center justify-center bg-white" aria-busy="true"><span className="sr-only">পণ্য লোড হচ্ছে…</span><span aria-hidden="true" className="size-8 animate-pulse rounded-full bg-[#eab308]/50" /></div>;
@@ -26,7 +40,7 @@ export default function KatimonMangoPage() {
     <main>
       <section className="mx-auto grid max-w-6xl gap-8 px-0 pb-16 pt-0 md:grid-cols-2 md:items-center md:px-5 md:pt-16">
         <div className="order-2 px-5 md:order-1 md:px-0"><p className="text-sm font-bold tracking-[0.2em] text-[#b98500]">অফসিজনের প্রিমিয়াম আম</p><h1 className="mt-4 text-4xl font-extrabold leading-tight md:text-6xl">বাগান থেকে সরাসরি<br /><span className="text-[#b98500]">কাটিমন আম</span></h1><p className="mt-5 max-w-xl text-lg leading-8 text-[#19382d]/70">প্রাকৃতিকভাবে ধীরে ধীরে পাকা, সুগন্ধি ও মিষ্টি কাটিমন আম—বিশুদ্ধ স্বাদে আপনার ঘরে।</p><a href="#order" className="mt-8 inline-flex rounded-full bg-[#eab308] px-7 py-4 font-extrabold text-[#19382d]">এখনই অর্ডার করুন</a></div>
-        <div className="order-1 overflow-hidden rounded-none bg-[#f2df9a] shadow-sm md:order-2 md:rounded-3xl"><img src="/katimon-mango-hero.webp" alt="কাটিমন আমের বাগানে তাজা আম" className="h-auto w-full object-contain" /></div>
+        <div className="order-1 bg-[#f6f6f6] p-[10px] shadow-sm md:order-2 md:rounded-[8px] md:p-4"><div className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-white"><div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing"><div className="flex h-full touch-pan-y">{displayGallery.map((url) => <div key={url} className="relative h-full min-w-0 flex-[0_0_100%] overflow-hidden"><img src={url} alt={product.name} draggable={false} className="absolute inset-0 h-full w-full select-none object-cover object-center" /></div>)}</div></div>{displayGallery.length > 1 && <div className="absolute left-3 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2">{displayGallery.map((url, idx) => <button key={url} type="button" onClick={() => galleryApi?.scrollTo(idx)} aria-label={`কাটিমন আমের ছবি ${idx + 1}`} className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-[6px] border-2 bg-white shadow-md transition-all ${activeImage === idx ? "border-black opacity-100" : "border-white/70 opacity-70 hover:opacity-100"}`}><img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" /></button>)}</div>}</div></div>
       </section>
       <section aria-labelledby="katimon-packages" className="mx-auto max-w-6xl px-5 pb-16">
         <div className="mb-7 text-center"><p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#b98500]">বিশেষ প্যাকেজ</p><h2 id="katimon-packages" className="mt-3 text-2xl font-bold text-[#19382d] md:text-3xl">আপনার পছন্দের প্যাক বেছে নিন</h2></div>
