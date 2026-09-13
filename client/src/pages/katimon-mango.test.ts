@@ -5,6 +5,7 @@ import test from "node:test";
 const pageSource = readFileSync(new URL("./katimon-mango.tsx", import.meta.url), "utf8");
 const checkoutSource = readFileSync(new URL("../features/kalojira-mixed/kalojira-checkout.tsx", import.meta.url), "utf8");
 const contentSource = readFileSync(new URL("../features/kalojira-mixed/katimon-content.ts", import.meta.url), "utf8");
+const globalCssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
 test("Katimon WhatsApp href uses the exact Bengali order message", () => {
   assert.match(pageSource, /KATIMON_CAMPAIGN_WHATSAPP_HREF/);
@@ -23,4 +24,9 @@ test("Katimon header, hero, footer, and checkout use the Katimon WhatsApp href",
 
 test("Katimon gold order CTAs remain checkout scroll actions", () => {
   assert.ok((pageSource.match(/href="#order" onClick=\{handleOrderClick\}/g) ?? []).length >= 3);
+});
+
+test("the document background stays white behind the Katimon page", () => {
+  assert.match(globalCssSource, /html,\s*body\s*\{\s*background-color: #fff;\s*\}/);
+  assert.doesNotMatch(globalCssSource, /html,\s*body\s*\{\s*background-color: #FBBB14;/);
 });
