@@ -75,3 +75,7 @@ test("the Katimon navbar buttons use compact controls", () => {
   assert.match(globalCssSource, /header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto > a[\s\S]*min-height: 40px;/);
   assert.match(globalCssSource, /header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto > nav a[\s\S]*min-width: 40px;/);
 });
+
+test("the Katimon mobile navbar matches the gallery side gap", () => {
+  assert.match(globalCssSource, /@media \(max-width: 767px\)[\s\S]*header\.sticky\.top-0\.z-40 > div\.relative\.mx-auto\s*\{[\s\S]*padding-left: 10px;[\s\S]*padding-right: 10px;/);
+});
