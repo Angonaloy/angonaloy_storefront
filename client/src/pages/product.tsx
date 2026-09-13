@@ -865,7 +865,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           {(() => {
                             const item = detailSections[openSection];
                             return (
-                              <div className="space-y-1.5 text-center">
+                              <div className="space-y-1.5 text-left">
                                 {item.body?.map((paragraph, idx) => (
                                   <p
                                     key={idx}
@@ -875,11 +875,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   </p>
                                 ))}
                                 {item.details?.length ? (
-                                   <ul className="mx-auto max-w-[720px] space-y-1 text-center">
+                                    <ul className="-ml-3 max-w-[720px] space-y-1 text-left md:-ml-4">
                                      {item.details.map((detail, detailIndex) => (
                                        <li
                                          key={detail}
-                                          className="mx-auto grid w-fit max-w-full grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
+                                          className="grid w-full max-w-full grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
                                        >
                                          <span
                                            className="w-6 text-right font-normal tabular-nums text-brand-gold"

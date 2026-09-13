@@ -94,6 +94,13 @@ test("uses aligned Bengali numbering in the normal detail-list font", () => {
   assert.doesNotMatch(productSource, /rounded-full bg-brand-gold/);
 });
 
+test("left-aligns the active product detail tab content", () => {
+  assert.match(productSource, /<div className="space-y-1\.5 text-left">/);
+  assert.match(productSource, /<ul className="-ml-3 max-w-\[720px\] space-y-1 text-left md:-ml-4">/);
+  assert.match(productSource, /className="grid w-full max-w-full grid-cols-\[1\.5rem_minmax\(0,1fr\)\]/);
+  assert.doesNotMatch(productSource, /space-y-1\.5 text-center/);
+});
+
 test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel/);
   assert.match(productSource, /ref=\{reelRef\}/);

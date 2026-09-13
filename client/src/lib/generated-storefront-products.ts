@@ -2,6 +2,104 @@ import type { StorefrontProduct } from "./storefront-products";
 
 export const generatedStorefrontProducts: StorefrontProduct[] = [
   {
+    "id": "ad6ce851-b1d2-4da5-bcef-f538554fffb6",
+    "name": "কাটিমন আম | Katimon Mango",
+    "slug": "katimon-mango",
+    "description": "বাগান থেকে সরাসরি সংগ্রহ করা অথেনটিক অফসিজনের সুমিষ্ট কাটিমন আম—গড়ে প্রতি কেজিতে ৪± পিস। পরিপক্ক কাঁচা অবস্থায় সংগ্রহ করা হয় এবং ধীরে ধীরে পেকে নরম, সুগন্ধি ও আরও মিষ্টি হয়ে ওঠে। ক্ষতিকর কেমিক্যালমুক্ত, প্রাকৃতিক স্বাদে ভরপুর।",
+    "url": null,
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
+    "images": [
+      {
+        "id": "a4018273-3e20-4c2e-9b8f-1a4f851853b0",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "d06354ef-d99b-48c0-8ea1-2b9a535f8df2",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "9bf6aebf-c51a-4355-8567-e2ab88a47e1f",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "81a427e2-f2aa-4a38-8ae4-4a23723d6991",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 3,
+        "is_primary": false
+      },
+      {
+        "id": "12e710e9-0c9e-418d-afd6-09f84ce0cc2d",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 4,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/960.webp"
+    ],
+    "price": 1080,
+    "compare_at_price": 1280,
+    "available": true,
+    "variants": [
+      {
+        "id": "fa407a54-9ff9-4587-aae5-67e06b0a5b31",
+        "attributes": {
+          "kg": "6KG"
+        },
+        "price": 1080,
+        "available": true
+      },
+      {
+        "id": "3124465c-9e8e-4b91-b4c1-bd149f19556d",
+        "attributes": {
+          "size": "10KG"
+        },
+        "price": 1800,
+        "available": true
+      }
+    ]
+  },
+  {
     "id": "899a84cd-ae8e-4e6e-a4f0-09c88222bddf",
     "name": "আখের দানাদার গুড় | Granulated Sugarcane Jaggery",
     "slug": "granulated-sugarcane-jaggery",
@@ -269,19 +367,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "f17ba129-3c47-4317-b302-f344f9f453db",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 1000,
-        "available": true
-      },
-      {
         "id": "e86964ff-fb87-42ad-b465-e1885d7a94e3",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 500,
+        "available": true
+      },
+      {
+        "id": "f17ba129-3c47-4317-b302-f344f9f453db",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 1000,
         "available": true
       }
     ]
@@ -742,20 +840,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "slug": "honey-nut",
     "description": "প্রিমিয়াম বাদাম ও খাঁটি মধুর নিখুঁত মিশ্রণ—প্রতিটি চামচে সমৃদ্ধ স্বাদ, প্রাকৃতিক পুষ্টি আর তৃপ্তির অনন্য অভিজ্ঞতা।",
     "url": null,
-    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp",
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/7a071db9-5df1-4a93-aeb4-4354949b8aad/960.webp",
     "images": [
-      {
-        "id": "b3328624-e3c0-43dc-abcc-0cd071891e43",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp",
-        "sources": {
-          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/320.webp",
-          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/640.webp",
-          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp"
-        },
-        "alt_text": "হানি নাট | Honey Nut",
-        "sort_order": 0,
-        "is_primary": true
-      },
       {
         "id": "df68d2ce-6c9d-4cda-bf60-dc4bbabd6494",
         "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/7a071db9-5df1-4a93-aeb4-4354949b8aad/960.webp",
@@ -765,8 +851,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/7a071db9-5df1-4a93-aeb4-4354949b8aad/960.webp"
         },
         "alt_text": "হানি নাট | Honey Nut",
-        "sort_order": 1,
-        "is_primary": false
+        "sort_order": 0,
+        "is_primary": true
       },
       {
         "id": "f18bdb8e-6276-46dc-a69c-9a812f0ea925",
@@ -777,27 +863,31 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/e4f722b9-ba12-4d54-bde9-335956bc183f/960.webp"
         },
         "alt_text": "হানি নাট | Honey Nut",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "b3328624-e3c0-43dc-abcc-0cd071891e43",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp"
+        },
+        "alt_text": "হানি নাট | Honey Nut",
         "sort_order": 2,
         "is_primary": false
       }
     ],
     "image_urls": [
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/7a071db9-5df1-4a93-aeb4-4354949b8aad/960.webp",
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/e4f722b9-ba12-4d54-bde9-335956bc183f/960.webp"
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/e4f722b9-ba12-4d54-bde9-335956bc183f/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1e1b872d-3060-4328-a0be-abf1b5091a87/a2eab6be-af88-443a-b03d-bb8dec13ddf4/960.webp"
     ],
     "price": 650,
     "compare_at_price": 850,
     "available": true,
     "variants": [
-      {
-        "id": "bbab057c-a15f-4003-b53f-1b8598faacc4",
-        "attributes": {
-          "size": "৫০০ গ্রাম"
-        },
-        "price": 650,
-        "available": true
-      },
       {
         "id": "f2344f23-cc82-4c63-8813-14fcd6446fcb",
         "attributes": {

@@ -19,7 +19,7 @@ export type KalojiraOrderTotals = {
   unitPrice: number;
   quantity: number;
   subtotal: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   total: number;
 };
 
@@ -28,7 +28,7 @@ export type KalojiraOrderPayload = {
   bundleDetails: string;
   bundlePrice: number;
   quantity: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   customerName: string;
   phone: string;
   address: string;
@@ -43,7 +43,7 @@ export type KalojiraOrderConfirmation = {
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   total: number;
 };
 
@@ -74,7 +74,7 @@ export function getKalojiraPackOptions(product: StorefrontProduct): KalojiraPack
     if (variant.id === undefined || variant.id === null) return [];
 
     const variantId = String(variant.id).trim();
-    const size = variant.attributes?.size;
+    const size = variant.attributes?.size ?? variant.attributes?.kg;
     const label = typeof size === "string" || typeof size === "number"
       ? String(size).trim()
       : "";
@@ -87,7 +87,7 @@ export function getKalojiraPackOptions(product: StorefrontProduct): KalojiraPack
   });
 }
 
-export function calculateKalojiraOrder(unitPrice: number, quantity: number): KalojiraOrderTotals {
+export function calculateKalojiraOrder(unitPrice: number, quantity: number, deliveryCharge = KALOJIRA_DELIVERY_CHARGE): KalojiraOrderTotals {
   if (!isPositiveSafeInteger(unitPrice, MAX_PRICE)) {
     throw new Error("Unit price is invalid");
   }
@@ -96,7 +96,7 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number): Kal
   }
 
   const subtotal = unitPrice * quantity;
-  const total = subtotal + KALOJIRA_DELIVERY_CHARGE;
+  const total = subtotal + deliveryCharge;
   if (!Number.isSafeInteger(subtotal) || subtotal > MAX_PRICE || !Number.isSafeInteger(total)) {
     throw new Error("Order total is invalid");
   }
@@ -105,7 +105,7 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number): Kal
     unitPrice,
     quantity,
     subtotal,
-    deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+    deliveryCharge,
     total,
   };
 }
@@ -135,8 +135,9 @@ export function buildKalojiraOrderPayload(input: {
   customerName: string;
   phone: string;
   address: string;
+  deliveryCharge?: number;
 }): KalojiraOrderPayload {
-  const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity);
+  const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity, input.deliveryCharge);
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
   const phone = requiredTrimmedString(input.phone, 11, "Phone");
   const address = requiredTrimmedString(input.address, 500, "Address");
@@ -152,7 +153,7 @@ export function buildKalojiraOrderPayload(input: {
     bundleDetails: requiredTrimmedString(input.pack.label, 300, "Pack label"),
     bundlePrice: totals.subtotal,
     quantity: totals.quantity,
-    deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+    deliveryCharge: totals.deliveryCharge,
     customerName,
     phone,
     address,
