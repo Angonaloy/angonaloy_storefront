@@ -8,11 +8,14 @@ import { ShiningText } from "@/components/ui/shining-text";
 
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
 import { WhatsAppBrandIcon } from "@/features/kalojira-mixed/campaign-layout";
-import { KALOJIRA_CAMPAIGN_PHONE_HREF, KALOJIRA_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/content";
+import { KALOJIRA_CAMPAIGN_PHONE_HREF } from "@/features/kalojira-mixed/content";
+import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/katimon-content";
 import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { resolveKalojiraCheckoutStatus } from "@/features/kalojira-mixed/checkout-state";
 import { getKalojiraPackOptions } from "@/features/kalojira-mixed/order";
 import { fetchStorefrontProduct, fetchStorefrontProductInventory, getProductGallery, mergeInventory } from "@/lib/storefront-products";
+
+const KALOJIRA_CAMPAIGN_WHATSAPP_HREF = KATIMON_CAMPAIGN_WHATSAPP_HREF;
 
 export default function KatimonMangoPage() {
   const slug = "katimon-mango";
@@ -33,6 +36,11 @@ export default function KatimonMangoPage() {
   }, [galleryApi]);
   const status = resolveKalojiraCheckoutStatus({ hasProduct: Boolean(product), hasOrderablePacks: product ? getKalojiraPackOptions(product).length > 0 : false, productIsPending: productQuery.isPending, productIsError: productQuery.isError, inventoryIsError: inventoryQuery.isError, inventoryIsFetched: inventoryQuery.isFetched, hasInventory: Boolean(inventoryQuery.data?.inventory) });
   const handleOrderClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.currentTarget.className.includes("border-[#25d366]")) {
+      event.preventDefault();
+      window.open(KATIMON_CAMPAIGN_WHATSAPP_HREF, "_blank", "noopener,noreferrer");
+      return;
+    }
     event.preventDefault();
     const target = document.getElementById("order");
     const heading = document.getElementById("kalojira-checkout-heading");
