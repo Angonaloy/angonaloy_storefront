@@ -117,6 +117,12 @@ test("curates detailed source content for regular products", () => {
       expected: ["কাটিমন", "অফসিজন", "কৃত্রিমভাবে পাকানো নয়"],
       minimumCharacters: 1700,
     },
+    {
+      slug: "homemade-pumpkin-bori",
+      labels: ["বিবরণ", "বৈশিষ্ট্য", "উপকরণ", "রান্নার পরামর্শ", "সংরক্ষণের নিয়ম", "প্যাক সাইজ", "কেন ম্যাংগো লাভারের?"],
+      expected: ["মাষকলাই", "চালকুমড়ো", "হাতে তৈরি", "রোদে শুকানো", "৫০০ গ্রাম", "১ কেজি"],
+      minimumCharacters: 900,
+    },
   ];
 
   for (const { slug, labels, expected, minimumCharacters } of cases) {
