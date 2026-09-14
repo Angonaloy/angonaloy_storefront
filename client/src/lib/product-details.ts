@@ -851,6 +851,9 @@ export const productDetailSections: Record<string, ProductDetailSection[]> = {
     },
     {
       label: "বৈশিষ্ট্য",
+      body: [
+        "ঘরোয়া স্বাদ ও ঐতিহ্যবাহী প্রস্তুত পদ্ধতিকে গুরুত্ব দিয়ে এই কুমড়ো বড়ি তৈরি করা হয়। অভিজ্ঞ কারিগরদের হাতে তৈরি করে পরিষ্কার-পরিচ্ছন্নভাবে রোদে শুকানো হয়।",
+      ],
       details: [
         "হাতে তৈরি",
         "ঘরোয়া পদ্ধতিতে প্রস্তুত",
@@ -861,6 +864,9 @@ export const productDetailSections: Record<string, ProductDetailSection[]> = {
     },
     {
       label: "উপকরণ",
+      body: [
+        "বাছাই করা উপাদান দিয়ে তৈরি এই বড়িতে মাষকলাইয়ের ডাল ও টাটকা চালকুমড়োর স্বাভাবিক স্বাদ বজায় থাকে।",
+      ],
       details: [
         "বাছাই করা মাষকলাইয়ের ডাল",
         "টাটকা চালকুমড়ো",
@@ -886,10 +892,6 @@ export const productDetailSections: Record<string, ProductDetailSection[]> = {
         "ব্যবহারের পর পাত্রের মুখ ভালোভাবে বন্ধ করুন",
         "প্যাকেটের Best Before নির্দেশনা অনুসরণ করুন",
       ],
-    },
-    {
-      label: "প্যাক সাইজ",
-      details: ["৫০০ গ্রাম", "১ কেজি"],
     },
     {
       label: "কেন ম্যাংগো লাভারের?",
