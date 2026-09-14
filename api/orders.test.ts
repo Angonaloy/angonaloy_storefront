@@ -30,6 +30,17 @@ test("trims whitespace around an otherwise valid phone number", () => {
   assert.equal(validateOrder({ ...validOrder, phone: " 01712345678 " }).phone, "01712345678");
 });
 
+test("validates and normalizes optional landing-page attribution", () => {
+  assert.equal(
+    validateOrder({ ...validOrder, landingPagePath: "/step/katimon-mango/?utm_campaign=summer" }).landingPagePath,
+    "/step/katimon-mango",
+  );
+  assert.equal(validateOrder(validOrder).landingPagePath, undefined);
+  for (const landingPagePath of ["https://evil.example/step/fake", "/products", "/step/with spaces", "/step/"]) {
+    assert.throws(() => validateOrder({ ...validOrder, landingPagePath }));
+  }
+});
+
 test("rejects invalid quantities", () => {
   const { quantity: _quantity, ...withoutQuantity } = validOrder;
   assert.throws(() => validateOrder(withoutQuantity));

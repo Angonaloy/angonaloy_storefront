@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.js";
+import { normalizeLandingPagePath } from "../server/landing-page-attribution.js";
 
 export { OrderProtectionError } from "../server/order-protection-errors.js";
 
@@ -23,6 +24,7 @@ export type OrderRequest = {
   turnstileToken?: string;
   clientSessionId?: string;
   checkoutStartedAt?: string;
+  landingPagePath?: string;
   items?: Array<{ productId: string; variantId: string; quantity: number }>;
   shippingZoneId?: string;
 };
@@ -162,6 +164,12 @@ export function validateOrder(body: unknown): OrderRequest {
   if (checkoutStartedAt && !Number.isFinite(Date.parse(checkoutStartedAt))) throw new OrderValidationError();
   if (clientSessionId && !/^[a-zA-Z0-9._:-]+$/.test(clientSessionId)) throw new OrderValidationError();
 
+  let landingPagePath: string | undefined;
+  if (value.landingPagePath !== undefined) {
+    landingPagePath = normalizeLandingPagePath(value.landingPagePath);
+    if (!landingPagePath) throw new OrderValidationError();
+  }
+
   let items: OrderRequest["items"];
   if (value.items !== undefined) {
     if (!Array.isArray(value.items) || value.items.length < 1 || value.items.length > 50) throw new OrderValidationError();
@@ -194,6 +202,7 @@ export function validateOrder(body: unknown): OrderRequest {
     ...(turnstileToken !== undefined ? { turnstileToken } : {}),
     ...(clientSessionId !== undefined ? { clientSessionId } : {}),
     ...(checkoutStartedAt !== undefined ? { checkoutStartedAt } : {}),
+    ...(landingPagePath ? { landingPagePath } : {}),
     ...(items ? { items } : {}),
     ...(shippingZoneId !== undefined ? { shippingZoneId } : {}),
   };
@@ -230,6 +239,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         turnstileToken: order.turnstileToken,
         clientSessionId: order.clientSessionId,
         checkoutStartedAt: order.checkoutStartedAt,
+        ...(order.landingPagePath ? { landingPagePath: order.landingPagePath } : {}),
         notes: `${order.bundleTitle} - ${order.bundleDetails}`,
         ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),

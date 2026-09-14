@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { currentLandingPagePath } from "@/lib/landing-page-attribution";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
@@ -321,7 +322,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       }
 
       const combinedAddress = buildKalojiraAddress(address);
-      const payload: KalojiraOrderPayload & { draftKey?: string; items: Array<{ productId: string; variantId: string; quantity: number }>; shippingZoneId?: string; website: string; turnstileToken: string; clientSessionId: string; checkoutStartedAt: string } = {
+      const landingPagePath = currentLandingPagePath();
+      const payload: KalojiraOrderPayload & { draftKey?: string; items: Array<{ productId: string; variantId: string; quantity: number }>; shippingZoneId?: string; website: string; turnstileToken: string; clientSessionId: string; checkoutStartedAt: string; landingPagePath?: string } = {
         ...buildKalojiraOrderPayload({
           productName: refreshedProduct.name,
           pack: freshPack,
@@ -338,6 +340,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         turnstileToken,
         clientSessionId,
         checkoutStartedAt,
+        ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);
