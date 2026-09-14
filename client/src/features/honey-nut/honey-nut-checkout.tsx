@@ -3,6 +3,7 @@ import { LoaderCircle, MessageCircle, Minus, Phone, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { apiRequest } from "@/lib/queryClient";
+import { currentLandingPagePath } from "@/lib/landing-page-attribution";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
@@ -348,6 +349,7 @@ export function HoneyNutCheckout({
         trackCheckoutError("availability");
         return;
       }
+      const landingPagePath = currentLandingPagePath();
       const payload = {
         ...buildHoneyNutOrderPayload({
           productName: refreshedProduct.name,
@@ -368,6 +370,7 @@ export function HoneyNutCheckout({
         turnstileToken,
         clientSessionId,
         checkoutStartedAt,
+        ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);

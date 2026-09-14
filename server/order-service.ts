@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
+import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
 
@@ -24,6 +25,11 @@ export const orderRequestSchema = z.object({
   turnstileToken: z.string().max(4096).optional(),
   clientSessionId: z.string().max(120).regex(/^[a-zA-Z0-9._:-]+$/).optional(),
   checkoutStartedAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value)), "Invalid checkout timestamp").optional(),
+  landingPagePath: z.string().trim().max(120).transform((value) => {
+    const normalized = normalizeLandingPagePath(value);
+    if (!normalized) throw new Error("Invalid landing page path");
+    return normalized;
+  }).optional(),
   items: z.array(z.object({
     productId: z.string().trim().min(1).max(120),
     variantId: z.string().trim().min(1).max(120),
@@ -99,6 +105,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         turnstileToken: order.turnstileToken,
         clientSessionId: order.clientSessionId,
         checkoutStartedAt: order.checkoutStartedAt,
+        ...(order.landingPagePath ? { landingPagePath: order.landingPagePath } : {}),
         ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(10_000)))(),

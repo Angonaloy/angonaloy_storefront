@@ -194,6 +194,25 @@ test("uses the public storefront handle endpoint and forwards protection signals
   assert.equal(outboundBody?.turnstileToken, "turnstile-token");
 });
 
+test("forwards validated landing-page attribution to Merchant Suite", async () => {
+  let outboundBody: Record<string, unknown> | undefined;
+  const order = orderRequestSchema.parse({
+    ...validEnglishOrder,
+    items: canonicalItems,
+    landingPagePath: "/step/katimon-mango",
+  });
+
+  await processOrder(order, {
+    ...dependencies,
+    fetchImpl: async (_input, init) => {
+      outboundBody = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ orderRef: "ML-150003", decision: "allow" }), { status: 201 });
+    },
+  });
+
+  assert.equal(outboundBody?.landingPagePath, "/step/katimon-mango");
+});
+
 test("keeps a held review as a normal checkout outcome", async () => {
   const order = orderRequestSchema.parse({ ...validEnglishOrder, items: canonicalItems });
   const result = await processOrder(order, {
