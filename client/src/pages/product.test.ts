@@ -33,13 +33,14 @@ test("uses Kaium Simanto for delivery timeline Bengali labels", () => {
   assert.match(productSource, /ডেলিভারি/);
 });
 
-test("uses shared sizing and IhtishamDeshlipi for product detail labels", () => {
+test("uses IhtishamDeshlipi headings and readable product detail tabs", () => {
   assert.match(productSource, /বিস্তারিত/);
   assert.match(productSource, /বৈশিষ্ট্য/);
-  assert.match(productSource, /text-\[19px\] font-normal text-black/);
-  assert.match(productSource, /text-\[19px\] font-normal text-black\/65/);
+  assert.match(productSource, /text-\[23px\] font-normal text-black/);
+  assert.match(productSource, /text-\[23px\] font-normal text-black\/65/);
   assert.match(productSource, /fontFamily: "'IhtishamDeshlipi', serif"/);
-  assert.match(productSource, /text-\[15px\] transition-colors md:text-\[17px\]/);
+  assert.match(productSource, /text-\[17px\] transition-colors md:text-\[19px\]/);
+  assert.match(productSource, /fontFamily: "'KaiumSimanto', serif"/);
 });
 
 test("does not mark a live product unavailable while inventory is still loading", () => {

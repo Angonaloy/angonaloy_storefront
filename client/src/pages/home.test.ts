@@ -15,17 +15,18 @@ test("renders category sections after Latest Drop", () => {
   assert.match(homeSource, /collection\.label/);
 });
 
-test("renders a What's New section after the hero", () => {
+test("renders the Top Selling Products section after the hero", () => {
   const heroIndex = homeSource.indexOf("Hero Section");
-  const whatsNewIndex = homeSource.indexOf("What's New Section");
+  const topSellingIndex = homeSource.indexOf("What's New Section");
   const latestDropIndex = homeSource.indexOf("Latest Drop Section");
 
   assert.notEqual(heroIndex, -1);
-  assert.notEqual(whatsNewIndex, -1);
+  assert.notEqual(topSellingIndex, -1);
   assert.notEqual(latestDropIndex, -1);
-  assert.ok(whatsNewIndex > heroIndex);
-  assert.ok(whatsNewIndex < latestDropIndex);
-  assert.match(homeSource, /WHAT'S NEW/);
+  assert.ok(topSellingIndex > heroIndex);
+  assert.ok(topSellingIndex < latestDropIndex);
+  assert.match(homeSource, /BEST SELLERS/);
+  assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
 });
 
 test("uses only the highlighted Bengali Featured Categories heading", () => {
@@ -168,14 +169,17 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   assert.doesNotMatch(whatsNewSource, /<svg/);
 });
 
-test("styles Latest Drop header like the Just arrived header", () => {
-  const latestDropContainer = /Latest Drop Section[\s\S]*?<motion\.div[^>]*className="mx-auto max-w-\[1500px\] px-4 md:px-8 xl:px-12"/.test(homeSource);
-  const latestDropHeading = /className="text-\[clamp\(2rem,5vw,2\.6rem\)\] font-bold leading-none tracking-\[-0\.04em\] text-black"[\s\S]*?>\s*Latest\s*<span[\s\S]*?Drop/.test(homeSource);
-  const discoverMoreLink = /className="mt-1\.5 shrink-0 border-b-2 border-black pb-1 text-\[11px\] font-medium uppercase tracking-\[0\.2em\] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-\[0\.24em\]"[\s\S]*?>\s*Discover More/.test(homeSource);
+test("styles Latest Drop as a compact newly-added catalog section", () => {
+  const latestDropSource = homeSource.slice(
+    homeSource.indexOf("Latest Drop Section"),
+    homeSource.indexOf("Category Section: Homemade"),
+  );
 
-  assert.equal(latestDropContainer, true);
-  assert.equal(latestDropHeading, true);
-  assert.equal(discoverMoreLink, true);
+  assert.match(latestDropSource, /NEWLY ADDED/);
+  assert.match(latestDropSource, /আমাদের নতুন পণ্য/);
+  assert.match(latestDropSource, /See More/);
+  assert.match(latestDropSource, /homepageProducts\.slice\(0, 4\)\.map/);
+  assert.match(latestDropSource, /grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4/);
 });
 
 test("renders the Newly Added bilingual title with Bengali highlight", () => {
@@ -207,53 +211,32 @@ test("uses a reduced type scale across homepage section headings", () => {
 });
 
 test("loads every homepage product section from the public catalog", () => {
-  const whatsNewSource = homeSource.slice(
-    homeSource.indexOf("What's New Section"),
-    homeSource.indexOf("Latest Drop Section"),
-  );
-  const latestDropSource = homeSource.slice(
-    homeSource.indexOf("Latest Drop Section"),
-    homeSource.indexOf("Category Section: Homemade"),
-  );
-  const categorySource = homeSource.slice(
-    homeSource.indexOf("Category Section: Homemade"),
-    homeSource.indexOf("Editorial Section"),
-  );
-
   assert.match(homeSource, /import \{ useQuery \} from "@tanstack\/react-query";/);
   assert.match(homeSource, /fetchStorefrontProducts,/);
-  assert.match(homeSource, /formatProductPriceRange,/);
-  assert.match(homeSource, /getProductImage,/);
   assert.match(homeSource, /STOREFRONT_POLL_INTERVAL_MS,/);
   assert.match(homeSource, /data: catalogProducts = \[\]/);
   assert.match(homeSource, /getTopSellingProducts\(homepageProducts\)/);
+  assert.match(homeSource, /getProductsForCollection\(homepageProducts, collection\)/);
+  assert.match(homeSource, /getVisibleFeaturedCollections\(catalogProducts\)/);
   assert.match(homeSource, /queryKey: \["merchant-suite-products-listing"\],/);
   assert.match(homeSource, /queryFn: fetchStorefrontProducts,/);
   assert.match(homeSource, /refetchInterval: STOREFRONT_POLL_INTERVAL_MS,/);
   assert.doesNotMatch(homeSource, /const whatsNewProducts = \[/);
   assert.doesNotMatch(homeSource, /const justArrivedProducts = \[/);
   assert.doesNotMatch(homeSource, /const specialProducts = \[/);
-  assert.match(homeSource, /useCart/);
-  assert.match(homeSource, /Add to Cart/);
-  assert.match(whatsNewSource, /getProductNumericId\(product\)/);
-  assert.match(whatsNewSource, /className="mt-auto w-full border border-black\/15 bg-\[#FBBB14\]/);
-  assert.match(whatsNewSource, /const firstVariant = product\.variants\?\.\[0\]/);
-  assert.match(whatsNewSource, /compare_at_price/);
-  assert.match(whatsNewSource, /Save/);
-  assert.match(whatsNewSource, /bg-\[#FBBB14\]\/35/);
-  assert.match(whatsNewSource, /className="group flex min-w-0 flex-col"/);
-  assert.match(whatsNewSource, /line-clamp-1/);
-  assert.match(whatsNewSource, /className="mt-auto w-full border/);
-  assert.match(whatsNewSource, /topSellingProducts\.slice\(0, 6\)\.map/);
+  assert.match(homeSource, /import HomeProductCard from "@\/components\/home-product-card"/);
+  assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
+  assert.match(homeSource, /homepageProducts\.slice\(0, 4\)\.map/);
+  assert.match(homeSource, /products\.slice\(0, 4\)\.map/);
   assert.match(homeSource, /product\.compare_at_price == null && snapshotProduct\?\.compare_at_price != null/);
-   assert.match(categorySource, /renderCategorySection\("homemade"\)/);
-   assert.match(homeSource, /renderCategorySection\("honey"\)/);
-   assert.match(homeSource, /renderCategorySection\("oil-and-ghee"\)/);
-   assert.match(homeSource, /renderCategorySection\("semai"\)/);
-   assert.match(homeSource, /renderCategorySection\("nuts-and-seeds"\)/);
-   assert.doesNotMatch(homeSource, /Just Arrived Section/);
-   assert.doesNotMatch(homeSource, /Special Collections Section/);
- });
+  assert.match(homeSource, /renderCategorySection\("homemade"\)/);
+  assert.match(homeSource, /renderCategorySection\("honey"\)/);
+  assert.match(homeSource, /renderCategorySection\("oil-and-ghee"\)/);
+  assert.match(homeSource, /renderCategorySection\("semai"\)/);
+  assert.match(homeSource, /renderCategorySection\("nuts-and-seeds"\)/);
+  assert.doesNotMatch(homeSource, /Just Arrived Section/);
+  assert.doesNotMatch(homeSource, /Special Collections Section/);
+});
 
 test("uses the generated catalog while the live catalog revalidates", () => {
   assert.match(homeSource, /generatedStorefrontProducts/);
@@ -261,34 +244,29 @@ test("uses the generated catalog while the live catalog revalidates", () => {
   assert.match(homeSource, /initialDataUpdatedAt: 0/);
 });
 
-test("prioritizes the first category images with lightweight thumbnails", () => {
-  assert.match(homeSource, /image: "\/categories\/homemade-3-320\.webp"/);
+test("prioritizes early live category images with lightweight thumbnails", () => {
+  assert.match(homeSource, /visibleFeaturedCollections\.map\(\(\{ slug, label, image \}, index\) =>/);
+  assert.match(homeSource, /src=\{image\}/);
   assert.match(homeSource, /loading=\{index < 4 \? "eager" : "lazy"\}/);
   assert.match(homeSource, /fetchPriority=\{index < 4 \? "high" : "auto"\}/);
+  assert.doesNotMatch(homeSource, /image: "\/categories\//);
 });
 
 test("uses the Mango Lover hero poster", () => {
-  assert.match(homeSource, /src="\/hero-mango-lover\.webp"/);
+  assert.match(homeSource, /src="\/hero-mango-lover\.webp\?v=2"/);
+  assert.match(homeSource, /src="\/hero-desktop\.webp"/);
   assert.doesNotMatch(homeSource, /hero1\.webp/);
 });
 
-test("renders a full-bleed editorial hero", () => {
+test("renders a responsive Mango Lover hero inside the mobile page gutter", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="w-full px-0"/);
-  // Mobile crops ~8% of leaf off the top of the 940x1411 poster and leaves no
-  // bare yellow band below it; desktop keeps the uncropped fixed-height hero.
-  assert.match(homeSource, /className="relative aspect-\[940\/1298\] w-full overflow-hidden bg-\[#FBBB14\] md:aspect-auto md:min-h-\[760px\]"/);
-  // Desktop contains the whole portrait poster so none of its baked-in Bangla
-  // type is cropped. Mobile covers instead, anchored to the bottom so the only
-  // thing the crop can eat is leaf at the top.
-  assert.match(homeSource, /className="h-full w-full object-cover object-bottom md:object-contain md:object-center"/);
-  assert.match(homeSource, /pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end/);
-  assert.match(homeSource, /pointer-events-auto inline-flex w-fit/);
-  assert.match(homeSource, /md:px-7 md:py-3 md:text-base/);
-  assert.match(homeSource, /DISCOVER MORE/);
+  assert.match(homeSource, /className="relative w-full px-4 pt-4 md:px-0 md:pt-0"/);
+  assert.match(homeSource, /className="relative z-10 aspect-\[940\/1080\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-auto md:min-h-\[600px\] md:rounded-\[6px\]"/);
+  assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
+  assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);
+  assert.match(homeSource, /Foggy gradient bottom blend/);
   assert.doesNotMatch(homeSource, /SS26 STATEMENT PIECES/);
   assert.doesNotMatch(homeSource, /Bold by/);
-  assert.doesNotMatch(homeSource, /Shop now/);
   assert.doesNotMatch(homeSource, /Discover New Arrival/);
 });
 

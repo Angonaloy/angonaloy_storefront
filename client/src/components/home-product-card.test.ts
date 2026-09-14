@@ -8,7 +8,9 @@ const cardSource = existsSync(cardPath) ? readFileSync(cardPath, "utf8") : "";
 
 test("uses one styled product card across all homepage catalog sections", () => {
   assert.match(homeSource, /import HomeProductCard from "@\/components\/home-product-card"/);
-  assert.equal((homeSource.match(/<HomeProductCard\b/g) ?? []).length, 4);
+  assert.match(homeSource, /products\.slice\(0, 4\)\.map\(\(product\) => <HomeProductCard/);
+  assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map\(\(product\) => <HomeProductCard/);
+  assert.match(homeSource, /homepageProducts\.slice\(0, 4\)\.map\(\(product\) => <HomeProductCard/);
   assert.match(cardSource, /Save/);
   assert.match(cardSource, /compareAtPrice/);
   assert.match(cardSource, /Add to Cart/);
