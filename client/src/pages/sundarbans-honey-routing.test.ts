@@ -33,12 +33,10 @@ test("registers the isolated campaign routes in specific-first order", () => {
   assert.doesNotMatch(thankYouPage, /\bLayout\b/);
 });
 
-test("suppresses Meta initialization and PageView tracking on campaign paths", () => {
-  assert.match(app, /isGoogleOnlyCampaignPath\(location\)/);
-  assert.match(app, /if \(!googleOnlyCampaign\) \{\s*initMetaPixel\(\);\s*\}/);
-  assert.match(
+test("does not branch campaign routes for direct tracking", () => {
+  assert.doesNotMatch(
     app,
-    /if \(!googleOnlyCampaign\) \{\s*trackMetaEvent\(\{ eventName: "PageView", eventId: createEventId\(\), capi: true \}\);\s*\}/,
+    /(?:isGoogleOnlyCampaignPath|initMetaPixel|trackMetaEvent|createEventId)/,
   );
 });
 

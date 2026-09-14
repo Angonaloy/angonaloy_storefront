@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { CampaignFooter, CampaignHeader } from "@/features/kalojira-mixed/campaign-layout";
@@ -7,7 +7,6 @@ import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { resolveKalojiraCheckoutStatus } from "@/features/kalojira-mixed/checkout-state";
 import { getKalojiraPackOptions } from "@/features/kalojira-mixed/order";
 import { MobileOrderBar } from "@/features/kalojira-mixed/mobile-order-bar";
-import { trackKalojiraCampaignEvent } from "@/features/kalojira-mixed/tracking";
 import "@/features/kalojira-mixed/campaign.css";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
@@ -42,16 +41,7 @@ export default function KalojiraMixedPage() {
     inventoryIsFetched: inventoryQuery.isFetched,
     hasInventory: Boolean(inventoryQuery.data?.inventory),
   });
-  const campaignViewedRef = useRef(false);
-
-  useEffect(() => {
-    if (campaignViewedRef.current) return;
-    campaignViewedRef.current = true;
-    trackKalojiraCampaignEvent("campaign_view", {});
-  }, []);
-
   const handleOrderClick = useCallback((placement: string) => {
-    trackKalojiraCampaignEvent("landing_cta_click", { placement });
     const target = document.getElementById("kalojira-checkout");
     const heading = document.getElementById("kalojira-checkout-heading");
     if (!target) return;

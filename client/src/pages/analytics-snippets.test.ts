@@ -21,7 +21,7 @@ test("installs the GTM noscript fallback immediately after the body opens", () =
   );
 });
 
-test("installs direct GA4 because GA4 is not configured inside GTM", () => {
-  assert.match(html, /googletagmanager\.com\/gtag\/js\?id=G-Q7J7KV6ZVC/);
-  assert.match(html, /gtag\('config', 'G-Q7J7KV6ZVC'\)/);
+test("leaves GA4 loading and configuration to GTM", () => {
+  assert.doesNotMatch(html, /googletagmanager\.com\/gtag\/js/);
+  assert.doesNotMatch(html, /gtag\s*\(\s*["']config["']/);
 });

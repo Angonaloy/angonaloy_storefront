@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
@@ -10,7 +10,6 @@ import { HoneyNutCheckout } from "@/features/honey-nut/honey-nut-checkout";
 import { MobileOrderBar } from "@/features/honey-nut/mobile-order-bar";
 import { resolveHoneyNutCheckoutStatus } from "@/features/honey-nut/checkout-state";
 import { getHoneyNutPackOptions } from "@/features/honey-nut/order";
-import { trackHoneyNutCampaignEvent } from "@/features/honey-nut/tracking";
 import "@/features/honey-nut/campaign.css";
 
 export default function HoneyNutPage() {
@@ -20,16 +19,7 @@ export default function HoneyNutPage() {
   const inventoryQuery = useQuery({ queryKey: ["merchant-suite-inventory", slug], queryFn: () => fetchStorefrontProductInventory(slug), refetchInterval: STOREFRONT_POLL_INTERVAL_MS });
   const product = mergeInventory(productQuery.data, inventoryQuery.data?.inventory);
   const status = resolveHoneyNutCheckoutStatus({ hasProduct: Boolean(product), hasOrderablePacks: product ? getHoneyNutPackOptions(product).length > 0 : false, productIsPending: productQuery.isPending, productIsError: productQuery.isError, inventoryIsError: inventoryQuery.isError, inventoryIsFetched: inventoryQuery.isFetched, hasInventory: Boolean(inventoryQuery.data?.inventory) });
-  const campaignViewedRef = useRef(false);
-
-  useEffect(() => {
-    if (campaignViewedRef.current) return;
-    campaignViewedRef.current = true;
-    trackHoneyNutCampaignEvent("campaign_view", {});
-  }, []);
-
   const handleOrderClick = useCallback((placement: string) => {
-    trackHoneyNutCampaignEvent("landing_cta_click", { placement });
     const target = document.getElementById("honey-nut-checkout");
     const heading = document.getElementById("honey-nut-checkout-heading");
     if (!target) return;

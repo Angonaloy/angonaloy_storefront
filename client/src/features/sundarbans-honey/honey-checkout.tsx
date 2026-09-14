@@ -37,7 +37,6 @@ import {
   type HoneyOrderPayload,
   type HoneyPackOption,
 } from "./order";
-import { trackHoneyCampaignEvent } from "./tracking";
 
 const PHONE_NUMBER = "01301636461";
 const PHONE_HREF = "tel:+8801301636461";
@@ -106,12 +105,11 @@ function InlineError({ id, error }: { id: string; error?: string }) {
   ) : null;
 }
 
-function SupportActions({ placement }: { placement: string }) {
+function SupportActions() {
   return (
     <div className="flex flex-wrap gap-3">
       <a
         href={PHONE_HREF}
-        onClick={() => trackHoneyCampaignEvent("phone_click", { placement })}
         className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       >
         <Phone className="size-4" aria-hidden="true" />
@@ -121,7 +119,6 @@ function SupportActions({ placement }: { placement: string }) {
         href={WHATSAPP_HREF}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => trackHoneyCampaignEvent("whatsapp_click", { placement })}
         className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
       >
         <MessageCircle className="size-4" aria-hidden="true" />
@@ -198,10 +195,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     quantity: itemQuantity,
   });
 
-  const trackCheckoutError = (type: "validation" | "availability" | "network") => {
-    trackHoneyCampaignEvent("checkout_error", { error_type: type });
-  };
-
   const beginCheckout = () => {
     if (beganCheckoutRef.current || status !== "ready" || !selectedPack || !product) return;
     beganCheckoutRef.current = true;
@@ -275,7 +268,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       const firstError = (firstInvalidField ? nextErrors[firstInvalidField] : null) ?? "অর্ডারের তথ্য আবার দেখুন।";
       setAnnouncement(firstError);
       focusFirstInvalidField(nextErrors);
-      trackCheckoutError("validation");
       return;
     }
 
@@ -316,7 +308,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         setErrors(availabilityErrors);
         setAnnouncement(AVAILABILITY_ERROR);
         focusFirstInvalidField(availabilityErrors, freshPacks);
-        trackCheckoutError("availability");
         return;
       }
 
@@ -332,7 +323,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         }),
         deliveryCharge: HONEY_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
-        trackingMode: "google_only" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
         website,
         turnstileToken,
@@ -365,7 +355,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       }
       setRequestError(true);
       setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
-      trackCheckoutError("network");
     } finally {
       submittingRef.current = false;
       setIsPending(false);
@@ -452,7 +441,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
                   >
                     আবার চেষ্টা করুন
                   </button>
-                  <SupportActions placement="checkout_availability_error" />
+                  <SupportActions />
                 </div>
               </div>
             ) : null}
@@ -576,7 +565,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
-              <SupportActions placement="checkout_network_error" />
+              <SupportActions />
             </div>
           ) : null}
 

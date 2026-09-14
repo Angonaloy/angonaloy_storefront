@@ -27,7 +27,6 @@ export type HoneyNutOrderPayload = {
   phone: string;
   address: string;
   paymentMethod: "cash_on_delivery";
-  trackingMode: "google_only";
 };
 export type HoneyNutOrderConfirmation = {
   orderRef: string;
@@ -118,7 +117,6 @@ export function buildHoneyNutOrderPayload(input: {
     phone,
     address,
     paymentMethod: "cash_on_delivery",
-    trackingMode: "google_only",
   };
 }
 

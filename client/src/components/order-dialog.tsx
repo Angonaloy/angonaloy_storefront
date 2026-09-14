@@ -9,7 +9,6 @@ import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
-import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
@@ -126,20 +125,6 @@ export default function OrderDialog({
         });
       }
 
-      const eventId = createEventId();
-      trackMetaEvent({
-        eventName: "InitiateCheckout",
-        eventId,
-        capi: true,
-        customData: {
-          currency: "BDT",
-          value: bundle?.price ?? 0,
-          content_type: "product",
-          contents: bundle
-            ? [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }]
-            : [],
-        },
-      });
     }
     previousOpen.current = open;
   }, [open, bundle, bundleQuantity, bundleUnitPrice]);
@@ -187,8 +172,6 @@ export default function OrderDialog({
     }
 
     const formData = new FormData(event.currentTarget);
-    const eventId = createEventId();
-
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
     const address = String(formData.get("address") || "").trim();
@@ -242,7 +225,6 @@ export default function OrderDialog({
          phone,
          address,
         paymentMethod: selectedPaymentMethod,
-        metaEventId: eventId,
         items: bundle.items,
         website: String(formData.get("website") || ""),
         turnstileToken,
@@ -276,17 +258,6 @@ export default function OrderDialog({
         customer: { name, phone, address },
       });
 
-      trackMetaEvent({
-        eventName: "Purchase",
-        eventId,
-        capi: false, // Purchase is sent server-side from /api/orders (for dedup)
-        customData: {
-          currency: "BDT",
-          value: bundle.price + selectedDeliveryCharge,
-          content_type: "product",
-          contents: [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }],
-        },
-      });
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");

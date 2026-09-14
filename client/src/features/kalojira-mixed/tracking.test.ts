@@ -1,17 +1,20 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import type { GoogleAnalyticsWindow } from "../../lib/google-analytics.ts";
-import { markKalojiraPurchaseTracked, trackKalojiraCampaignEvent } from "./tracking.ts";
+import { markKalojiraPurchaseTracked } from "./tracking.ts";
 
-test("Kalojira events attach the campaign without customer data", () => {
-  const calls: unknown[][] = [];
-  const target: GoogleAnalyticsWindow = {
-    dataLayer: [],
-    gtag: (...args: unknown[]) => calls.push(args),
-  };
-  const payload = trackKalojiraCampaignEvent("landing_cta_click", { placement: "hero", phone: "01712345678" }, target);
-  assert.deepEqual(payload, { event: "landing_cta_click", campaign: "kalojira_mixed", placement: "hero" });
-  assert.deepEqual(calls, [["event", "landing_cta_click", { campaign: "kalojira_mixed", placement: "hero" }]]);
+const campaignSources = [
+  readFileSync(new URL("./tracking.ts", import.meta.url), "utf8"),
+  readFileSync(new URL("./campaign-layout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./mobile-order-bar.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./kalojira-checkout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("../../pages/kalojira-mixed.tsx", import.meta.url), "utf8"),
+];
+
+test("Kalojira campaign has no direct interaction tracker", () => {
+  for (const source of campaignSources) {
+    assert.doesNotMatch(source, /(?:trackKalojiraCampaignEvent|trackGoogleInteractionEvent)/);
+  }
 });
 
 test("purchase markers allow one event per order reference", () => {

@@ -33,7 +33,6 @@ export type KalojiraOrderPayload = {
   phone: string;
   address: string;
   paymentMethod: "cash_on_delivery";
-  trackingMode: "google_only";
 };
 
 export type KalojiraOrderConfirmation = {
@@ -161,7 +160,6 @@ export function buildKalojiraOrderPayload(input: {
     phone,
     address,
     paymentMethod: "cash_on_delivery",
-    trackingMode: "google_only",
   };
 }
 

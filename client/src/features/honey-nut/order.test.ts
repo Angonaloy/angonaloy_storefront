@@ -24,7 +24,7 @@ test("Honey Nut order contract extracts live variants and validates COD payload 
   assert.match(source, /stock_quantity/);
   assert.match(source, /buildHoneyNutOrderPayload/);
   assert.match(source, /cash_on_delivery/);
-  assert.match(source, /google_only/);
+  assert.doesNotMatch(source, /(?:trackingMode|google_only)/);
   assert.match(source, /writeHoneyNutOrderConfirmation/);
   assert.match(source, /readHoneyNutOrderConfirmation/);
 });

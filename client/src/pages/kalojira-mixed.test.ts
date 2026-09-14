@@ -67,7 +67,7 @@ test("campaign chrome mirrors the Sundarbans header and sticky order bar", () =>
   assert.match(layoutSource, /bg-\[#25d366\]/);
   assert.match(layoutSource, /WhatsAppBrandIcon/);
   assert.match(barSource, /WhatsAppBrandIcon/);
-  assert.match(barSource, /placement: "sticky_bar"/);
+  assert.match(barSource, /onOrderClick\("sticky_bar"\)/);
   assert.match(barSource, /h-12 flex-1 rounded-full bg-\[#f5c456\]/);
   assert.match(barSource, /কল করুন/);
   assert.match(campaignCssSource, /background: rgba\(115, 115, 115, 0\.6\)/);
