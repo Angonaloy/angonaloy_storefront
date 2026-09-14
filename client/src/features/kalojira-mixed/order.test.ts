@@ -66,6 +66,9 @@ test("builds COD payload and persists only safe confirmation data", () => {
     subtotal: 1600,
     deliveryCharge: 0,
     total: 1600,
+    customerName: "পরীক্ষা গ্রাহক",
+    phone: "01712345678",
+    address: "বাড়ি ১২ সাভার ঢাকা",
   }), true);
   assert.ok(storage.getItem(KALOJIRA_CONFIRMATION_KEY));
   assert.equal(readKalojiraOrderConfirmation(storage)?.orderRef, "ORD-123");

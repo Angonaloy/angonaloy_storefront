@@ -23,8 +23,13 @@ test("normalizes storefront items into the merchant team's GA4 item shape", () =
       item_id: "mango-himsagar",
       item_name: "Himsagar Mango — 10kg",
       item_brand: "Mango Lover BD",
+      item_category: "",
       item_variant: "10kg",
+      item_list_name: "",
+      item_list_id: "",
       price: 1850,
+      discount: 0,
+      index: 0,
       quantity: 2,
     },
   );
@@ -61,13 +66,23 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
     ecommerce: {
       currency: "BDT",
       value: 1850,
+      transaction_id: "",
+      affiliation: "",
+      tax: 0,
+      shipping: 0,
+      coupon: "",
       items: [
         {
           item_id: "mango-himsagar",
           item_name: "Himsagar Mango — 10kg",
           item_brand: "Mango Lover BD",
+          item_category: "",
           item_variant: "10kg",
+          item_list_name: "",
+          item_list_id: "",
           price: 1850,
+          discount: 0,
+          index: 0,
           quantity: 1,
         },
       ],
@@ -107,12 +122,23 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
       ecommerce: {
         currency: "BDT",
         value: 1850,
+        transaction_id: "",
+        affiliation: "",
+        tax: 0,
+        shipping: 0,
+        coupon: "",
         items: [
           {
             item_id: "mango-himsagar",
             item_name: "Himsagar Mango",
             item_brand: "Mango Lover BD",
+            item_category: "",
+            item_variant: "",
+            item_list_name: "",
+            item_list_id: "",
             price: 1850,
+            discount: 0,
+            index: 0,
             quantity: 1,
           },
         ],
@@ -170,8 +196,13 @@ test("uses the GA4 select_item ecommerce shape for a selected live pack", () => 
     item_id: "honey-1kg",
     item_name: "Sundarbans Natural Honey — 1KG",
     item_brand: "Mango Lover BD",
+    item_category: "",
     item_variant: "1KG",
+    item_list_name: "",
+    item_list_id: "",
     price: 1600,
+    discount: 0,
+    index: 0,
     quantity: 2,
   }]);
   assert.equal(payload?.event, "select_item");
@@ -182,4 +213,52 @@ test("parses visible taka prices into GA4 numbers", () => {
   assert.equal(parseCurrencyAmount("৳1,850"), 1850);
   assert.equal(parseCurrencyAmount("BDT 1,850.50"), 1850.5);
   assert.equal(parseCurrencyAmount("Select Items"), 0);
+});
+
+test("builds the merchant purchase shape with transaction, shipping, and customer", () => {
+  const target: GoogleAnalyticsWindow = { dataLayer: [] };
+
+  const payload = trackGoogleEcommerceEvent("purchase", {
+    pageType: "thank_you",
+    value: 1942,
+    transactionId: "ML-1001",
+    affiliation: "",
+    tax: 0,
+    shipping: 150,
+    coupon: "",
+    customer: { name: "Test Customer", phone: "01712345678", address: "House 12 Savar Dhaka" },
+    items: [toGoogleAnalyticsItem({
+      id: "honey-1kg",
+      name: "Sundarbans Natural Honey",
+      variant: "1KG",
+      price: 896,
+      quantity: 2,
+    })],
+  }, target);
+
+  assert.deepEqual(payload?.ecommerce, {
+    currency: "BDT",
+    value: 1942,
+    transaction_id: "ML-1001",
+    affiliation: "",
+    tax: 0,
+    shipping: 150,
+    coupon: "",
+    customer: { name: "Test Customer", phone: "01712345678", address: "House 12 Savar Dhaka" },
+    items: [{
+      item_id: "honey-1kg",
+      item_name: "Sundarbans Natural Honey — 1KG",
+      item_brand: "Mango Lover BD",
+      item_category: "",
+      item_variant: "1KG",
+      item_list_name: "",
+      item_list_id: "",
+      price: 896,
+      discount: 0,
+      index: 0,
+      quantity: 2,
+    }],
+  });
+  assert.equal(payload?.event, "purchase");
+  assert.equal(target.dataLayer?.length, 1);
 });

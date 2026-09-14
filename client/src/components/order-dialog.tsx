@@ -269,9 +269,11 @@ export default function OrderDialog({
         value: bundle.price + selectedDeliveryCharge,
         items: getBundleAnalyticsItems(bundle),
         transactionId: result.orderRef,
+        affiliation: "",
         tax: 0,
         shipping: selectedDeliveryCharge,
         coupon: "",
+        customer: { name, phone, address },
       });
 
       trackMetaEvent({

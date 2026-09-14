@@ -29,7 +29,13 @@ test("confirmed visits display only the safe canonical order summary", () => {
   assert.match(pageSource, />মোট</);
   assert.match(pageSource, /confirmation\.total/);
   assert.match(pageSource, /অর্ডার নিশ্চিত করতে আমাদের টিম আপনাকে ফোন করতে পারে।/);
-  assert.doesNotMatch(pageSource, /confirmation\.(?:customerName|phone|address|district|upazila)/);
+  const summaryStart = pageSource.indexOf("<dl");
+  const summaryEnd = pageSource.indexOf("</dl>");
+  assert.ok(summaryStart >= 0 && summaryEnd > summaryStart, "order summary block must exist");
+  assert.doesNotMatch(
+    pageSource.slice(summaryStart, summaryEnd),
+    /confirmation\.(?:customerName|phone|address|district|upazila)/,
+  );
 });
 
 test("a canonical confirmation is consumed and emits one deduped GA4 purchase", () => {
@@ -50,7 +56,10 @@ test("a canonical confirmation is consumed and emits one deduped GA4 purchase", 
   assert.match(pageSource, /items: \[toGoogleAnalyticsItem\(\{/);
   assert.match(pageSource, /price: confirmation\.unitPrice/);
   assert.match(pageSource, /quantity: confirmation\.quantity/);
-  assert.doesNotMatch(pageSource, /trackGoogleEcommerceEvent\("purchase"[\s\S]*?(?:customerName|phone|address|district|upazila)/);
+  assert.match(pageSource, /customer: \{/);
+  assert.match(pageSource, /name: confirmation\.customerName/);
+  assert.match(pageSource, /phone: confirmation\.phone/);
+  assert.match(pageSource, /address: confirmation\.address/);
 });
 
 test("support is available by phone and WhatsApp without page-owned metadata or Meta", () => {

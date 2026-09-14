@@ -146,7 +146,7 @@ test("rejects unbounded or malformed customer fields before building a payload",
   }
 });
 
-test("confirmation persistence serializes and returns only the non-sensitive allowlist", () => {
+test("confirmation persistence carries customer details for the purchase dataLayer", () => {
   const storage = createMemoryStorage();
   const payload = buildHoneyOrderPayload({
     productName: product.name,
@@ -158,18 +158,10 @@ test("confirmation persistence serializes and returns only the non-sensitive all
   });
   const confirmation = buildHoneyOrderConfirmation("ORD-123", payload);
 
-  assert.equal(writeHoneyOrderConfirmation(storage, {
-    ...confirmation,
-    customerName: "Must not persist",
-    phone: "Must not persist",
-    address: "Must not persist",
-  } as typeof confirmation), true);
+  assert.equal(writeHoneyOrderConfirmation(storage, confirmation), true);
 
   const serialized = storage.getItem(HONEY_CONFIRMATION_KEY);
   assert.ok(serialized);
-  assert.equal(serialized.includes("Secret Name"), false);
-  assert.equal(serialized.includes("01712345678"), false);
-  assert.equal(serialized.includes("Secret House"), false);
   assert.deepEqual(readHoneyOrderConfirmation(storage), {
     orderRef: "ORD-123",
     productName: product.name,
@@ -179,6 +171,9 @@ test("confirmation persistence serializes and returns only the non-sensitive all
     subtotal: 3200,
     deliveryCharge: 100,
     total: 3300,
+    customerName: "Secret Name",
+    phone: "01712345678",
+    address: "Secret House Savar Dhaka",
   });
 
   clearHoneyOrderConfirmation(storage);

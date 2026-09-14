@@ -45,6 +45,9 @@ export type KalojiraOrderConfirmation = {
   subtotal: number;
   deliveryCharge: number;
   total: number;
+  customerName: string;
+  phone: string;
+  address: string;
 };
 
 function isPositiveSafeInteger(value: unknown, max = Number.MAX_SAFE_INTEGER): value is number {
@@ -172,6 +175,9 @@ export function buildKalojiraOrderConfirmation(
     productName: requiredTrimmedString(payload.bundleTitle, 200, "Product name"),
     variantLabel: requiredTrimmedString(payload.bundleDetails, 300, "Pack label"),
     ...totals,
+    customerName: requiredTrimmedString(payload.customerName, 120, "Customer name"),
+    phone: requiredTrimmedString(payload.phone, 11, "Phone"),
+    address: requiredTrimmedString(payload.address, 500, "Address"),
   };
 }
 
@@ -187,6 +193,9 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
     const unitPrice = confirmation.unitPrice;
     const subtotal = confirmation.subtotal;
     const total = confirmation.total;
+    const customerName = requiredTrimmedString(confirmation.customerName, 120, "Customer name");
+    const phone = requiredTrimmedString(confirmation.phone, 11, "Phone");
+    const address = requiredTrimmedString(confirmation.address, 500, "Address");
 
     if (!isPositiveSafeInteger(quantity, MAX_QUANTITY)
       || !isPositiveSafeInteger(unitPrice, MAX_PRICE)
@@ -207,6 +216,9 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
       subtotal: subtotal as number,
       deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
       total: total as number,
+      customerName,
+      phone,
+      address,
     };
   } catch {
     return null;
