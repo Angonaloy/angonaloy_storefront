@@ -7,7 +7,6 @@ import {
   HONEY_NUT_CAMPAIGN_PHONE_NUMBER,
   HONEY_NUT_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
-import { trackHoneyNutCampaignEvent } from "./tracking";
 
 export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: string) => void }) {
   const [checkoutVisible, setCheckoutVisible] = useState(false);
@@ -34,7 +33,6 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
         aria-label="WhatsApp-এ অর্ডার করুন"
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => trackHoneyNutCampaignEvent("whatsapp_click", { placement: "sticky_bar" })}
         className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         <WhatsAppBrandIcon className="h-5 w-5" />
@@ -51,7 +49,6 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
       <a
         href={HONEY_NUT_CAMPAIGN_PHONE_HREF}
         aria-label="ফোনে অর্ডার করুন"
-        onClick={() => trackHoneyNutCampaignEvent("phone_click", { placement: "sticky_bar" })}
         className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         <Phone className="h-5 w-5" aria-hidden="true" />

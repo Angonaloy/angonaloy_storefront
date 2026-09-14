@@ -101,7 +101,7 @@ test("builds the combined address with optional upazila and district", () => {
   assert.throws(() => buildHoneyAddress("  "));
 });
 
-test("builds an allowlisted Google-only order payload from the selected live pack", () => {
+test("builds an allowlisted COD order payload from the selected live pack", () => {
   const payload = buildHoneyOrderPayload({
     productName: product.name,
     pack: { variantId: "one", label: "1KG", unitPrice: 1600 },
@@ -121,7 +121,6 @@ test("builds an allowlisted Google-only order payload from the selected live pac
     phone: "01712345678",
     address: "House 12 Savar Dhaka",
     paymentMethod: "cash_on_delivery",
-    trackingMode: "google_only",
   });
 });
 

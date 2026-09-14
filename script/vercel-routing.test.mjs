@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
 const config = JSON.parse(
@@ -27,7 +27,6 @@ test("SPA fallback handles app routes without swallowing products, assets, or AP
     "/assets/index-stale.js",
     "/assets/index-stale.css",
     "/favicon.ico",
-    "/api/meta",
   ]) {
     assert.equal(
       matchesFallback.test(resource),
@@ -35,6 +34,10 @@ test("SPA fallback handles app routes without swallowing products, assets, or AP
       `${resource} must not be rewritten to HTML`,
     );
   }
+});
+
+test("does not deploy a direct Meta API function", () => {
+  assert.equal(existsSync(new URL("../api/meta.ts", import.meta.url)), false);
 });
 
 test("only the confirmed legacy template product paths rewrite to the 410 handler", () => {

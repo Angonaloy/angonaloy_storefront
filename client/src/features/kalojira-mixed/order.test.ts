@@ -55,7 +55,7 @@ test("builds COD payload and persists only safe confirmation data", () => {
     address: "বাড়ি ১২ সাভার ঢাকা",
   });
   assert.equal(payload.paymentMethod, "cash_on_delivery");
-  assert.equal(payload.trackingMode, "google_only");
+  assert.equal("trackingMode" in payload, false);
   const storage = createMemoryStorage();
   assert.equal(writeKalojiraOrderConfirmation(storage, {
     orderRef: "ORD-123",

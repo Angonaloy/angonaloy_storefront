@@ -8,7 +8,6 @@ import {
   KALOJIRA_CAMPAIGN_PHONE_HREF,
   KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
-import { trackKalojiraCampaignEvent } from "./tracking";
 
 export function WhatsAppBrandIcon({ className }: { className?: string }) {
   return (
@@ -18,20 +17,17 @@ export function WhatsAppBrandIcon({ className }: { className?: string }) {
   );
 }
 
-function ContactLink({ href, label, placement, event, className, children }: {
+function ContactLink({ href, label, className, children }: {
   href: string;
   label: string;
-  placement: string;
-  event: "phone_click" | "whatsapp_click";
   className?: string;
   children: ReactNode;
 }) {
-  const external = event === "whatsapp_click";
+  const external = href.startsWith("https://");
   return (
     <a
       href={href}
       aria-label={label}
-      onClick={() => trackKalojiraCampaignEvent(event, { placement })}
       className={className}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
@@ -51,8 +47,6 @@ export function CampaignHeader() {
           <ContactLink
             href={KALOJIRA_CAMPAIGN_PHONE_HREF}
             label="ফোনে অর্ডার করুন"
-            placement="header"
-            event="phone_click"
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#eab308] px-3.5 py-2 text-[#19382d] transition-colors hover:bg-[#f5c456] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#eab308]"
           >
             <Phone className="size-4" strokeWidth={2.5} aria-hidden="true" />
@@ -61,8 +55,6 @@ export function CampaignHeader() {
           <ContactLink
             href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF}
             label="WhatsApp-এ অর্ডার করুন"
-            placement="header"
-            event="whatsapp_click"
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#25d366] px-3.5 py-2 text-[#06351d] transition-colors hover:bg-[#4be07f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366]"
           >
             <WhatsAppBrandIcon className="size-4" />
@@ -99,8 +91,6 @@ export function CampaignFooter() {
           <ContactLink
             href={KALOJIRA_CAMPAIGN_PHONE_HREF}
             label="ফোনে অর্ডার করুন"
-            placement="footer"
-            event="phone_click"
             className="inline-flex size-12 items-center justify-center rounded-full border border-[#19382d]/15 bg-[#fffaf0]/70 text-[#19382d] shadow-[0_2px_8px_rgba(25,56,45,0.1)] backdrop-blur-sm transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-px hover:bg-[#fffaf0] hover:shadow-[0_5px_14px_rgba(25,56,45,0.14)] active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
           >
             <Phone className="size-5" strokeWidth={2} aria-hidden="true" />
@@ -108,8 +98,6 @@ export function CampaignFooter() {
           <ContactLink
             href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF}
             label="WhatsApp-এ অর্ডার করুন"
-            placement="footer"
-            event="whatsapp_click"
             className="inline-flex size-12 items-center justify-center rounded-full border border-[#19382d]/15 bg-[#fffaf0]/70 text-[#19382d] shadow-[0_2px_8px_rgba(25,56,45,0.1)] backdrop-blur-sm transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-px hover:bg-[#fffaf0] hover:shadow-[0_5px_14px_rgba(25,56,45,0.14)] active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
           >
             <WhatsAppBrandIcon className="size-5" />

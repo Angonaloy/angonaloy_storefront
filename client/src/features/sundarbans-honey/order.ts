@@ -33,7 +33,6 @@ export type HoneyOrderPayload = {
   phone: string;
   address: string;
   paymentMethod: "cash_on_delivery";
-  trackingMode: "google_only";
 };
 
 export type HoneyOrderConfirmation = {
@@ -157,7 +156,6 @@ export function buildHoneyOrderPayload(input: {
     phone,
     address,
     paymentMethod: "cash_on_delivery",
-    trackingMode: "google_only",
   };
 }
 

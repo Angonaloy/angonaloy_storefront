@@ -42,7 +42,7 @@ Other commands:
 
 ## Environment
 
-Six variables, in `.env` locally and in Vercel project settings for deploys. `.env` is gitignored —
+Four variables, in `.env` locally and in Vercel project settings for deploys. `.env` is gitignored —
 never commit it. `.env.example` is the committed template.
 
 | Variable | Scope | Purpose |
@@ -51,11 +51,18 @@ never commit it. `.env.example` is the committed template.
 | `VITE_STOREFRONT_ID` | client (browser) | The fixed Mango Lover BD workspace id: `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
 | `MERCHANT_SUITE_URL` | server | Same URL as above, for the server-side checkout POST |
 | `CUSTOM_ORDERS_API_KEY` | server, **secret** | Authenticates the order webhook. Must match `<orgId>:custom_store_api_key` in the Suite's `app_settings`. Never expose this via a `VITE_` variable. |
-| `META_PIXEL_ID` | server, optional | Meta Conversions API — server-side event dedup |
-| `META_ACCESS_TOKEN` | server, **secret**, optional | Meta Conversions API token |
 
 Anything prefixed `VITE_` is compiled into the public JavaScript bundle and is readable by
 anyone. Only put non-secret values there.
+
+GTM `GTM-5KKTRHFD` owns GA4 `G-Q7J7KV6ZVC`, Meta Pixel `337187585388165`, and Meta CAPI. The
+storefront emits only safe ecommerce `dataLayer` events; do not add direct analytics, Pixel, or CAPI
+configuration to this application.
+
+Before deploying tracking changes, verify the GTM container has one GA4 configuration tag, one Meta
+Pixel/CAPI path, and one trigger per ecommerce event. Use a History Change or virtual page-view trigger
+for SPA navigation without duplicating the initial page view, then validate GA4 DebugView, Meta Test
+Events, and Meta Pixel Helper on the deployed storefront.
 
 ### Local development
 

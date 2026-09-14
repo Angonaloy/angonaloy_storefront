@@ -19,8 +19,6 @@ import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
 import CollectionPage from "@/pages/collection";
 import SiteInformationPage from "@/pages/site-information";
 import { SITE_PAGES } from "@/lib/site-pages";
-import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
-import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
@@ -102,7 +100,6 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
-  const googleOnlyCampaign = isGoogleOnlyCampaignPath(location);
   const scrollPositions = useRef(new Map<string, number>());
   const currentLocation = useRef(location);
   const isHistoryNavigation = useRef(false);
@@ -115,18 +112,6 @@ function Router() {
       window.setTimeout(restoreScroll, delay);
     });
   };
-
-  useEffect(() => {
-    if (!googleOnlyCampaign) {
-      initMetaPixel();
-    }
-  }, [googleOnlyCampaign]);
-
-  useEffect(() => {
-    if (!googleOnlyCampaign) {
-      trackMetaEvent({ eventName: "PageView", eventId: createEventId(), capi: true });
-    }
-  }, [googleOnlyCampaign, location]);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {

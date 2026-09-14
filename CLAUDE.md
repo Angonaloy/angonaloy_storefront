@@ -49,7 +49,7 @@ catalog, and deploy the storefront commit to `main`.
 
 ## 2. Environment
 
-Six variables. `.env` locally (gitignored), Vercel project settings for deploys. `.env.example` is
+Four variables. `.env` locally (gitignored), Vercel project settings for deploys. `.env.example` is
 the committed template.
 
 | Variable | Scope | Purpose |
@@ -58,11 +58,13 @@ the committed template.
 | `VITE_STOREFRONT_ID` | client | Fixed workspace id `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
 | `MERCHANT_SUITE_URL` | server | Same URL, for the checkout POST |
 | `CUSTOM_ORDERS_API_KEY` | server, **secret** | Order webhook auth; matches `<orgId>:custom_store_api_key` in the Suite's `app_settings` |
-| `META_PIXEL_ID` | server, optional | Meta Conversions API |
-| `META_ACCESS_TOKEN` | server, **secret**, optional | Meta Conversions API |
 
 `VITE_`-prefixed values are compiled into public JavaScript and readable by anyone. Never move a
 secret behind a `VITE_` prefix, and never read `CUSTOM_ORDERS_API_KEY` from client code.
+
+GTM `GTM-5KKTRHFD` owns GA4 `G-Q7J7KV6ZVC`, Meta Pixel `337187585388165`, and Meta CAPI. The
+storefront emits only safe ecommerce `dataLayer` events; do not add direct analytics, Pixel, or CAPI
+configuration to this application.
 
 Local dev points both URLs at `http://localhost:5002` (the Suite's dev port). The dev script loads
 `.env` with Node's `--env-file-if-exists`; there is deliberately no `dotenv` dependency, and the
@@ -311,8 +313,8 @@ file you edited is actually the one being rendered.
 ## 8. Hard Rules
 
 1. **Never commit `.env`** or any file containing a secret. `.env` is gitignored — keep it that way.
-2. **Never expose `CUSTOM_ORDERS_API_KEY`, `META_ACCESS_TOKEN`, or any Supabase service-role key to
-   the client**, and never move one behind a `VITE_` prefix.
+2. **Never expose `CUSTOM_ORDERS_API_KEY` or any Supabase service-role key to the client**, and never
+   move one behind a `VITE_` prefix.
 3. **No Supabase client and no direct database access in this repo.** Commerce data flows through the
    Suite's `/api/public/v1/...` endpoints. RLS on `products`, `product_images`, and `product_variants`
    exposes only a `service_role` policy, so a browser key cannot read or write them anyway. (A

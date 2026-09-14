@@ -14,8 +14,6 @@ export type OrderRequest = {
   address: string;
   paymentMethod: "cash_on_delivery" | "bkash";
   bkashTrxId?: string;
-  metaEventId?: string;
-  trackingMode: "default" | "google_only";
 };
 
 class OrderValidationError extends Error {
@@ -51,12 +49,6 @@ type OrderServiceDependencies = {
 
 type OrderHandlerDependencies = {
   processOrder?: (order: OrderRequest) => Promise<{ orderRef: string }>;
-  sendPurchaseCapi?: (options: {
-    order: OrderRequest;
-    orderRef: string;
-    total: number;
-    headers: Record<string, unknown>;
-  }) => Promise<void>;
 };
 
 function byteLength(value: unknown) {
@@ -126,12 +118,10 @@ export function validateOrder(body: unknown): OrderRequest {
   const paymentMethod = value.paymentMethod === undefined
     ? "cash_on_delivery"
     : value.paymentMethod;
-  const trackingMode = value.trackingMode === undefined ? "default" : value.trackingMode;
 
   if (!/^\d{11}$/.test(phone)
     || address.split(/\s+/).filter(Boolean).length < 3
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
-    || (trackingMode !== "default" && trackingMode !== "google_only")
     || !Number.isSafeInteger(bundlePrice + deliveryCharge)) {
     throw new OrderValidationError();
   }
@@ -144,13 +134,6 @@ export function validateOrder(body: unknown): OrderRequest {
   }
   if (paymentMethod === "bkash" && !bkashTrxId) throw new OrderValidationError();
 
-  let metaEventId = "";
-  if (value.metaEventId !== undefined) {
-    if (typeof value.metaEventId !== "string") throw new OrderValidationError();
-    metaEventId = value.metaEventId.trim();
-    if (metaEventId.length > 128) throw new OrderValidationError();
-  }
-
   return {
     bundleTitle,
     bundleDetails,
@@ -162,8 +145,6 @@ export function validateOrder(body: unknown): OrderRequest {
     address,
     paymentMethod,
     ...(bkashTrxId ? { bkashTrxId } : {}),
-    ...(metaEventId ? { metaEventId } : {}),
-    trackingMode,
   };
 }
 
@@ -171,10 +152,6 @@ function getCanonicalOrderRef(value: unknown) {
   if (typeof value === "string") return value.trim() || null;
   if (typeof value === "number" && Number.isFinite(value)) return String(value);
   return null;
-}
-
-export function shouldSendMetaPurchase(order: Pick<OrderRequest, "trackingMode">) {
-  return order.trackingMode !== "google_only";
 }
 
 export async function processOrder(order: OrderRequest, dependencies: OrderServiceDependencies = {}) {
@@ -214,38 +191,6 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
   }
 }
 
-async function sendPurchaseCapi(options: {
-  order: OrderRequest;
-  orderRef: string;
-  total: number;
-  headers: Record<string, unknown>;
-}) {
-  const { getMetaUserDataFromRequest, sendMetaCapiEvent } = await import("../server/meta-capi");
-  const user_data = getMetaUserDataFromRequest({
-    headers: options.headers,
-    customerName: options.order.customerName,
-    phone: options.order.phone,
-    eventSourceUrl: String(options.headers.referer || ""),
-  });
-  await sendMetaCapiEvent({
-    event_name: "Purchase",
-    event_id: options.order.metaEventId,
-    event_source_url: String(options.headers.referer || ""),
-    user_data,
-    custom_data: {
-      currency: "BDT",
-      value: options.total,
-      content_type: "product",
-      contents: [{
-        id: options.order.bundleTitle,
-        quantity: options.order.quantity,
-        item_price: options.order.bundlePrice / options.order.quantity,
-      }],
-      order_id: options.orderRef,
-    },
-  });
-}
-
 function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
   res.statusCode = statusCode;
   res.setHeader("Content-Type", "application/json");
@@ -254,7 +199,6 @@ function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
 
 export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) {
   const process = dependencies.processOrder ?? processOrder;
-  const sendPurchase = dependencies.sendPurchaseCapi ?? sendPurchaseCapi;
 
   return async function handler(
     req: IncomingMessage & { body?: unknown },
@@ -268,17 +212,6 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
     try {
       const order = validateOrder(await readBody(req));
       const result = await process(order);
-
-      if (shouldSendMetaPurchase(order)) {
-        void sendPurchase({
-          order,
-          orderRef: result.orderRef,
-          total: order.bundlePrice + order.deliveryCharge,
-          headers: req.headers as unknown as Record<string, unknown>,
-        }).catch(() => {
-          console.warn("Meta Purchase CAPI failed");
-        });
-      }
 
       sendJson(res, 201, { orderRef: result.orderRef });
     } catch (error) {

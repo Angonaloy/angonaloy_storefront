@@ -18,7 +18,6 @@ import {
 } from "./order";
 import { getFirstHoneyNutInvalidField, getHoneyNutFocusTargetId, type HoneyNutCheckoutStatus, type HoneyNutFieldErrors } from "./checkout-state";
 import { HONEY_NUT_CAMPAIGN_PHONE_HREF, HONEY_NUT_CAMPAIGN_PHONE_NUMBER, HONEY_NUT_CAMPAIGN_WHATSAPP_HREF } from "./content";
-import { trackHoneyNutCampaignEvent } from "./tracking";
 
 const AVAILABILITY_ERROR = "এই প্যাকটি এখন অর্ডারের জন্য পাওয়া যাচ্ছে না। অন্য প্যাক বেছে নিন বা আমাদের কল করুন।";
 type RefreshResult<T> = { data: T | undefined; isError: boolean };
@@ -33,8 +32,8 @@ function InlineError({ id, error }: { id: string; error?: string }) {
   return error ? <p id={`${id}-error`} className="text-sm text-red-700">{error}</p> : null;
 }
 
-function SupportActions({ placement }: { placement: string }) {
-  return <div className="flex flex-wrap gap-3"><a href={HONEY_NUT_CAMPAIGN_PHONE_HREF} onClick={() => trackHoneyNutCampaignEvent("phone_click", { placement })} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#5b793e] bg-white px-4 py-2 font-semibold text-[#3d211a] focus-visible:outline-2 focus-visible:outline-offset-2"><Phone className="size-4" aria-hidden="true" />কল করুন: {HONEY_NUT_CAMPAIGN_PHONE_NUMBER}</a><a href={HONEY_NUT_CAMPAIGN_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" onClick={() => trackHoneyNutCampaignEvent("whatsapp_click", { placement })} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"><MessageCircle className="size-4" aria-hidden="true" />WhatsApp</a></div>;
+function SupportActions({ placement: _placement }: { placement: string }) {
+  return <div className="flex flex-wrap gap-3"><a href={HONEY_NUT_CAMPAIGN_PHONE_HREF} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#5b793e] bg-white px-4 py-2 font-semibold text-[#3d211a] focus-visible:outline-2 focus-visible:outline-offset-2"><Phone className="size-4" aria-hidden="true" />কল করুন: {HONEY_NUT_CAMPAIGN_PHONE_NUMBER}</a><a href={HONEY_NUT_CAMPAIGN_WHATSAPP_HREF} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"><MessageCircle className="size-4" aria-hidden="true" />WhatsApp</a></div>;
 }
 
 function getFieldErrors(fields: { name: string; phone: string; address: string; selectedVariantId: string; quantity: number }, packs: HoneyNutPackOption[]): HoneyNutFieldErrors {
@@ -108,8 +107,6 @@ export function HoneyNutCheckout({ product, status, productQuery, inventoryQuery
     if (fieldId) requestAnimationFrame(() => document.getElementById(fieldId)?.focus());
   };
 
-  const trackCheckoutError = (type: "validation" | "availability" | "network") => trackHoneyNutCampaignEvent("checkout_error", { error_type: type });
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (submittingRef.current) return;
@@ -119,7 +116,6 @@ export function HoneyNutCheckout({ product, status, productQuery, inventoryQuery
       const firstInvalidField = getFirstHoneyNutInvalidField(nextErrors);
       setAnnouncement((firstInvalidField ? nextErrors[firstInvalidField] : null) ?? "অর্ডারের তথ্য আবার দেখুন।");
       focusFirstInvalidField(nextErrors);
-      trackCheckoutError("validation");
       return;
     }
     submittingRef.current = true;
@@ -140,7 +136,6 @@ export function HoneyNutCheckout({ product, status, productQuery, inventoryQuery
         setErrors(availabilityErrors);
         setAnnouncement(AVAILABILITY_ERROR);
         focusFirstInvalidField(availabilityErrors, freshPacks);
-        trackCheckoutError("availability");
         return;
       }
       const payload = buildHoneyNutOrderPayload({ productName: refreshedProduct.name, pack: freshPack, quantity, customerName: name, phone, address: buildHoneyNutAddress(address) });
@@ -153,7 +148,6 @@ export function HoneyNutCheckout({ product, status, productQuery, inventoryQuery
     } catch {
       setRequestError(true);
       setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
-      trackCheckoutError("network");
     } finally {
       submittingRef.current = false;
       setIsPending(false);

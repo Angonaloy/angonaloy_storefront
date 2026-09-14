@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
-import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
@@ -67,7 +66,6 @@ export default function OrderDialog({
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const bundleQuantity = bundle?.quantity ?? 1;
-  const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
   const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold;
 
   useEffect(() => {
@@ -82,23 +80,9 @@ export default function OrderDialog({
         });
       }
 
-      const eventId = createEventId();
-      trackMetaEvent({
-        eventName: "InitiateCheckout",
-        eventId,
-        capi: true,
-        customData: {
-          currency: "BDT",
-          value: bundle?.price ?? 0,
-          content_type: "product",
-          contents: bundle
-            ? [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }]
-            : [],
-        },
-      });
     }
     previousOpen.current = open;
-  }, [open, bundle, bundleQuantity, bundleUnitPrice]);
+  }, [open, bundle]);
 
   useEffect(() => {
     if (open && qualifiesForFreeDelivery) {
@@ -137,8 +121,6 @@ export default function OrderDialog({
     }
 
     const formData = new FormData(event.currentTarget);
-    const eventId = createEventId();
-
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
     const address = String(formData.get("address") || "").trim();
@@ -189,7 +171,6 @@ export default function OrderDialog({
          phone,
          address,
         paymentMethod: selectedPaymentMethod,
-        metaEventId: eventId,
       });
       const result = await response.json();
       setOrderRef(result.orderRef || "");
@@ -203,18 +184,6 @@ export default function OrderDialog({
         tax: 0,
         shipping: selectedDeliveryCharge,
         coupon: "",
-      });
-
-      trackMetaEvent({
-        eventName: "Purchase",
-        eventId,
-        capi: false, // Purchase is sent server-side from /api/orders (for dedup)
-        customData: {
-          currency: "BDT",
-          value: bundle.price + selectedDeliveryCharge,
-          content_type: "product",
-          contents: [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }],
-        },
       });
     } catch (error) {
       setOrderError(

@@ -1,16 +1,29 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { markHoneyNutPurchaseTracked } from "./tracking.ts";
 
-test("Honey Nut tracking is campaign-scoped and excludes customer fields", () => {
-  let source = "";
-  try {
-    source = readFileSync(new URL("./tracking.ts", import.meta.url), "utf8");
-  } catch {
-    // The source assertion should fail until the contract exists.
+const campaignSources = [
+  readFileSync(new URL("./tracking.ts", import.meta.url), "utf8"),
+  readFileSync(new URL("./campaign-layout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./mobile-order-bar.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./honey-nut-checkout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("../../pages/honey-nut.tsx", import.meta.url), "utf8"),
+];
+
+test("Honey Nut campaign has no direct interaction tracker", () => {
+  for (const source of campaignSources) {
+    assert.doesNotMatch(source, /(?:trackHoneyNutCampaignEvent|trackGoogleInteractionEvent)/);
   }
-  assert.match(source, /trackHoneyNutCampaignEvent/);
-  assert.match(source, /honey_nut/);
-  assert.match(source, /markHoneyNutPurchaseTracked/);
-  assert.doesNotMatch(source, /customerName|customerPhone|customerAddress/);
+});
+
+test("purchase markers allow one Honey Nut purchase event per order reference", () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+  };
+  assert.equal(markHoneyNutPurchaseTracked(storage, "ORD-123"), true);
+  assert.equal(markHoneyNutPurchaseTracked(storage, "ORD-123"), false);
+  assert.equal(markHoneyNutPurchaseTracked(storage, "ORD-124"), true);
 });

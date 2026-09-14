@@ -5,13 +5,6 @@ export type GoogleEcommerceEventName =
   | "begin_checkout"
   | "purchase";
 
-export type GoogleInteractionEventName =
-  | "campaign_view"
-  | "landing_cta_click"
-  | "whatsapp_click"
-  | "phone_click"
-  | "checkout_error";
-
 export type GoogleAnalyticsItem = {
   item_id: string;
   item_name: string;
@@ -67,11 +60,8 @@ export type GoogleEcommercePayload = {
   ecommerce: GoogleEcommerceData;
 };
 
-type GoogleTagFunction = (...args: unknown[]) => void;
-
 export type GoogleAnalyticsWindow = {
   dataLayer?: unknown[];
-  gtag?: GoogleTagFunction;
   location?: Pick<Location, "href" | "pathname"> | URL;
   document?: {
     title?: string;
@@ -82,7 +72,6 @@ export type GoogleAnalyticsWindow = {
 declare global {
   interface Window {
     dataLayer?: unknown[];
-    gtag?: GoogleTagFunction;
   }
 }
 
@@ -97,6 +86,22 @@ export function parseCurrencyAmount(value: string | number | null | undefined) {
 
 function roundMoney(value: number) {
   return Math.round(value * 100) / 100;
+}
+
+function getSafePageLocation(url: string) {
+  try {
+    const location = new URL(url);
+    if (location.protocol !== "http:" && location.protocol !== "https:") {
+      return { pageUrl: "", pagePath: "" };
+    }
+
+    return {
+      pageUrl: `${location.origin}${location.pathname}`,
+      pagePath: location.pathname,
+    };
+  } catch {
+    return { pageUrl: "", pagePath: "" };
+  }
 }
 
 export function toGoogleAnalyticsItem(input: GoogleAnalyticsItemInput): GoogleAnalyticsItem {
@@ -121,14 +126,7 @@ export function toGoogleAnalyticsItem(input: GoogleAnalyticsItemInput): GoogleAn
 }
 
 export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): GoogleEcommercePayload {
-  const url = input.url || "";
-  let pagePath = "";
-
-  try {
-    pagePath = url ? new URL(url).pathname : "";
-  } catch {
-    pagePath = "";
-  }
+  const { pageUrl, pagePath } = getSafePageLocation(input.url || "");
 
   const ecommerce: GoogleEcommerceData = {
     currency: "BDT",
@@ -145,7 +143,7 @@ export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): Go
     event: input.event,
     page_type: input.pageType,
     page_title: input.title || "",
-    page_url: url,
+    page_url: pageUrl,
     page_path: pagePath,
     page_language: input.language || "en",
     logged_in: false,
@@ -188,25 +186,6 @@ export function trackGoogleEcommerceEvent(
 
   browserTarget.dataLayer = browserTarget.dataLayer || [];
   browserTarget.dataLayer.push(payload);
-
-  return payload;
-}
-
-export function trackGoogleInteractionEvent(
-  event: GoogleInteractionEventName,
-  parameters: Record<string, string | number | boolean>,
-  target?: GoogleAnalyticsWindow,
-) {
-  const browserTarget = getBrowserTarget(target);
-  if (!browserTarget) return null;
-
-  const payload = { event, ...parameters };
-  if (browserTarget.gtag) {
-    browserTarget.gtag("event", event, parameters);
-  } else {
-    browserTarget.dataLayer = browserTarget.dataLayer || [];
-    browserTarget.dataLayer.push(payload);
-  }
 
   return payload;
 }
