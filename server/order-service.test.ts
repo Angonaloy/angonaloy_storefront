@@ -7,7 +7,6 @@ import {
   OrderUpstreamError,
   orderRequestSchema,
   processOrder,
-  shouldSendMetaPurchase,
 } from "./order-service.ts";
 import { registerRoutes } from "./routes.ts";
 
@@ -26,7 +25,6 @@ const validEnglishOrder = { ...validOrder, phone: "01712345678" };
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  apiKey: "test-api-key",
   storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
@@ -65,13 +63,10 @@ test("requires a positive whole-number quantity", () => {
   assert.throws(() => orderRequestSchema.parse(withoutQuantity));
 });
 
-test("normalizes the tracking policy and rejects unknown modes", () => {
-  assert.equal(orderRequestSchema.parse(validEnglishOrder).trackingMode, "default");
-  assert.equal(orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "default" }).trackingMode, "default");
-  assert.equal(orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "google_only" }).trackingMode, "google_only");
-  assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "unknown" }));
-  assert.equal(shouldSendMetaPurchase({ trackingMode: "default" }), true);
-  assert.equal(shouldSendMetaPurchase({ trackingMode: "google_only" }), false);
+test("strips retired tracking fields from local checkout input", () => {
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "google_only", metaEventId: "meta-secret" });
+  assert.equal("trackingMode" in order, false);
+  assert.equal("metaEventId" in order, false);
 });
 
 test("accepts an optional checkout draft key only when it is a UUID", () => {
@@ -107,7 +102,6 @@ test("enforces the reviewed bounded order contract", () => {
     { customerName: "N".repeat(120) },
     { address: "A B " + "C".repeat(496) },
     { paymentMethod: undefined },
-    { metaEventId: "E".repeat(128) },
   ];
   for (const override of accepted) {
     assert.doesNotThrow(() => orderRequestSchema.parse({ ...validEnglishOrder, ...override }));
@@ -128,7 +122,6 @@ test("enforces the reviewed bounded order contract", () => {
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },
-    { metaEventId: "E".repeat(129) },
   ];
   for (const override of rejected) {
     assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, ...override }));
@@ -138,11 +131,7 @@ test("enforces the reviewed bounded order contract", () => {
 test("forwards the exact allowlisted Merchant-Suite body and canonical ID", async () => {
   let outboundBody: unknown;
   let outboundSignal: AbortSignal | null | undefined;
-  const order = orderRequestSchema.parse({
-    ...validEnglishOrder,
-    trackingMode: "google_only",
-    metaEventId: "meta-secret",
-  });
+  const order = orderRequestSchema.parse(validEnglishOrder);
 
   const result = await processOrder(order, {
     ...dependencies,
@@ -257,8 +246,8 @@ test("forwards a validated checkout draft key only through the secret-backed ord
   });
 });
 
-test("requires a canonical Merchant-Suite ID for Google-only orders", async () => {
-  const order = orderRequestSchema.parse({ ...validEnglishOrder, trackingMode: "google_only" });
+test("requires a canonical Merchant-Suite ID", async () => {
+  const order = orderRequestSchema.parse(validEnglishOrder);
   const failures = [
     async () => new Response("failure", { status: 503 }),
     async () => { throw new Error("network"); },
@@ -276,7 +265,7 @@ test("requires a canonical Merchant-Suite ID for Google-only orders", async () =
   }
 });
 
-test("rejects every default-order webhook failure without a fake reference", async () => {
+test("rejects every webhook failure without a fake reference", async () => {
   const order = orderRequestSchema.parse(validEnglishOrder);
   const failures = [
     async () => new Response("failure", { status: 503 }),
@@ -321,52 +310,28 @@ async function invokeLocalOrder(body: unknown, routeDependencies: Record<string,
   }
 }
 
-test("local handler skips the entire Meta preparation path for Google-only success", async () => {
-  let userDataCalls = 0;
-  let metaCalls = 0;
+test("local handler confirms an order and returns no PII", async () => {
   const response = await invokeLocalOrder(
-    { ...validEnglishOrder, trackingMode: "google_only", metaEventId: "event-1" },
+    validEnglishOrder,
     {
       processOrder: async () => ({ orderRef: "ORD-123" }),
-      getMetaUserDataFromRequest: () => { userDataCalls += 1; return {}; },
-      sendMetaCapiEvent: async () => { metaCalls += 1; },
     },
   );
   assert.deepEqual(response, { status: 201, body: { orderRef: "ORD-123", decision: "allow" } });
-  assert.equal(userDataCalls, 0);
-  assert.equal(metaCalls, 0);
   assert.equal(JSON.stringify(response).includes("Test Customer"), false);
   assert.equal(JSON.stringify(response).includes("01712345678"), false);
 });
 
-test("local handler retains one non-blocking Meta attempt for default orders", async () => {
-  let metaCalls = 0;
-  const response = await invokeLocalOrder(validEnglishOrder, {
-    processOrder: async () => ({ orderRef: "#fallback" }),
-    getMetaUserDataFromRequest: () => ({}),
-    sendMetaCapiEvent: async () => { metaCalls += 1; },
-  });
-  assert.deepEqual(response, { status: 201, body: { orderRef: "#fallback", decision: "allow" } });
-  assert.equal(metaCalls, 1);
-});
-
-test("local handler returns a hold response without a Purchase event", async () => {
-  let metaCalls = 0;
+test("local handler returns a hold response", async () => {
   const response = await invokeLocalOrder(validEnglishOrder, {
     processOrder: async () => ({ decision: "review", reviewId: "review-1" }),
-    getMetaUserDataFromRequest: () => ({}),
-    sendMetaCapiEvent: async () => { metaCalls += 1; },
   });
   assert.deepEqual(response, { status: 202, body: { decision: "review", reviewId: "review-1" } });
-  assert.equal(metaCalls, 0);
 });
 
-test("local handler maps a typed block without a Purchase event", async () => {
-  let metaCalls = 0;
+test("local handler maps a typed block", async () => {
   const response = await invokeLocalOrder(validEnglishOrder, {
     processOrder: async () => { throw new OrderProtectionError("block", false); },
-    getMetaUserDataFromRequest: () => ({}),
-    sendMetaCapiEvent: async () => { metaCalls += 1; },
   });
   assert.deepEqual(response, {
     status: 403,
@@ -376,32 +341,23 @@ test("local handler maps a typed block without a Purchase event", async () => {
       retryable: false,
     },
   });
-  assert.equal(metaCalls, 0);
 });
 
-test("local handler rejects validation before webhook or Meta side effects", async () => {
+test("local handler rejects validation before webhook side effects", async () => {
   let processCalls = 0;
-  let metaCalls = 0;
-  const response = await invokeLocalOrder({ ...validEnglishOrder, trackingMode: "unknown" }, {
+  const response = await invokeLocalOrder({ ...validEnglishOrder, quantity: 0 }, {
     processOrder: async () => { processCalls += 1; return { orderRef: "never" }; },
-    getMetaUserDataFromRequest: () => ({}),
-    sendMetaCapiEvent: async () => { metaCalls += 1; },
   });
   assert.deepEqual(response, { status: 400, body: { message: "Invalid order details" } });
   assert.equal(processCalls, 0);
-  assert.equal(metaCalls, 0);
 });
 
-test("local handler returns a stable 502 and no Meta for strict campaign failures", async () => {
-  let metaCalls = 0;
-  const response = await invokeLocalOrder({ ...validEnglishOrder, trackingMode: "google_only" }, {
+test("local handler returns a stable 502", async () => {
+  const response = await invokeLocalOrder(validEnglishOrder, {
     processOrder: async () => { throw new OrderUpstreamError(); },
-    getMetaUserDataFromRequest: () => ({}),
-    sendMetaCapiEvent: async () => { metaCalls += 1; },
   });
   assert.deepEqual(response, {
     status: 502,
     body: { message: "Could not confirm order. Please try again." },
   });
-  assert.equal(metaCalls, 0);
 });

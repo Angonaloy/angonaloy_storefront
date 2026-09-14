@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -12,7 +12,6 @@ import {
 import { resolveHoneyCheckoutStatus } from "@/features/sundarbans-honey/honey-checkout-state";
 import { MobileOrderBar } from "@/features/sundarbans-honey/mobile-order-bar";
 import { getHoneyPackOptions } from "@/features/sundarbans-honey/order";
-import { trackHoneyCampaignEvent } from "@/features/sundarbans-honey/tracking";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
   STOREFRONT_POLL_INTERVAL_MS,
@@ -47,15 +46,7 @@ export default function SundarbansHoneyPage() {
     hasInventory: Boolean(inventoryQuery.data?.inventory),
   });
 
-  const campaignViewedRef = useRef(false);
-  useEffect(() => {
-    if (campaignViewedRef.current) return;
-    campaignViewedRef.current = true;
-    trackHoneyCampaignEvent("campaign_view", {});
-  }, []);
-
   const handleOrderClick = useCallback((placement: string) => {
-    trackHoneyCampaignEvent("landing_cta_click", { placement });
     const target = document.getElementById("honey-checkout");
     const heading = document.getElementById("honey-checkout-heading");
     if (!target) return;

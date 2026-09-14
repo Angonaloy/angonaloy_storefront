@@ -27,5 +27,5 @@ test("checkout revalidates the selected live pack before creating an order", () 
   assert.match(source, /productQuery\.refetch\(\)/);
   assert.match(source, /inventoryQuery\.refetch\(\)/);
   assert.match(source, /variantId === selectedVariantId/);
-  assert.match(source, /trackKalojiraCampaignEvent\("checkout_error"/);
+  assert.doesNotMatch(source, /trackKalojiraCampaignEvent/);
 });

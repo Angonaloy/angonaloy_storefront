@@ -44,7 +44,6 @@ import {
   type KalojiraOrderPayload,
   type KalojiraPackOption,
 } from "./order";
-import { trackKalojiraCampaignEvent } from "./tracking";
 import { WhatsAppBrandIcon } from "./campaign-layout";
 
 const PHONE_NUMBER = KALOJIRA_CAMPAIGN_PHONE_NUMBER;
@@ -114,12 +113,11 @@ function InlineError({ id, error }: { id: string; error?: string }) {
   ) : null;
 }
 
-function SupportActions({ placement, whatsappHref }: { placement: string; whatsappHref: string }) {
+function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   return (
     <div className="flex flex-wrap gap-3">
       <a
         href={PHONE_HREF}
-        onClick={() => trackKalojiraCampaignEvent("phone_click", { placement })}
         className="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       >
         <Phone className="size-4" aria-hidden="true" />
@@ -129,7 +127,6 @@ function SupportActions({ placement, whatsappHref }: { placement: string; whatsa
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => trackKalojiraCampaignEvent("whatsapp_click", { placement })}
         className="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
       >
         <WhatsAppBrandIcon className="size-4" />
@@ -208,10 +205,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     quantity: itemQuantity,
   });
 
-  const trackCheckoutError = (type: "validation" | "availability" | "network") => {
-    trackKalojiraCampaignEvent("checkout_error", { error_type: type });
-  };
-
   const beginCheckout = () => {
     if (beganCheckoutRef.current || status !== "ready" || !selectedPack || !product) return;
     beganCheckoutRef.current = true;
@@ -285,7 +278,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       const firstError = (firstInvalidField ? nextErrors[firstInvalidField] : null) ?? "অর্ডারের তথ্য আবার দেখুন।";
       setAnnouncement(firstError);
       focusFirstInvalidField(nextErrors);
-      trackCheckoutError("validation");
       return;
     }
 
@@ -326,7 +318,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         setErrors(availabilityErrors);
         setAnnouncement(AVAILABILITY_ERROR);
         focusFirstInvalidField(availabilityErrors, freshPacks);
-        trackCheckoutError("availability");
         return;
       }
 
@@ -344,7 +335,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         }),
         deliveryCharge,
         paymentMethod: "cash_on_delivery" as const,
-        trackingMode: "google_only" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
         website,
         turnstileToken,
@@ -378,7 +368,6 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       }
       setRequestError(true);
       setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
-      trackCheckoutError("network");
     } finally {
       submittingRef.current = false;
       setIsPending(false);
@@ -474,7 +463,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                   >
                     আবার চেষ্টা করুন
                   </button>
-                  <SupportActions placement="checkout_availability_error" whatsappHref={whatsappHref} />
+                  <SupportActions whatsappHref={whatsappHref} />
                 </div>
               </div>
             ) : null}
@@ -595,7 +584,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
-              <SupportActions placement="checkout_network_error" whatsappHref={whatsappHref} />
+              <SupportActions whatsappHref={whatsappHref} />
             </div>
           ) : null}
 

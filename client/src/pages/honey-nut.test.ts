@@ -94,7 +94,7 @@ test("Honey Nut mobile sticky bar mirrors Kalojira's three-action behavior", () 
   assert.match(mobileBarSource, /IntersectionObserver/);
   assert.match(mobileBarSource, /data-hidden/);
   assert.match(mobileBarSource, /WhatsAppBrandIcon/);
-  assert.match(mobileBarSource, /placement: "sticky_bar"/);
+  assert.match(mobileBarSource, /onOrderClick\("sticky_bar"\)/);
   assert.match(stylesSource, /safe-area-inset-bottom/);
   assert.match(stylesSource, /honey-nut-order-bar\[data-hidden="true"\]/);
 });

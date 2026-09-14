@@ -7,7 +7,6 @@ import {
   OrderUpstreamError,
   createOrderHandler,
   processOrder,
-  shouldSendMetaPurchase,
   validateOrder,
 } from "./orders.ts";
 
@@ -53,7 +52,6 @@ test("rejects invalid quantities", () => {
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  apiKey: "test-api-key",
   storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
@@ -64,13 +62,10 @@ const canonicalItems = [{
   quantity: 3,
 }];
 
-test("normalizes the tracking policy and rejects unknown modes", () => {
-  assert.equal(validateOrder(validOrder).trackingMode, "default");
-  assert.equal(validateOrder({ ...validOrder, trackingMode: "default" }).trackingMode, "default");
-  assert.equal(validateOrder({ ...validOrder, trackingMode: "google_only" }).trackingMode, "google_only");
-  assert.throws(() => validateOrder({ ...validOrder, trackingMode: "unknown" }));
-  assert.equal(shouldSendMetaPurchase({ trackingMode: "default" }), true);
-  assert.equal(shouldSendMetaPurchase({ trackingMode: "google_only" }), false);
+test("strips retired tracking fields from checkout input", () => {
+  const order = validateOrder({ ...validOrder, trackingMode: "google_only", metaEventId: "meta-secret" });
+  assert.equal("trackingMode" in order, false);
+  assert.equal("metaEventId" in order, false);
 });
 
 test("accepts an optional checkout draft key only when it is a UUID", () => {
@@ -107,7 +102,6 @@ test("matches the reviewed bounded validation contract without coercion", () => 
     { customerName: "N".repeat(120) },
     { address: "A B " + "C".repeat(496) },
     { paymentMethod: undefined },
-    { metaEventId: "E".repeat(128) },
   ];
   for (const override of accepted) {
     assert.doesNotThrow(() => validateOrder({ ...validOrder, ...override }));
@@ -128,7 +122,6 @@ test("matches the reviewed bounded validation contract without coercion", () => 
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },
-    { metaEventId: "E".repeat(129) },
   ];
   for (const override of rejected) {
     assert.throws(() => validateOrder({ ...validOrder, ...override }));
@@ -137,7 +130,7 @@ test("matches the reviewed bounded validation contract without coercion", () => 
 
 test("forwards the exact allowlisted Merchant-Suite body and canonical ID", async () => {
   let outboundBody: unknown;
-  const order = validateOrder({ ...validOrder, trackingMode: "google_only", metaEventId: "meta-secret" });
+  const order = validateOrder(validOrder);
   const result = await processOrder(order, {
     ...dependencies,
     fetchImpl: async (_input, init) => {
@@ -241,8 +234,8 @@ test("forwards a validated checkout draft key only through the secret-backed ord
   });
 });
 
-test("requires a canonical Merchant-Suite ID for Google-only orders", async () => {
-  const order = validateOrder({ ...validOrder, trackingMode: "google_only" });
+test("requires a canonical Merchant-Suite ID", async () => {
+  const order = validateOrder(validOrder);
   const failures = [
     async () => new Response("failure", { status: 503 }),
     async () => { throw new Error("network"); },
@@ -256,7 +249,7 @@ test("requires a canonical Merchant-Suite ID for Google-only orders", async () =
   }
 });
 
-test("rejects every default-order webhook failure without a fake reference", async () => {
+test("rejects every webhook failure without a fake reference", async () => {
   const order = validateOrder(validOrder);
   const failures = [
     async () => new Response("failure", { status: 503 }),
@@ -301,43 +294,25 @@ function createResponse() {
   };
 }
 
-test("handler skips all Meta preparation for Google-only success and returns no PII", async () => {
-  let metaPreparations = 0;
+test("handler confirms an order and returns no PII", async () => {
   const { response, read } = createResponse();
   const handler = createOrderHandler({
     processOrder: async () => ({ orderRef: "ORD-123" }),
-    sendPurchaseCapi: async () => { metaPreparations += 1; },
   });
-  await handler(createRequest({ ...validOrder, trackingMode: "google_only" }), response);
+  await handler(createRequest(validOrder), response);
 
   assert.deepEqual(read(), { status: 201, body: { orderRef: "ORD-123", decision: "allow" } });
-  assert.equal(metaPreparations, 0);
   assert.equal(JSON.stringify(read()).includes("Test Customer"), false);
   assert.equal(JSON.stringify(read()).includes("01712345678"), false);
 });
 
-test("handler retains one non-blocking Meta attempt for default orders", async () => {
-  let metaPreparations = 0;
-  const { response, read } = createResponse();
-  const handler = createOrderHandler({
-    processOrder: async () => ({ orderRef: "#fallback" }),
-    sendPurchaseCapi: async () => { metaPreparations += 1; },
-  });
-  await handler(createRequest(validOrder), response);
-
-  assert.deepEqual(read(), { status: 201, body: { orderRef: "#fallback", decision: "allow" } });
-  assert.equal(metaPreparations, 1);
-});
-
 test("handler returns stable client errors and has no side effects for invalid requests", async () => {
   let processCalls = 0;
-  let metaCalls = 0;
   const handler = createOrderHandler({
     processOrder: async () => { processCalls += 1; return { orderRef: "never" }; },
-    sendPurchaseCapi: async () => { metaCalls += 1; },
   });
   for (const request of [
-    createRequest({ ...validOrder, trackingMode: "unknown" }),
+    createRequest({ ...validOrder, quantity: 0 }),
     createRequest(undefined, "{not-json"),
   ]) {
     const { response, read } = createResponse();
@@ -345,7 +320,6 @@ test("handler returns stable client errors and has no side effects for invalid r
     assert.equal(read().status, 400);
   }
   assert.equal(processCalls, 0);
-  assert.equal(metaCalls, 0);
 });
 
 test("handler rejects an oversized request before order side effects", async () => {
@@ -353,24 +327,20 @@ test("handler rejects an oversized request before order side effects", async () 
   const { response, read } = createResponse();
   const handler = createOrderHandler({
     processOrder: async () => { processCalls += 1; return { orderRef: "never" }; },
-    sendPurchaseCapi: async () => {},
   });
   await handler(createRequest(undefined, JSON.stringify({ value: "x".repeat(33 * 1024) })), response);
   assert.equal(read().status, 413);
   assert.equal(processCalls, 0);
 });
 
-test("handler maps strict campaign upstream failures to a stable 502 without Meta", async () => {
-  let metaCalls = 0;
+test("handler maps upstream failures to a stable 502", async () => {
   const { response, read } = createResponse();
   const handler = createOrderHandler({
     processOrder: async () => { throw new OrderUpstreamError(); },
-    sendPurchaseCapi: async () => { metaCalls += 1; },
   });
-  await handler(createRequest({ ...validOrder, trackingMode: "google_only" }), response);
+  await handler(createRequest(validOrder), response);
   assert.deepEqual(read(), {
     status: 502,
     body: { message: "Could not confirm order. Please try again." },
   });
-  assert.equal(metaCalls, 0);
 });

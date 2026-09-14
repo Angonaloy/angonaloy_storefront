@@ -18,8 +18,6 @@ export const orderRequestSchema = z.object({
   address: z.string().trim().min(5).max(500),
   paymentMethod: z.enum(["cash_on_delivery", "bkash"]).default("cash_on_delivery"),
   bkashTrxId: z.string().trim().max(80).optional().default(""),
-  metaEventId: z.string().trim().max(128).optional(),
-  trackingMode: z.enum(["default", "google_only"]).default("default"),
   draftKey: z.string().trim().regex(UUID_RE, "Draft key must be a UUID").transform((value) => value.toLowerCase()).optional(),
   website: z.string().max(200).optional(),
   turnstileToken: z.string().max(4096).optional(),
@@ -68,10 +66,6 @@ type OrderServiceDependencies = {
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
 };
-
-export function shouldSendMetaPurchase(order: Pick<OrderRequest, "trackingMode">) {
-  return order.trackingMode !== "google_only";
-}
 
 function getCanonicalOrderRef(value: unknown) {
   if (typeof value === "string") return value.trim() || null;

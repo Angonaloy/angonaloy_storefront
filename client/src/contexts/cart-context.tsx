@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 
@@ -91,19 +90,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         trackMerchantSuiteEvent("cart");
 
         const value = Number(String(product.price).replace(/[^0-9.]/g, "")) || 0;
-        const eventId = createEventId();
-        trackMetaEvent({
-          eventName: "AddToCart",
-          eventId,
-          capi: true,
-          customData: {
-            currency: "BDT",
-            value,
-            content_type: "product",
-            content_ids: [String(product.id)],
-            contents: [{ id: String(product.id), quantity, item_price: value }],
-          },
-        });
         trackGoogleEcommerceEvent("add_to_cart", {
           pageType: "product",
           value,

@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import type { GoogleAnalyticsWindow } from "../../lib/google-analytics.ts";
-import { markPurchaseTracked, trackHoneyCampaignEvent } from "./tracking.ts";
+import { markPurchaseTracked } from "./tracking.ts";
+
+const campaignSources = [
+  readFileSync(new URL("./tracking.ts", import.meta.url), "utf8"),
+  readFileSync(new URL("./campaign-layout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./mobile-order-bar.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./honey-checkout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("../../pages/sundarbans-honey.tsx", import.meta.url), "utf8"),
+];
 
 function createMemoryStorage() {
   const values = new Map<string, string>();
@@ -15,32 +23,10 @@ function createMemoryStorage() {
   };
 }
 
-test("honey campaign events attach the fixed campaign without PII", () => {
-  const gtagCalls: unknown[][] = [];
-  const target: GoogleAnalyticsWindow = {
-    dataLayer: [],
-    gtag: (...args: unknown[]) => gtagCalls.push(args),
-  };
-  const untrustedParameters = {
-    placement: "hero",
-    customerName: "Private Name",
-    phone: "01712345678",
-    streetAddress: "Private street",
-    district: "Dhaka",
-    upazila: "Savar",
-  };
-  const payload = trackHoneyCampaignEvent("landing_cta_click", untrustedParameters, target);
-
-  assert.deepEqual(payload, {
-    event: "landing_cta_click",
-    campaign: "sundarbans_natural_honey",
-    placement: "hero",
-  });
-  assert.deepEqual(target.dataLayer, [payload]);
-  assert.deepEqual(gtagCalls, [["event", "landing_cta_click", {
-    campaign: "sundarbans_natural_honey",
-    placement: "hero",
-  }]]);
+test("honey campaign has no direct interaction tracker", () => {
+  for (const source of campaignSources) {
+    assert.doesNotMatch(source, /(?:trackHoneyCampaignEvent|trackGoogleInteractionEvent)/);
+  }
 });
 
 test("purchase markers allow one event per order reference in a session", () => {

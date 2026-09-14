@@ -28,5 +28,5 @@ test("Honey Nut checkout revalidates the selected live pack before ordering", ()
   assert.match(source, /productQuery\.refetch\(\)/);
   assert.match(source, /inventoryQuery\.refetch\(\)/);
   assert.match(source, /variantId === selectedVariantId/);
-  assert.match(source, /trackHoneyNutCampaignEvent\("checkout_error"/);
+  assert.doesNotMatch(source, /trackHoneyNutCampaignEvent/);
 });

@@ -19,7 +19,8 @@ test("Katimon header, hero, footer, and checkout use the Katimon WhatsApp href",
   assert.match(pageSource, /window\.open\(KATIMON_CAMPAIGN_WHATSAPP_HREF, "_blank"/);
   assert.match(pageSource, /KALOJIRA_CAMPAIGN_WHATSAPP_HREF[^\n]*WhatsAppBrandIcon/);
   assert.match(checkoutSource, /product\?\.slug === "katimon-mango" \? KATIMON_CAMPAIGN_WHATSAPP_HREF/);
-  assert.match(checkoutSource, /function SupportActions\(\{ placement, whatsappHref \}/);
+  assert.match(checkoutSource, /function SupportActions\(\{ whatsappHref \}/);
+  assert.doesNotMatch(checkoutSource, /placement=/);
   assert.match(checkoutSource, /href=\{whatsappHref\}/);
 });
 

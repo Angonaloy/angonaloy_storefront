@@ -11,7 +11,6 @@ import RecentlyViewed from "@/components/recently-viewed";
 import { useCart } from "@/contexts/cart-context";
 import Layout from "@/components/layout";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
-import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent } from "@/lib/google-analytics";
 import { getProductDetailSections } from "@/lib/product-details";
 import { Counter } from "@/components/ui/animated-counter";
@@ -390,19 +389,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       });
     }
 
-    const eventId = createEventId();
-    trackMetaEvent({
-      eventName: "ViewContent",
-      eventId,
-      capi: true,
-      customData: {
-        currency: "BDT",
-        value: selectedBundle.amount,
-        content_type: "product",
-        content_ids: [product.slug],
-        contents: [{ id: product.slug, quantity: 1, item_price: selectedBundle.amount }],
-      },
-    });
   }, [isLoading, product, productAnalyticsItem, selectedBundle.amount]);
 
   // SEO: per-product title/meta/OG + JSON-LD so crawlers index real mango

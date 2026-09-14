@@ -5,7 +5,6 @@ import {
   parseCurrencyAmount,
   toGoogleAnalyticsItem,
   trackGoogleEcommerceEvent,
-  trackGoogleInteractionEvent,
   type GoogleAnalyticsWindow,
   type GoogleEcommerceEventName,
 } from "./google-analytics.ts";
@@ -58,7 +57,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
     event: "view_item",
     page_type: "product",
     page_title: "Himsagar Mango | Mango Lover BD",
-    page_url: "https://mangoloverbd.vercel.app/product/himsagar-mango?utm=1",
+    page_url: "https://mangoloverbd.vercel.app/product/himsagar-mango",
     page_path: "/product/himsagar-mango",
     page_language: "en",
     logged_in: false,
@@ -90,11 +89,22 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
   });
 });
 
+test("omits query and hash values from GTM page URLs", () => {
+  const payload = buildGoogleEcommercePayload({
+    event: "view_item",
+    pageType: "product",
+    url: "https://mangoloverbd.vercel.app/product/himsagar-mango?contact=private-value#delivery",
+    value: 1850,
+    items: [],
+  });
+
+  assert.equal(payload.page_url, "https://mangoloverbd.vercel.app/product/himsagar-mango");
+  assert.equal(payload.page_path, "/product/himsagar-mango");
+});
+
 test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency", () => {
-  const gtagCalls: unknown[][] = [];
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
-    gtag: (...args: unknown[]) => gtagCalls.push(args),
     location: new URL("https://mangoloverbd.vercel.app/checkout"),
     document: { title: "Checkout | Mango Lover BD", documentElement: { lang: "en" } },
   };
@@ -145,31 +155,6 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
       },
     },
   ]);
-  assert.deepEqual(gtagCalls, []);
-});
-
-test("sends one direct GA4 custom interaction without adding a duplicate dataLayer event", () => {
-  const gtagCalls: unknown[][] = [];
-  const target: GoogleAnalyticsWindow = {
-    dataLayer: [],
-    gtag: (...args: unknown[]) => gtagCalls.push(args),
-  };
-
-  const payload = trackGoogleInteractionEvent("landing_cta_click", {
-    campaign: "sundarbans_natural_honey",
-    placement: "hero",
-  }, target);
-
-  assert.deepEqual(payload, {
-    event: "landing_cta_click",
-    campaign: "sundarbans_natural_honey",
-    placement: "hero",
-  });
-  assert.deepEqual(target.dataLayer, []);
-  assert.deepEqual(gtagCalls, [["event", "landing_cta_click", {
-    campaign: "sundarbans_natural_honey",
-    placement: "hero",
-  }]]);
 });
 
 test("uses the GA4 select_item ecommerce shape for a selected live pack", () => {

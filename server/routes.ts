@@ -5,7 +5,6 @@ import {
   OrderUpstreamError,
   processOrder,
   orderRequestSchema,
-  shouldSendMetaPurchase,
   type OrderRequest,
 } from "./order-service.ts";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
@@ -15,13 +14,10 @@ import {
   parseAbandonedCartCapture,
   processAbandonedCartCapture,
 } from "./abandoned-cart-service.ts";
-import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "./meta-capi.ts";
 
 type RouteDependencies = {
   processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
   processAbandonedCartCapture?: typeof processAbandonedCartCapture;
-  getMetaUserDataFromRequest?: typeof getMetaUserDataFromRequest;
-  sendMetaCapiEvent?: typeof sendMetaCapiEvent;
 };
 
 export async function registerRoutes(
@@ -31,45 +27,6 @@ export async function registerRoutes(
 ): Promise<Server> {
   const process = dependencies.processOrder ?? processOrder;
   const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
-  const getMetaUserData = dependencies.getMetaUserDataFromRequest ?? getMetaUserDataFromRequest;
-  const sendMetaEvent = dependencies.sendMetaCapiEvent ?? sendMetaCapiEvent;
-
-  app.post("/api/meta", async (req, res, next) => {
-    try {
-      const body = req.body as {
-        event_name?: string;
-        event_id?: string;
-        event_source_url?: string;
-        user_data?: {
-          fbp?: string;
-          fbc?: string;
-          external_id?: string;
-        };
-        custom_data?: Record<string, unknown>;
-      };
-
-      if (!body?.event_name) {
-        res.status(400).json({ message: "event_name is required" });
-        return;
-      }
-
-      const result = await sendMetaEvent({
-        event_name: body.event_name,
-        event_id: body.event_id,
-        event_source_url: body.event_source_url,
-        user_data: getMetaUserData({
-          headers: req.headers as unknown as Record<string, unknown>,
-          eventSourceUrl: body.event_source_url,
-          browserUserData: body.user_data,
-        }),
-        custom_data: body.custom_data ?? {},
-      });
-
-      res.status(200).json({ ok: true, result });
-    } catch (error) {
-      next(error);
-    }
-  });
 
   app.post("/api/abandoned-carts", async (req, res, next) => {
     try {
@@ -95,33 +52,6 @@ export async function registerRoutes(
       const result = await process(order);
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
-
-      if (decision === "allow" && shouldSendMetaPurchase(order)) {
-        // Fire-and-forget Purchase CAPI (do not block checkout).
-        void sendMetaEvent({
-          event_name: "Purchase",
-          event_id: order.metaEventId,
-          event_source_url: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
-          user_data: getMetaUserData({
-            headers: req.headers as unknown as Record<string, unknown>,
-            customerName: order.customerName,
-            phone: order.phone,
-          }),
-          custom_data: {
-            currency: "BDT",
-            value: order.bundlePrice + order.deliveryCharge,
-            content_type: "product",
-            contents: [{
-              id: order.bundleTitle,
-              quantity: order.quantity,
-              item_price: order.bundlePrice / order.quantity,
-            }],
-            order_id: orderRef,
-          },
-        }).catch(() => {
-          console.warn("Meta Purchase CAPI failed");
-        });
-      }
 
       if (decision === "review") {
         res.status(202).json({ decision: "review", reviewId: "reviewId" in result ? result.reviewId : "" });
