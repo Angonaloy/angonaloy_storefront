@@ -70,7 +70,7 @@
 
   html,
   body {
-    background-color: #FBBB14;
+    background-color: #fff;
   }
 
   body {
@@ -80,6 +80,123 @@
 
 .swiss-grid-line {
   @apply border-border;
+}
+
+.katimon-hero-button {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  font: inherit;
+  vertical-align: middle;
+}
+
+.katimon-hero-button__shadow,
+.katimon-hero-button__edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.katimon-hero-button__shadow {
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.katimon-hero-button__edge {
+  background: linear-gradient(
+    to left,
+    hsl(340deg 100% 16%) 0%,
+    hsl(340deg 100% 32%) 8%,
+    hsl(340deg 100% 32%) 92%,
+    hsl(340deg 100% 16%) 100%
+  );
+}
+
+.katimon-hero-button__front {
+  display: block;
+  position: relative;
+  padding: 6px 27px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: inherit;
+  line-height: 1.2;
+  color: white;
+  background: #fcc435;
+  white-space: nowrap;
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.katimon-hero-button:hover {
+  filter: brightness(110%);
+}
+
+.katimon-hero-button:hover .katimon-hero-button__front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.katimon-hero-button:active .katimon-hero-button__front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.katimon-hero-button:hover .katimon-hero-button__shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.katimon-hero-button:active .katimon-hero-button__shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.katimon-hero-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+section[aria-labelledby="katimon-packages"] article span.whitespace-nowrap {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+section.mx-auto.max-w-4xl.px-5.pb-8.text-center > img[src="/katimon-description-v2.webp"] {
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  width: calc(100% + 2.5rem);
+  max-width: none;
+}
+
+@media (max-width: 767px) {
+  section.mx-auto.grid.max-w-6xl.gap-8 > div.order-2.px-5.text-center {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  header.sticky.top-0.z-40 > div.relative.mx-auto {
+    height: 56px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+@media (min-width: 640px) {
+  header.sticky.top-0.z-40 > div.relative.mx-auto {
+    height: 64px;
+  }
 }
 
 .text-minimal {

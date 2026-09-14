@@ -4,6 +4,12 @@ import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { OrderProtectionError } from "@/lib/order-protection-errors";
+import { useCheckoutProtectionSignals } from "@/lib/order-protection";
+import { OrderProtectionMessage } from "@/components/order-protection-message";
+import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
+import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
   type StorefrontProduct,
@@ -124,6 +130,7 @@ function SupportActions() {
 
 export function HoneyCheckout({ product, status, productQuery, inventoryQuery, onRetry }: HoneyCheckoutProps) {
   const [, setLocation] = useLocation();
+  const capture = useAbandonedCartCapture("sundarbans_honey");
   const livePacks = useMemo(() => product ? getHoneyPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
   if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
@@ -137,6 +144,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const [announcement, setAnnouncement] = useState("");
   const [requestError, setRequestError] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
+  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -148,6 +157,35 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
       )
     : null;
+
+  const getCaptureSnapshot = () => {
+    if (!product || !presentedPack || !totals) return null;
+    return {
+      customerName: name,
+      phone,
+      address,
+      items: [{
+        productName: product.name,
+        variantName: presentedPack.label,
+        quantity: totals.quantity,
+        unitPrice: presentedPack.unitPrice,
+      }],
+      subtotal: totals.subtotal,
+      deliveryRate: totals.deliveryCharge,
+      total: totals.total,
+      campaign: readAbandonedCartCampaign(window.location.search),
+    };
+  };
+
+  const updateCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    return snapshot ? capture.capture(snapshot) : null;
+  };
+
+  const flushCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    if (snapshot) void capture.flush(snapshot);
+  };
 
   const analyticsItem = (pack: HoneyPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
     id: pack.variantId,
@@ -199,6 +237,10 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     setAnnouncement((current) => current === AVAILABILITY_ERROR ? "" : current);
   }, [livePacks, selectedVariantId, status]);
 
+  useEffect(() => {
+    updateCapture();
+  }, [address, name, phone, product, quantity, selectedVariantId, status]);
+
   const focusFirstInvalidField = (
     fieldErrors: HoneyFieldErrors,
     renderedPacks = packs,
@@ -215,6 +257,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     event.preventDefault();
     if (submittingRef.current) return;
 
+    const draftKey = updateCapture();
+    flushCapture();
     const fields = { name, phone, address, selectedVariantId, quantity };
     const nextErrors = getFieldErrors(fields, packs);
     if (Object.keys(nextErrors).length) {
@@ -229,6 +273,9 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
 
     submittingRef.current = true;
     setIsPending(true);
+    setProtectionDecision(null);
+    const protectionFormData = new FormData(event.currentTarget);
+    const website = String(protectionFormData.get("website") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -265,7 +312,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       }
 
       const combinedAddress = buildHoneyAddress(address);
-      const payload: HoneyOrderPayload = {
+      const payload: HoneyOrderPayload & { draftKey?: string; items: Array<{ productId: string; variantId: string; quantity: number }>; shippingZoneId?: string; website: string; turnstileToken: string; clientSessionId: string; checkoutStartedAt: string } = {
         ...buildHoneyOrderPayload({
           productName: refreshedProduct.name,
           pack: freshPack,
@@ -276,18 +323,36 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         }),
         deliveryCharge: HONEY_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
+        items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
+        website,
+        turnstileToken,
+        clientSessionId,
+        checkoutStartedAt,
+        ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);
+      const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
+      if (response.status === 202 && result.decision === "review") {
+        setProtectionDecision("review");
+        setAnnouncement("আপনার অর্ডারের তথ্য পাওয়া গেছে। আমাদের টিম ফোনে নিশ্চিত করবে।");
+        capture.clear();
+        return;
+      }
       if (response.status !== 201) throw new Error("unexpected-order-response");
-
-      const result = await response.json() as { orderRef?: unknown };
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
         throw new Error("missing-order-reference");
       }
+      capture.clear();
       const confirmation = buildHoneyOrderConfirmation(result.orderRef, payload);
       writeHoneyOrderConfirmation(window.sessionStorage, confirmation);
       setLocation("/step/sundarbans-natural-honey/thank-you");
-    } catch {
+    } catch (error) {
+      if (error instanceof OrderProtectionError) {
+        setProtectionDecision("block");
+        setRequestError(false);
+        setAnnouncement(error.message);
+        return;
+      }
       setRequestError(true);
       setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
     } finally {
@@ -322,9 +387,12 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
         onFocusCapture={beginCheckout}
+        onInput={updateCapture}
+        onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
+          <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#19382d]">প্যাক সাইজ বেছে নিন</legend>
             <div id="honey-pack" tabIndex={-1} className="grid gap-3 sm:grid-cols-2" {...fieldErrorProps("honey-pack", errors.pack)}>
@@ -471,6 +539,10 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
             />
             <InlineError id="honey-address" error={errors.address} />
           </div>
+          <p className="text-sm leading-6 text-[#654b2f]">
+            অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
+          </p>
+          <TurnstileChallenge onToken={setTurnstileToken} />
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">
@@ -487,6 +559,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           <div className="mt-5 min-h-6 text-sm" aria-live="polite" aria-atomic="true">
             {announcement}
           </div>
+
+          {protectionDecision ? <div className="mt-4"><OrderProtectionMessage decision={protectionDecision} /></div> : null}
 
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">

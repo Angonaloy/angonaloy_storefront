@@ -31,7 +31,7 @@ export default function ProductsPage() {
         <header className="mb-10 md:mb-16">
           <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-black/50">Shop</p>
           <h1 className="mt-3 text-[clamp(2.2rem,6vw,3.4rem)] font-bold leading-none tracking-[-0.04em] text-black">
-            All <span className="font-display italic">Products</span>
+            All Products-<span className="font-display italic">সকল পণ্য</span>
           </h1>
         </header>
 

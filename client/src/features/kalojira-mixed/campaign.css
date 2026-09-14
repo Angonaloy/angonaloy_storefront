@@ -14,7 +14,7 @@
   paint-order: stroke fill;
 }
 
-.kalojira-mixed-page .kalojira-order-bar {
+.kalojira-order-bar {
   position: fixed;
   left: 0.75rem;
   right: 0.75rem;
@@ -35,18 +35,18 @@
   transition: transform 0.25s ease;
 }
 
-.kalojira-mixed-page .kalojira-order-bar[data-hidden="true"] {
+.kalojira-order-bar[data-hidden="true"] {
   transform: translateY(110%);
 }
 
 @media (min-width: 768px) {
-  .kalojira-mixed-page .kalojira-order-bar {
+  .kalojira-order-bar {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kalojira-mixed-page .kalojira-order-bar {
+  .kalojira-order-bar {
     transition: none;
   }
 }

@@ -7,18 +7,28 @@ import {
   KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
 
-export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: string) => void }) {
+type MobileOrderBarProps = {
+  onOrderClick: (placement: string) => void;
+  checkoutId?: string;
+  whatsappHref?: string;
+};
+
+export function MobileOrderBar({
+  onOrderClick,
+  checkoutId = "kalojira-checkout",
+  whatsappHref = KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
+}: MobileOrderBarProps) {
   const [checkoutVisible, setCheckoutVisible] = useState(false);
 
   useEffect(() => {
-    const target = document.getElementById("kalojira-checkout");
+    const target = document.getElementById(checkoutId);
     if (!target || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(([entry]) => {
       setCheckoutVisible(entry.isIntersecting);
     }, { threshold: 0.12 });
     observer.observe(target);
     return () => observer.disconnect();
-  }, []);
+  }, [checkoutId]);
 
   return (
     <div
@@ -28,7 +38,7 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
       aria-label="দ্রুত অর্ডার"
     >
       <a
-        href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF}
+        href={whatsappHref}
         aria-label="WhatsApp-এ অর্ডার করুন"
         target="_blank"
         rel="noopener noreferrer"

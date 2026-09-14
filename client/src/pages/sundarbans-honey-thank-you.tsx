@@ -64,7 +64,15 @@ export default function SundarbansHoneyThankYouPage() {
       pageType: "thank_you",
       transactionId: confirmation.orderRef,
       value: confirmation.total,
+      affiliation: "",
+      tax: 0,
       shipping: confirmation.deliveryCharge,
+      coupon: "",
+      customer: {
+        name: confirmation.customerName,
+        phone: confirmation.phone,
+        address: confirmation.address,
+      },
       items: [toGoogleAnalyticsItem({
         id: confirmation.productName,
         name: confirmation.productName,

@@ -36,11 +36,11 @@ function ContactLink({ href, label, className, children }: {
   );
 }
 
-export function CampaignHeader() {
+export function CampaignHeader({ href = "/step/kalojira-mixed", label = "ম্যাংগো লাভার কালোজিরা মিক্সড পেজ" }: { href?: string; label?: string } = {}) {
   return (
     <header className="sticky top-0 z-40 border-b border-[#19382d]/10 bg-[#faf3e6]">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:h-[72px] sm:px-6">
-        <Link href="/step/kalojira-mixed" aria-label="ম্যাংগো লাভার কালোজিরা মিক্সড পেজ" className="flex min-h-11 min-w-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c456]">
+        <Link href={href} aria-label={label} className="flex min-h-11 min-w-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c456]">
           <img src={mangoLoverLogo} alt="ম্যাংগো লাভার" className="h-8 w-auto sm:h-9" decoding="async" />
         </Link>
         <nav aria-label="যোগাযোগ" className="flex shrink-0 items-center gap-2">

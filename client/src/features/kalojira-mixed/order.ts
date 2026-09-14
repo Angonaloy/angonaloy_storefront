@@ -19,7 +19,7 @@ export type KalojiraOrderTotals = {
   unitPrice: number;
   quantity: number;
   subtotal: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   total: number;
 };
 
@@ -28,7 +28,7 @@ export type KalojiraOrderPayload = {
   bundleDetails: string;
   bundlePrice: number;
   quantity: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   customerName: string;
   phone: string;
   address: string;
@@ -42,8 +42,11 @@ export type KalojiraOrderConfirmation = {
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  deliveryCharge: 0;
+  deliveryCharge: number;
   total: number;
+  customerName: string;
+  phone: string;
+  address: string;
 };
 
 function isPositiveSafeInteger(value: unknown, max = Number.MAX_SAFE_INTEGER): value is number {
@@ -73,7 +76,7 @@ export function getKalojiraPackOptions(product: StorefrontProduct): KalojiraPack
     if (variant.id === undefined || variant.id === null) return [];
 
     const variantId = String(variant.id).trim();
-    const size = variant.attributes?.size;
+    const size = variant.attributes?.size ?? variant.attributes?.kg;
     const label = typeof size === "string" || typeof size === "number"
       ? String(size).trim()
       : "";
@@ -86,7 +89,7 @@ export function getKalojiraPackOptions(product: StorefrontProduct): KalojiraPack
   });
 }
 
-export function calculateKalojiraOrder(unitPrice: number, quantity: number): KalojiraOrderTotals {
+export function calculateKalojiraOrder(unitPrice: number, quantity: number, deliveryCharge = KALOJIRA_DELIVERY_CHARGE): KalojiraOrderTotals {
   if (!isPositiveSafeInteger(unitPrice, MAX_PRICE)) {
     throw new Error("Unit price is invalid");
   }
@@ -95,7 +98,7 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number): Kal
   }
 
   const subtotal = unitPrice * quantity;
-  const total = subtotal + KALOJIRA_DELIVERY_CHARGE;
+  const total = subtotal + deliveryCharge;
   if (!Number.isSafeInteger(subtotal) || subtotal > MAX_PRICE || !Number.isSafeInteger(total)) {
     throw new Error("Order total is invalid");
   }
@@ -104,7 +107,7 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number): Kal
     unitPrice,
     quantity,
     subtotal,
-    deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+    deliveryCharge,
     total,
   };
 }
@@ -134,8 +137,9 @@ export function buildKalojiraOrderPayload(input: {
   customerName: string;
   phone: string;
   address: string;
+  deliveryCharge?: number;
 }): KalojiraOrderPayload {
-  const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity);
+  const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity, input.deliveryCharge);
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
   const phone = requiredTrimmedString(input.phone, 11, "Phone");
   const address = requiredTrimmedString(input.address, 500, "Address");
@@ -151,7 +155,7 @@ export function buildKalojiraOrderPayload(input: {
     bundleDetails: requiredTrimmedString(input.pack.label, 300, "Pack label"),
     bundlePrice: totals.subtotal,
     quantity: totals.quantity,
-    deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+    deliveryCharge: totals.deliveryCharge,
     customerName,
     phone,
     address,
@@ -169,6 +173,9 @@ export function buildKalojiraOrderConfirmation(
     productName: requiredTrimmedString(payload.bundleTitle, 200, "Product name"),
     variantLabel: requiredTrimmedString(payload.bundleDetails, 300, "Pack label"),
     ...totals,
+    customerName: requiredTrimmedString(payload.customerName, 120, "Customer name"),
+    phone: requiredTrimmedString(payload.phone, 11, "Phone"),
+    address: requiredTrimmedString(payload.address, 500, "Address"),
   };
 }
 
@@ -184,6 +191,9 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
     const unitPrice = confirmation.unitPrice;
     const subtotal = confirmation.subtotal;
     const total = confirmation.total;
+    const customerName = requiredTrimmedString(confirmation.customerName, 120, "Customer name");
+    const phone = requiredTrimmedString(confirmation.phone, 11, "Phone");
+    const address = requiredTrimmedString(confirmation.address, 500, "Address");
 
     if (!isPositiveSafeInteger(quantity, MAX_QUANTITY)
       || !isPositiveSafeInteger(unitPrice, MAX_PRICE)
@@ -204,6 +214,9 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
       subtotal: subtotal as number,
       deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
       total: total as number,
+      customerName,
+      phone,
+      address,
     };
   } catch {
     return null;

@@ -1,9 +1,18 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { OrderProtectionError } from "./order-protection-errors";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    const text = await res.text();
+    try {
+      const body = JSON.parse(text) as { decision?: unknown; retryable?: unknown };
+      if (body.decision === "block") {
+        throw new OrderProtectionError("block", body.retryable === true, res.status);
+      }
+    } catch (error) {
+      if (error instanceof OrderProtectionError) throw error;
+    }
+    throw new Error(`${res.status}: ${text || res.statusText}`);
   }
 }
 

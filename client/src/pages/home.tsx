@@ -11,7 +11,11 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
-import { getProductsForCollection, getVisibleFeaturedCollections } from "@/lib/featured-collections";
+import {
+  getProductsForCollection,
+  getTopSellingProducts,
+  getVisibleFeaturedCollections,
+} from "@/lib/featured-collections";
 
 function HighlightedWord({
   children,
@@ -91,13 +95,14 @@ export default function Home() {
       ? { ...product, compare_at_price: snapshotProduct.compare_at_price }
       : product;
   });
+  const topSellingProducts = getTopSellingProducts(homepageProducts);
   const visibleFeaturedCollections = getVisibleFeaturedCollections(catalogProducts);
 
   const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 
   const reveal = {
-    hidden: { filter: "blur(2px)", transform: "translateY(20%)", opacity: 0 },
-    visible: { filter: "blur(0)", transform: "translateY(0)", opacity: 1 },
+    hidden: { transform: "translateY(12px)", opacity: 0 },
+    visible: { transform: "translateY(0)", opacity: 1 },
   };
 
   const [heroRef] = useReveal();
@@ -177,9 +182,9 @@ export default function Home() {
           className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
         >
           <div className="mb-7 flex items-center justify-between gap-6 md:mb-12">
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]">
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]">
               <span>{englishLabel}</span>-
-              <HighlightedWord highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
+              <HighlightedWord className="font-display italic" highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
             </h2>
             <Link
               href={`/collection/${collection.slug}`}
@@ -283,9 +288,8 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-              <span>FEATURED</span>{" "}
-              <HighlightedWord highlightColor="#FBBB14">CATEGORIES</HighlightedWord>
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)] md:leading-none">
+              <HighlightedWord className="font-display italic text-[1.65rem] leading-none md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ</HighlightedWord>
             </h2>
           </motion.div>
 
@@ -296,34 +300,38 @@ export default function Home() {
             ref={categoriesRef}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
           >
-            {visibleFeaturedCollections.map(({ slug, label, image }, index) => (
-              <Link
-                key={label}
-                href={`/collection/${slug}`}
-                className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
-              >
-                <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
-                  <img
-                    src={image}
-                    alt={label}
-                    loading={index < 4 ? "eager" : "lazy"}
-                    fetchPriority={index < 4 ? "high" : "auto"}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-                <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                  {label.includes("-") ? (
-                    <>
-                      <span className="block md:inline">{label.split("-")[0]}</span>
-                      <span className="hidden md:inline">-</span>
-                      <span className="block md:inline">{label.split("-")[1]}</span>
-                    </>
-                  ) : (
-                    <span>{label}</span>
-                  )}
-                </span>
-              </Link>
-            ))}
+            {visibleFeaturedCollections.map(({ slug, label, image }, index) => {
+              const featuredCategoryLabel = slug === "functional-food" ? "Functional-ফুড" : label;
+
+              return (
+                <Link
+                  key={label}
+                  href={`/collection/${slug}`}
+                  className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
+                >
+                  <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
+                    <img
+                      src={image}
+                      alt={label}
+                      loading={index < 4 ? "eager" : "lazy"}
+                      fetchPriority={index < 4 ? "high" : "auto"}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
+                    {featuredCategoryLabel.includes("-") ? (
+                      <>
+                        <span className="block md:inline">{featuredCategoryLabel.split("-")[0]}</span>
+                        <span className="hidden md:inline">-</span>
+                        <span className="block md:inline">{featuredCategoryLabel.split("-")[1]}</span>
+                      </>
+                    ) : (
+                      <span>{featuredCategoryLabel}</span>
+                    )}
+                  </span>
+                </Link>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -342,8 +350,12 @@ export default function Home() {
             transition={transition}
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)] md:leading-none">
-              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-1 text-[1.85rem] leading-none md:ml-0 md:text-[clamp(1.65rem,4.3vw,2.6rem)]" highlightColor="#FBBB14">PRODUCTS</HighlightedWord>
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)] md:leading-none">
+              <span className="block md:inline">BEST SELLERS</span>
+              <span className="hidden md:inline">-</span>
+              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
+                <HighlightedWord className="font-display italic text-[1.65rem] leading-none md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">সবচেয়ে জনপ্রিয়</HighlightedWord>
+              </span>
             </h2>
             <Link
               href="/products"
@@ -373,7 +385,7 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : homepageProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+                : topSellingProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
           </motion.div>
         </motion.div>
       </section>
@@ -393,10 +405,13 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
+              className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
             >
-              <span>LATEST</span>{" "}
-               <HighlightedWord highlightColor="#FFD166">COLLECTION</HighlightedWord>
+              <span className="block md:inline">NEWLY ADDED</span>
+              <span className="hidden md:inline">-</span>
+              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
+                <HighlightedWord className="font-display italic text-[1.65rem] md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">আমাদের নতুন পণ্য</HighlightedWord>
+              </span>
             </motion.h2>
 
             <Link
@@ -434,6 +449,9 @@ export default function Home() {
       {/* Category Section: Homemade */}
       {renderCategorySection("homemade")}
 
+      {/* Category Section: Functional Food */}
+      {renderCategorySection("functional-food")}
+
       {/* Category Section: Honey */}
       {renderCategorySection("honey")}
 
@@ -460,11 +478,11 @@ export default function Home() {
               className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/35" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
               >
                 <HighlightedWord highlightColor="#F4A261">PURE GHEE</HighlightedWord>
               </motion.h2>
@@ -478,7 +496,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/products"
+                  href="/product/pure-ghee"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
               >
                 Shop Now
@@ -491,6 +509,9 @@ export default function Home() {
 
       {/* Category Section: Oil & Ghee */}
       {renderCategorySection("oil-and-ghee")}
+
+      {/* Category Section: Jaggery */}
+      {renderCategorySection("jaggery")}
 
       {/* Essentials Section */}
       <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
@@ -515,11 +536,11 @@ export default function Home() {
               className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
               >
                 <span>BLACK SEED</span>{" "}
                 <HighlightedWord highlightColor="#B8D8BA">MIX</HighlightedWord>
@@ -534,7 +555,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/products"
+                  href="/product/kalojira-mixed"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
                 >
                   Shop Now

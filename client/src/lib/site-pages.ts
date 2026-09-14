@@ -280,6 +280,13 @@ export const SITE_PAGES = {
         ),
       ),
       section(
+        text("Incomplete checkout details", "অসম্পূর্ণ চেকআউটের তথ্য"),
+        text(
+          "During an incomplete checkout, if you enter a valid phone number but do not place an order, we may keep the checkout details you provided, including selected items, for up to 30 days so our team can offer manual assistance. We do not send automated recovery messages or use these details for advertising audiences.",
+          "অসম্পূর্ণ চেকআউটের সময় বৈধ ফোন নম্বর দিলেও অর্ডার সম্পন্ন না করলে, আমাদের টিমের ম্যানুয়াল সহায়তার জন্য আপনার দেওয়া চেকআউটের তথ্য ও নির্বাচিত পণ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে। আমরা স্বয়ংক্রিয় রিকভারি বার্তা পাঠাই না এবং বিজ্ঞাপনের অডিয়েন্স তৈরিতে এই তথ্য ব্যবহার করি না।",
+        ),
+      ),
+      section(
         text("Sharing and service providers", "তথ্য শেয়ার ও সেবা প্রদানকারী"),
         text(
           "We may share the information needed to fulfill an order with delivery or technology service providers working for Mango Lover. We do not sell customer information. We may disclose information when required to prevent fraud, protect our service, or comply with applicable law.",

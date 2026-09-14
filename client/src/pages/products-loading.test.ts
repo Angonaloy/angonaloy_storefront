@@ -16,6 +16,11 @@ test("renders generated products before the live catalog request completes", () 
   assert.match(productsSource, /isError && !filteredProducts\?\.length/);
 });
 
+test("renders a bilingual All Products title", () => {
+  assert.match(productsSource, /All Products-/);
+  assert.match(productsSource, /font-display italic">সকল পণ্য<\/span>/);
+});
+
 test("keeps the shared product grid visible when background revalidation fails", () => {
   assert.match(gridSource, /generatedStorefrontProducts/);
   assert.match(gridSource, /initialData: generatedStorefrontProducts/);

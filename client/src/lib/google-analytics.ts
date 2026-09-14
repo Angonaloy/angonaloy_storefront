@@ -9,9 +9,13 @@ export type GoogleAnalyticsItem = {
   item_id: string;
   item_name: string;
   item_brand: "Mango Lover BD";
-  item_category?: string;
-  item_variant?: string;
+  item_category: string;
+  item_variant: string;
+  item_list_name: string;
+  item_list_id: string;
   price: number;
+  discount: number;
+  index: number;
   quantity: number;
 };
 
@@ -33,19 +37,23 @@ type GoogleEcommerceBaseInput = {
   value: number;
   items: GoogleAnalyticsItem[];
   transactionId?: string | null;
+  affiliation?: string;
   tax?: number;
   shipping?: number;
   coupon?: string;
+  customer?: { name: string; phone: string; address: string };
 };
 
 export type GoogleEcommerceData = {
   currency: "BDT";
   value: number;
   items: GoogleAnalyticsItem[];
-  transaction_id?: string;
-  tax?: number;
-  shipping?: number;
-  coupon?: string;
+  transaction_id: string;
+  affiliation: string;
+  tax: number;
+  shipping: number;
+  coupon: string;
+  customer?: { name: string; phone: string; address: string };
 };
 
 export type GoogleEcommercePayload = {
@@ -106,21 +114,20 @@ function getSafePageLocation(url: string) {
 
 export function toGoogleAnalyticsItem(input: GoogleAnalyticsItemInput): GoogleAnalyticsItem {
   const variant = input.variant?.trim() || "";
+  const category = input.category?.trim() || "";
   const item: GoogleAnalyticsItem = {
     item_id: String(input.id || input.name),
     item_name: variant ? `${input.name} — ${variant}` : input.name,
     item_brand: "Mango Lover BD",
+    item_category: category,
+    item_variant: variant,
+    item_list_name: "",
+    item_list_id: "",
     price: roundMoney(parseCurrencyAmount(input.price)),
+    discount: 0,
+    index: 0,
     quantity: input.quantity && input.quantity > 0 ? input.quantity : 1,
   };
-
-  if (input.category?.trim()) {
-    item.item_category = input.category.trim();
-  }
-
-  if (variant) {
-    item.item_variant = variant;
-  }
 
   return item;
 }
@@ -132,12 +139,14 @@ export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): Go
     currency: "BDT",
     value: roundMoney(input.value),
     items: input.items,
+    transaction_id: input.transactionId || "",
+    affiliation: input.affiliation ?? "",
+    tax: typeof input.tax === "number" ? roundMoney(input.tax) : 0,
+    shipping: typeof input.shipping === "number" ? roundMoney(input.shipping) : 0,
+    coupon: typeof input.coupon === "string" ? input.coupon : "",
   };
 
-  if (input.transactionId) ecommerce.transaction_id = input.transactionId;
-  if (typeof input.tax === "number") ecommerce.tax = roundMoney(input.tax);
-  if (typeof input.shipping === "number") ecommerce.shipping = roundMoney(input.shipping);
-  if (typeof input.coupon === "string") ecommerce.coupon = input.coupon;
+  if (input.customer) ecommerce.customer = input.customer;
 
   const payload: GoogleEcommercePayload = {
     event: input.event,

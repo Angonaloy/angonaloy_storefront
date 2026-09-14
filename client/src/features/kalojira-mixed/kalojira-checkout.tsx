@@ -1,9 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { LoaderCircle, MessageCircle, Minus, Phone, Plus } from "lucide-react";
+import { LoaderCircle, Minus, Phone, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { OrderProtectionError } from "@/lib/order-protection-errors";
+import { useCheckoutProtectionSignals } from "@/lib/order-protection";
+import { OrderProtectionMessage } from "@/components/order-protection-message";
+import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
+import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
   type StorefrontProduct,
@@ -18,6 +24,7 @@ import {
   KALOJIRA_CAMPAIGN_PHONE_NUMBER,
   KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
+import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "./katimon-content";
 
 import {
   getFirstKalojiraInvalidField,
@@ -36,6 +43,7 @@ import {
   type KalojiraOrderPayload,
   type KalojiraPackOption,
 } from "./order";
+import { WhatsAppBrandIcon } from "./campaign-layout";
 
 const PHONE_NUMBER = KALOJIRA_CAMPAIGN_PHONE_NUMBER;
 const PHONE_HREF = KALOJIRA_CAMPAIGN_PHONE_HREF;
@@ -104,31 +112,33 @@ function InlineError({ id, error }: { id: string; error?: string }) {
   ) : null;
 }
 
-function SupportActions() {
+function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   return (
     <div className="flex flex-wrap gap-3">
       <a
         href={PHONE_HREF}
-        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       >
         <Phone className="size-4" aria-hidden="true" />
         কল করুন: {PHONE_NUMBER}
       </a>
       <a
-        href={WHATSAPP_HREF}
+        href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
       >
-        <MessageCircle className="size-4" aria-hidden="true" />
+        <WhatsAppBrandIcon className="size-4" />
         WhatsApp
       </a>
     </div>
   );
 }
 
-export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry }: KalojiraCheckoutProps) {
+export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
   const [, setLocation] = useLocation();
+  const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
+  const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
   if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
@@ -142,6 +152,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   const [announcement, setAnnouncement] = useState("");
   const [requestError, setRequestError] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
+  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -151,8 +163,38 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     ? calculateKalojiraOrder(
         presentedPack.unitPrice,
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
+        deliveryCharge,
       )
     : null;
+
+  const getCaptureSnapshot = () => {
+    if (!product || !presentedPack || !totals) return null;
+    return {
+      customerName: name,
+      phone,
+      address,
+      items: [{
+        productName: product.name,
+        variantName: presentedPack.label,
+        quantity: totals.quantity,
+        unitPrice: presentedPack.unitPrice,
+      }],
+      subtotal: totals.subtotal,
+      deliveryRate: totals.deliveryCharge,
+      total: totals.total,
+      campaign: readAbandonedCartCampaign(window.location.search),
+    };
+  };
+
+  const updateCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    return snapshot ? capture.capture(snapshot) : null;
+  };
+
+  const flushCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    if (snapshot) void capture.flush(snapshot);
+  };
 
   const analyticsItem = (pack: KalojiraPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
     id: pack.variantId,
@@ -204,6 +246,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     setAnnouncement((current) => current === AVAILABILITY_ERROR ? "" : current);
   }, [livePacks, selectedVariantId, status]);
 
+  useEffect(() => {
+    updateCapture();
+  }, [address, name, phone, product, quantity, selectedVariantId, status]);
+
   const focusFirstInvalidField = (
     fieldErrors: KalojiraFieldErrors,
     renderedPacks = packs,
@@ -220,6 +266,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     event.preventDefault();
     if (submittingRef.current) return;
 
+    const draftKey = updateCapture();
+    flushCapture();
     const fields = { name, phone, address, selectedVariantId, quantity };
     const nextErrors = getFieldErrors(fields, packs);
     if (Object.keys(nextErrors).length) {
@@ -234,6 +282,9 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
 
     submittingRef.current = true;
     setIsPending(true);
+    setProtectionDecision(null);
+    const protectionFormData = new FormData(event.currentTarget);
+    const website = String(protectionFormData.get("website") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -270,7 +321,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       }
 
       const combinedAddress = buildKalojiraAddress(address);
-      const payload: KalojiraOrderPayload = {
+      const payload: KalojiraOrderPayload & { draftKey?: string; items: Array<{ productId: string; variantId: string; quantity: number }>; shippingZoneId?: string; website: string; turnstileToken: string; clientSessionId: string; checkoutStartedAt: string } = {
         ...buildKalojiraOrderPayload({
           productName: refreshedProduct.name,
           pack: freshPack,
@@ -278,21 +329,40 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           customerName: name,
           phone,
           address: combinedAddress,
+          deliveryCharge,
         }),
-        deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+        deliveryCharge,
         paymentMethod: "cash_on_delivery" as const,
+        items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
+        website,
+        turnstileToken,
+        clientSessionId,
+        checkoutStartedAt,
+        ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);
+      const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
+      if (response.status === 202 && result.decision === "review") {
+        setProtectionDecision("review");
+        setAnnouncement("আপনার অর্ডারের তথ্য পাওয়া গেছে। আমাদের টিম ফোনে নিশ্চিত করবে।");
+        capture.clear();
+        return;
+      }
       if (response.status !== 201) throw new Error("unexpected-order-response");
-
-      const result = await response.json() as { orderRef?: unknown };
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
         throw new Error("missing-order-reference");
       }
+      capture.clear();
       const confirmation = buildKalojiraOrderConfirmation(result.orderRef, payload);
       writeKalojiraOrderConfirmation(window.sessionStorage, confirmation);
       setLocation("/step/kalojira-mixed/thank-you");
-    } catch {
+    } catch (error) {
+      if (error instanceof OrderProtectionError) {
+        setProtectionDecision("block");
+        setRequestError(false);
+        setAnnouncement(error.message);
+        return;
+      }
       setRequestError(true);
       setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
     } finally {
@@ -317,26 +387,29 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   return (
     <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="kalojira-checkout-heading">
       <div className="max-w-2xl">
-        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d]" tabIndex={-1}>
+        <h2 id="kalojira-checkout-heading" className="whitespace-nowrap text-center text-xl font-extrabold text-[#19382d] focus:outline-none sm:text-2xl sm:text-left" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">সারা দেশে ডেলিভারি ফ্রি</span></p>
+        <p className="mt-2 whitespace-nowrap text-center text-sm leading-6 text-[#654b2f] sm:text-left">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
       </div>
 
       <form
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
         onFocusCapture={beginCheckout}
+        onInput={updateCapture}
+        onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
+          <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#19382d]">প্যাক সাইজ বেছে নিন</legend>
             <div id="kalojira-pack" tabIndex={-1} className="grid gap-3 sm:grid-cols-2" {...fieldErrorProps("kalojira-pack", errors.pack)}>
               {packs.map((pack) => (
                 <label
                   key={pack.variantId}
-                    className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
+                    className="relative flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[4px] border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -367,7 +440,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                       {pack.label.includes("কেজি") ? (
                         <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳460</span>
                       ) : null}
-                      <span className="rounded-full bg-[#187d48]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#187d48]">ডেলিভারি ফ্রি</span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="rounded-[4px] bg-[#fcc435] px-2.5 py-0.5 text-[11px] font-bold text-black">{deliveryCharge ? `ডেলিভারি ৳${deliveryCharge}` : "ডেলিভারি ফ্রি"}</span>
+                        {pack.label.includes("10") ? <span className="whitespace-nowrap rounded-[4px] border border-[#b98500]/35 bg-gradient-to-r from-[#fcc435] to-[#ffd968] px-2.5 py-0.5 text-[11px] font-bold tracking-[0.02em] text-black shadow-[0_2px_6px_rgba(185,133,0,0.18)]">গ্রাহকের পছন্দ</span> : null}
+                      </span>
                     </span>
                   ) : null}
                 </label>
@@ -380,11 +456,11 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                   <button
                     type="button"
                     onClick={onRetry}
-                    className="min-h-11 rounded-full bg-[#19382d] px-5 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                    className="min-h-11 rounded-[4px] bg-[#19382d] px-5 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
                     আবার চেষ্টা করুন
                   </button>
-                  <SupportActions />
+                  <SupportActions whatsappHref={whatsappHref} />
                 </div>
               </div>
             ) : null}
@@ -392,7 +468,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
 
           <div className="space-y-2">
             <label htmlFor="kalojira-quantity" className="block font-semibold text-[#19382d]">পরিমাণ</label>
-            <div className="flex w-fit items-center overflow-hidden rounded-xl border border-[#c8b98f] bg-white">
+            <div className="flex w-fit items-center overflow-hidden rounded-[4px] border border-[#c8b98f] bg-white">
               <button
                 type="button"
                 className="grid min-h-11 min-w-11 place-items-center text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-[-3px]"
@@ -442,7 +518,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               maxLength={120}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-11 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-name", errors.name)}
             />
             <InlineError id="kalojira-name" error={errors.name} />
@@ -461,7 +537,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               placeholder="01XXXXXXXXX"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-11 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-phone", errors.phone)}
             />
             <InlineError id="kalojira-phone" error={errors.phone} />
@@ -477,11 +553,12 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
               maxLength={300}
               value={address}
               onChange={(event) => setAddress(event.target.value)}
-              className="min-h-24 w-full rounded-xl border border-[#c8b98f] bg-white px-4 py-3 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              className="min-h-24 w-full rounded-[4px] border border-[#c8b98f] bg-white px-4 py-3 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("kalojira-address", errors.address)}
             />
             <InlineError id="kalojira-address" error={errors.address} />
           </div>
+          <TurnstileChallenge onToken={setTurnstileToken} />
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">
@@ -490,19 +567,21 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
-            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">ফ্রি</dd></div>
+            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{deliveryCharge ? `৳${deliveryCharge}` : "ফ্রি"}</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
-          <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
+          <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-sm font-bold leading-6 sm:text-left">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
 
-          <div className="mt-5 min-h-6 text-sm" aria-live="polite" aria-atomic="true">
+          <div className="mt-5 min-h-6 text-center text-sm sm:text-left" aria-live="polite" aria-atomic="true">
             {announcement}
           </div>
+
+          {protectionDecision ? <div className="mt-4"><OrderProtectionMessage decision={protectionDecision} /></div> : null}
 
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
-              <SupportActions />
+              <SupportActions whatsappHref={whatsappHref} />
             </div>
           ) : null}
 

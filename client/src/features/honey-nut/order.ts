@@ -37,6 +37,9 @@ export type HoneyNutOrderConfirmation = {
   subtotal: number;
   deliveryCharge: typeof HONEY_NUT_DELIVERY_CHARGE;
   total: number;
+  customerName: string;
+  phone: string;
+  address: string;
 };
 
 function isPositiveSafeInteger(value: unknown, max = Number.MAX_SAFE_INTEGER): value is number {
@@ -124,6 +127,9 @@ export function buildHoneyNutOrderConfirmation(orderRef: string, payload: HoneyN
     productName: requiredTrimmedString(payload.bundleTitle, 200, "Product name"),
     variantLabel: requiredTrimmedString(payload.bundleDetails, 300, "Pack label"),
     ...totals,
+    customerName: requiredTrimmedString(payload.customerName, 120, "Customer name"),
+    phone: requiredTrimmedString(payload.phone, 11, "Phone"),
+    address: requiredTrimmedString(payload.address, 500, "Address"),
   };
 }
 
@@ -135,8 +141,11 @@ function parseHoneyNutOrderConfirmation(value: unknown): HoneyNutOrderConfirmati
     const productName = requiredTrimmedString(confirmation.productName, 200, "Product name");
     const variantLabel = requiredTrimmedString(confirmation.variantLabel, 300, "Pack label");
     const { quantity, unitPrice, subtotal, total } = confirmation;
+    const customerName = requiredTrimmedString(confirmation.customerName, 120, "Customer name");
+    const phone = requiredTrimmedString(confirmation.phone, 11, "Phone");
+    const address = requiredTrimmedString(confirmation.address, 500, "Address");
     if (!isPositiveSafeInteger(quantity, MAX_QUANTITY) || !isPositiveSafeInteger(unitPrice, MAX_PRICE) || !Number.isSafeInteger(subtotal) || (subtotal as number) < 0 || confirmation.deliveryCharge !== HONEY_NUT_DELIVERY_CHARGE || !Number.isSafeInteger(total) || (total as number) < 0 || subtotal !== (unitPrice as number) * (quantity as number) || total !== (subtotal as number) + HONEY_NUT_DELIVERY_CHARGE) return null;
-    return { orderRef, productName, variantLabel, quantity, unitPrice, subtotal: subtotal as number, deliveryCharge: HONEY_NUT_DELIVERY_CHARGE, total: total as number };
+    return { orderRef, productName, variantLabel, quantity, unitPrice, subtotal: subtotal as number, deliveryCharge: HONEY_NUT_DELIVERY_CHARGE, total: total as number, customerName, phone, address };
   } catch {
     return null;
   }

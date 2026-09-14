@@ -1,7 +1,11 @@
 import type { IncomingMessage, ServerResponse } from "http";
+import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.js";
+
+export { OrderProtectionError } from "../server/order-protection-errors.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const WEBHOOK_TIMEOUT_MS = 10_000;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type OrderRequest = {
   bundleTitle: string;
@@ -14,6 +18,13 @@ export type OrderRequest = {
   address: string;
   paymentMethod: "cash_on_delivery" | "bkash";
   bkashTrxId?: string;
+  draftKey?: string;
+  website?: string;
+  turnstileToken?: string;
+  clientSessionId?: string;
+  checkoutStartedAt?: string;
+  items?: Array<{ productId: string; variantId: string; quantity: number }>;
+  shippingZoneId?: string;
 };
 
 class OrderValidationError extends Error {
@@ -43,12 +54,12 @@ export class OrderUpstreamError extends Error {
 type OrderServiceDependencies = {
   fetchImpl?: typeof fetch;
   merchantSuiteUrl?: string;
-  apiKey?: string;
+  storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
 };
 
 type OrderHandlerDependencies = {
-  processOrder?: (order: OrderRequest) => Promise<{ orderRef: string }>;
+  processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
 };
 
 function byteLength(value: unknown) {
@@ -118,7 +129,6 @@ export function validateOrder(body: unknown): OrderRequest {
   const paymentMethod = value.paymentMethod === undefined
     ? "cash_on_delivery"
     : value.paymentMethod;
-
   if (!/^\d{11}$/.test(phone)
     || address.split(/\s+/).filter(Boolean).length < 3
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
@@ -134,6 +144,40 @@ export function validateOrder(body: unknown): OrderRequest {
   }
   if (paymentMethod === "bkash" && !bkashTrxId) throw new OrderValidationError();
 
+  let draftKey = "";
+  if (value.draftKey !== undefined) {
+    draftKey = requiredString(value.draftKey, 36, 36).toLowerCase();
+    if (!UUID_RE.test(draftKey)) throw new OrderValidationError();
+  }
+
+  const optionalString = (key: string, max: number) => {
+    if (value[key] === undefined) return undefined;
+    if (typeof value[key] !== "string" || value[key].length > max) throw new OrderValidationError();
+    return value[key].trim();
+  };
+  const website = optionalString("website", 200);
+  const turnstileToken = optionalString("turnstileToken", 4096);
+  const clientSessionId = optionalString("clientSessionId", 120);
+  const checkoutStartedAt = optionalString("checkoutStartedAt", 64);
+  if (checkoutStartedAt && !Number.isFinite(Date.parse(checkoutStartedAt))) throw new OrderValidationError();
+  if (clientSessionId && !/^[a-zA-Z0-9._:-]+$/.test(clientSessionId)) throw new OrderValidationError();
+
+  let items: OrderRequest["items"];
+  if (value.items !== undefined) {
+    if (!Array.isArray(value.items) || value.items.length < 1 || value.items.length > 50) throw new OrderValidationError();
+    items = value.items.map((item) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) throw new OrderValidationError();
+      const candidate = item as Record<string, unknown>;
+      if (typeof candidate.productId !== "string" || candidate.productId.trim().length < 1 || candidate.productId.length > 120
+        || typeof candidate.variantId !== "string" || candidate.variantId.trim().length < 1 || candidate.variantId.length > 120
+        || typeof candidate.quantity !== "number" || !Number.isSafeInteger(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 100) {
+        throw new OrderValidationError();
+      }
+      return { productId: candidate.productId.trim(), variantId: candidate.variantId.trim(), quantity: candidate.quantity };
+    });
+  }
+  const shippingZoneId = optionalString("shippingZoneId", 120);
+
   return {
     bundleTitle,
     bundleDetails,
@@ -145,6 +189,13 @@ export function validateOrder(body: unknown): OrderRequest {
     address,
     paymentMethod,
     ...(bkashTrxId ? { bkashTrxId } : {}),
+    ...(draftKey ? { draftKey } : {}),
+    ...(website !== undefined ? { website } : {}),
+    ...(turnstileToken !== undefined ? { turnstileToken } : {}),
+    ...(clientSessionId !== undefined ? { clientSessionId } : {}),
+    ...(checkoutStartedAt !== undefined ? { checkoutStartedAt } : {}),
+    ...(items ? { items } : {}),
+    ...(shippingZoneId !== undefined ? { shippingZoneId } : {}),
   };
 }
 
@@ -162,31 +213,51 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     ?? "").replace(/\/$/, "");
   const fetchImpl = dependencies.fetchImpl ?? fetch;
   try {
-    if (!merchantSuiteUrl) throw new Error("Missing Merchant-Suite configuration");
-    const response = await fetchImpl(`${merchantSuiteUrl}/api/custom-orders/webhook`, {
+    const storefrontHandle = (dependencies.storefrontHandle ?? process.env.STOREFRONT_HANDLE ?? "").trim();
+    if (!merchantSuiteUrl || !storefrontHandle) throw new Error("Missing Merchant-Suite configuration");
+    const response = await fetchImpl(`${merchantSuiteUrl}/api/public/v1/${encodeURIComponent(storefrontHandle)}/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": dependencies.apiKey ?? process.env.CUSTOM_ORDERS_API_KEY ?? "",
       },
       body: JSON.stringify({
-        customer_name: order.customerName,
+        customerName: order.customerName,
         phone: order.phone,
         address: order.address,
-        product: `${order.bundleTitle} - ${order.bundleDetails}`,
-        quantity: order.quantity,
-        price: order.bundlePrice,
-        delivery_rate: order.deliveryCharge,
+        items: order.items,
+        shippingZoneId: order.shippingZoneId,
+        website: order.website,
+        turnstileToken: order.turnstileToken,
+        clientSessionId: order.clientSessionId,
+        checkoutStartedAt: order.checkoutStartedAt,
+        notes: `${order.bundleTitle} - ${order.bundleDetails}`,
+        ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(WEBHOOK_TIMEOUT_MS)))(),
     });
+    const data = await response.json().catch(() => ({})) as {
+      order_id?: unknown;
+      orderRef?: unknown;
+      orderId?: unknown;
+      decision?: unknown;
+      review_id?: unknown;
+      reviewId?: unknown;
+      retryable?: unknown;
+    };
+    if (response.status === 202 && data.decision === "review") {
+      const reviewId = getCanonicalOrderRef(data.reviewId ?? data.review_id);
+      if (!reviewId) throw new Error("Missing review ID");
+      return { decision: "review", reviewId };
+    }
+    if (response.status === 403 || data.decision === "block") {
+      throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
+    }
     if (!response.ok) throw new Error("Merchant-Suite rejected order");
-
-    const data = await response.json() as { order_id?: unknown };
-    const orderRef = getCanonicalOrderRef(data?.order_id);
+    const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");
-    return { orderRef };
-  } catch {
+    return { orderRef, decision: "allow" };
+  } catch (error) {
+    if (error instanceof OrderProtectionError) throw error;
     throw new OrderUpstreamError();
   }
 }
@@ -212,8 +283,14 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
     try {
       const order = validateOrder(await readBody(req));
       const result = await process(order);
+      const decision = result.decision ?? "allow";
+      const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 
-      sendJson(res, 201, { orderRef: result.orderRef });
+      if (decision === "review") {
+        sendJson(res, 202, { decision: "review", reviewId: "reviewId" in result ? result.reviewId : "" });
+        return;
+      }
+      sendJson(res, 201, { orderRef, decision: "allow" });
     } catch (error) {
       if (error instanceof RequestBodyError) {
         sendJson(res, error.statusCode, { message: error.message });
@@ -225,6 +302,10 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
       }
       if (error instanceof OrderUpstreamError) {
         sendJson(res, 502, { message: "Could not confirm order. Please try again." });
+        return;
+      }
+      if (error instanceof OrderProtectionError) {
+        sendJson(res, error.statusCode, { message: error.message, decision: error.decision, retryable: error.retryable });
         return;
       }
       console.error("Order process failed");

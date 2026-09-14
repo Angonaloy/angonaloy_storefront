@@ -44,3 +44,13 @@ test("uses Mango Lover's phone number for customer WhatsApp support", () => {
   assert.equal(CONTACT_DETAILS.whatsapp, "+8801301636461");
   assert.equal(CONTACT_DETAILS.whatsappHref, "https://wa.me/8801301636461");
 });
+
+test("explains incomplete-checkout support and its fixed 30-day retention", () => {
+  const privacyPage = SITE_PAGES["privacy-policy"];
+  const policyText = privacyPage.sections.map((section) => `${section.body.en}\n${section.body.bn}`).join("\n");
+
+  assert.match(policyText, /incomplete checkout/i);
+  assert.match(policyText, /30 days/i);
+  assert.match(policyText, /অসম্পূর্ণ চেকআউট/);
+  assert.match(policyText, /৩০ দিন/);
+});

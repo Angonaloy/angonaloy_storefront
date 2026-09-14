@@ -16,6 +16,7 @@ import KalojiraMixedPage from "@/pages/kalojira-mixed";
 import KalojiraMixedThankYouPage from "@/pages/kalojira-mixed-thank-you";
 import HoneyNutPage from "@/pages/honey-nut";
 import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
+import KatimonMangoPage from "@/pages/katimon-mango";
 import CollectionPage from "@/pages/collection";
 import SiteInformationPage from "@/pages/site-information";
 import { SITE_PAGES } from "@/lib/site-pages";
@@ -28,6 +29,7 @@ const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
   "/step/kalojira-mixed/thank-you": "কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
   "/step/honey-nut": "হানি নাট | ম্যাংগো লাভার",
   "/step/honey-nut/thank-you": "হানি নাট অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
+  "/step/katimon-mango": "কাটিমন আম | ম্যাংগো লাভার",
 };
 
 function CampaignMetadata({ location }: { location: string }) {
@@ -214,6 +216,9 @@ function Router() {
           </Route>
           <Route path="/step/honey-nut">
             <PageTransition><HoneyNutPage /></PageTransition>
+          </Route>
+          <Route path="/step/katimon-mango">
+            <PageTransition><KatimonMangoPage /></PageTransition>
           </Route>
           <Route path="/">
             <PageTransition>

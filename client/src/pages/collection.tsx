@@ -4,7 +4,8 @@ import StorefrontProductCard from "@/components/storefront-product-card";
 import NotFound from "@/pages/not-found";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
-  getFeaturedCollection,
+  getCollection,
+  getTopSellingProducts,
   getProductsForCollection,
 } from "@/lib/featured-collections";
 import {
@@ -14,7 +15,7 @@ import {
 } from "@/lib/storefront-products";
 
 export default function CollectionPage({ params }: { params: { slug: string } }) {
-  const collection = getFeaturedCollection(params.slug);
+  const collection = getCollection(params.slug);
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
@@ -28,7 +29,9 @@ export default function CollectionPage({ params }: { params: { slug: string } })
     return <NotFound />;
   }
 
-  const filteredProducts = getProductsForCollection(products ?? [], collection);
+  const filteredProducts = collection.slug === "top-selling-products"
+    ? getTopSellingProducts(products ?? [])
+    : getProductsForCollection(products ?? [], collection);
   const [englishName, bengaliName] = collection.label.split("-");
 
   return (
