@@ -63,5 +63,7 @@ test("all campaign landing pages send ecommerce view, checkout, selection, and p
 
   for (const thankYouPage of campaignThankYouPages) {
     assert.match(thankYouPage, /trackGoogleEcommerceEvent\("purchase"/);
+    assert.match(thankYouPage, /customer: \{/);
+    assert.match(thankYouPage, /transactionId: confirmation\.orderRef/);
   }
 });

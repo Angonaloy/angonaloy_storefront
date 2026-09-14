@@ -71,7 +71,15 @@ export default function KalojiraMixedThankYouPage() {
       pageType: "thank_you",
       transactionId: confirmation.orderRef,
       value: total,
+      affiliation: "",
+      tax: 0,
       shipping: deliveryCharge,
+      coupon: "",
+      customer: {
+        name: confirmation.customerName,
+        phone: confirmation.phone,
+        address: confirmation.address,
+      },
       items: [toGoogleAnalyticsItem({
         id: confirmation.productName,
         name: confirmation.productName,
