@@ -560,7 +560,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="absolute inset-0 bg-white/60" />
 
         {/* Main Grid Content */}
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-2.5 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
             <img
@@ -632,7 +632,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Decorative Divider + Brand Name + Trust Badges */}
-        <div className="relative z-10 px-4 md:px-16 pt-10 pb-6 md:pt-12 md:pb-8">
+        <div className="relative z-10 px-2.5 md:px-16 pt-10 pb-6 md:pt-12 md:pb-8">
           {/* Gold Divider */}
           <div className="flex items-center justify-center gap-4 mb-8">
             <div className="h-px w-16 bg-[#FBBB14]/40" />
@@ -668,7 +668,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="relative z-10 bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
+        <div className="relative z-10 bg-transparent border-t border-black/10 px-2.5 sm:px-8 md:px-16 py-8">
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-6">
             <div className="text-center md:text-left">
               <a

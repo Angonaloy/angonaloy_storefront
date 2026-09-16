@@ -60,7 +60,7 @@ export default function RecentlyViewed({ products, excludeSlug, className = "" }
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
+        className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
       >
         <div className="mb-7 flex items-center justify-between gap-4 md:mb-12">
           <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
