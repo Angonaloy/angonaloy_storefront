@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
-import mangoLoverLogo from "@assets/mango-lover-logo.avif";
+import angonaloyLogo from "@assets/angonaloy-logo.webp";
 import {
   fetchStorefrontProducts,
   getProductImage,
@@ -225,7 +225,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <Link href="/">
               <a className="hidden items-center text-black md:flex">
-                <img src={mangoLoverLogo} alt="Mango Lover" className="h-10 w-auto" />
+                <img src={angonaloyLogo} alt="Angonaloy" className="h-10 w-auto" />
               </a>
             </Link>
           </div>
@@ -234,8 +234,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Link href="/">
               <a className="flex items-center text-black">
                 <img
-                  src={mangoLoverLogo}
-                  alt="Mango Lover"
+                  src={angonaloyLogo}
+                  alt="Angonaloy"
                   className="h-7 w-auto md:h-11"
                 />
               </a>
@@ -564,8 +564,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
             <img
-              src={mangoLoverLogo}
-              alt="Mango Lover"
+              src={angonaloyLogo}
+              alt="Angonaloy"
               className="h-9 w-auto md:hidden"
             />
             <p className="text-[13px] font-bold leading-[2] text-black/60 md:max-w-md">
