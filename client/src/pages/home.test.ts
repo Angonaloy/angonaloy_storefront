@@ -260,7 +260,7 @@ test("uses the Angonaloy hero poster", () => {
 
 test("renders a responsive Angonaloy hero inside the mobile page gutter", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="relative w-full px-4 pt-4 md:px-0 md:pt-0"/);
+  assert.match(homeSource, /className="relative w-full px-2\.5 pt-4 md:px-0 md:pt-0"/);
   assert.match(homeSource, /className="relative z-10 aspect-\[940\/1080\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-auto md:min-h-\[600px\] md:rounded-\[6px\]"/);
   assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
   assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);

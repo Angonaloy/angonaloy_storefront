@@ -250,7 +250,7 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-4 pt-4 md:px-0 md:pt-0">
+        <div className="relative w-full px-2.5 pt-4 md:px-0 md:pt-0">
           <div
             ref={heroRef}
             className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-auto md:min-h-[600px] md:rounded-[6px]"
@@ -273,8 +273,8 @@ export default function Home() {
               style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
             />
           </div>
-          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-4 z-30 w-px bg-black/10 md:hidden" />
-          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 z-30 w-px bg-black/10 md:hidden" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-2.5 z-30 w-px bg-black/10 md:hidden" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-2.5 z-30 w-px bg-black/10 md:hidden" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-4 z-30 h-px bg-black/10 md:hidden" />
         </div>
       </section>
