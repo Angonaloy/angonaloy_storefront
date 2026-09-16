@@ -383,7 +383,7 @@ export default function Home() {
                 className="relative inline-block"
                 style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
               >
-                জনপ্রিয়
+                জনপ্রিয় পণ্য
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 120 60"

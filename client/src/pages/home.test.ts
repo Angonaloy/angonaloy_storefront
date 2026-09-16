@@ -26,7 +26,7 @@ test("renders the Top Selling Products section after the hero", () => {
   assert.ok(topSellingIndex > heroIndex);
   assert.ok(topSellingIndex < latestDropIndex);
   assert.match(homeSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(homeSource, /জনপ্রিয়/);
+  assert.match(homeSource, /জনপ্রিয় পণ্য/);
   assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
 });
 
@@ -162,7 +162,7 @@ test("labels the product section Top Selling Products without a purchase CTA", (
   );
 
   assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(whatsNewSource, /জনপ্রিয়/);
+  assert.match(whatsNewSource, /জনপ্রিয় পণ্য/);
   assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
   assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
   assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
@@ -176,14 +176,14 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
 
   assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
   assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(whatsNewSource, /জনপ্রিয়/);
+  assert.match(whatsNewSource, /জনপ্রিয় পণ্য/);
   assert.match(whatsNewSource, /IhtishamDeshlipi/);
   assert.match(whatsNewSource, /M14,32 C9,15 48,6 72,8/);
   assert.match(whatsNewSource, /text-\[clamp\(1\.75rem,4\.8vw,2\.6rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.9rem\)\]/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
-  assert.doesNotMatch(whatsNewSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয়/);
+  assert.doesNotMatch(whatsNewSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয় পণ্য/);
 });
 
 test("styles Latest Drop as a compact newly-added catalog section", () => {
@@ -216,7 +216,7 @@ test("renders the Newly Added title in Bengali only with circled style", () => {
 
 test("uses circled Bengali for section titles and highlight for category labels", () => {
   assert.match(homeSource, /<HighlightedWord className="font-display italic" highlightColor="#FBBB14">\{bengaliLabel\}<\/HighlightedWord>/);
-  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয়/);
+  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয় পণ্য/);
   assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
   assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
 });
