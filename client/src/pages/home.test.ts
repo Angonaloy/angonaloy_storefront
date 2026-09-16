@@ -280,7 +280,7 @@ test("uses the Angonaloy hero poster", () => {
 
 test("renders a shorter edge-to-edge Angonaloy hero on mobile", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="relative w-full px-2\.5 pt-2 md:px-0 md:pt-0"/);
+  assert.match(homeSource, /className="relative w-full px-0 pt-2 md:px-0 md:pt-0"/);
   assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-video md:rounded-\[6px\]"/);
   assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
   assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);
@@ -290,6 +290,14 @@ test("renders a shorter edge-to-edge Angonaloy hero on mobile", () => {
   assert.match(homeSource, /className="pointer-events-none absolute bottom-0 left-\[2px\] right-\[2px\] z-30 h-px bg-black\/10 md:hidden"/);
   assert.doesNotMatch(homeSource, /inset-x-0 top-4 z-30 h-px/);
   assert.match(homeSource, /Foggy gradient bottom blend/);
+  assert.match(homeSource, /<h1/);
+  assert.match(homeSource, /আঙ্গনালয়/);
+  assert.match(homeSource, /আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান/);
+  assert.match(homeSource, /backdrop-blur-md/);
+  assert.match(homeSource, /Shop Now - এখনই কিনুন/);
+  assert.match(homeSource, /md:text-\[4\.5rem\]/);
+  assert.match(homeSource, /md:pb-12/);
+  assert.match(homeSource, /inset-x-0 bottom-0 z-20 flex flex-col items-center/);
   assert.doesNotMatch(homeSource, /SS26 STATEMENT PIECES/);
   assert.doesNotMatch(homeSource, /Bold by/);
   assert.doesNotMatch(homeSource, /Discover New Arrival/);

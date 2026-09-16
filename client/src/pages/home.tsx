@@ -250,7 +250,7 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-2.5 pt-2 md:px-0 md:pt-0">
+        <div className="relative w-full px-0 pt-2 md:px-0 md:pt-0">
           <div
             ref={heroRef}
             className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-video md:rounded-[6px]"
@@ -269,13 +269,30 @@ export default function Home() {
             </Link>
             {/* Foggy gradient bottom blend */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none md:hidden"
-              style={{ background: "linear-gradient(to top, #f6f6f6b3 0%, transparent 100%)" }}
+              className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none md:hidden"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 45%, transparent 100%)" }}
             />
             <div
-              className="absolute bottom-0 left-0 right-0 hidden h-48 pointer-events-none md:block"
-              style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
+              className="absolute bottom-0 left-0 right-0 hidden h-80 pointer-events-none md:block"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 45%, transparent 100%)" }}
             />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 p-5 pb-7 text-center md:items-start md:gap-4 md:p-12 md:pb-12 md:text-left">
+              <h1
+                className="text-[2.75rem] font-bold leading-none text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[4.5rem]"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+              >
+                আঙ্গনালয়
+              </h1>
+              <p className="whitespace-nowrap text-[12px] font-medium leading-relaxed text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:max-w-[480px] md:whitespace-normal md:text-[15px]">
+                আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান ।
+              </p>
+              <Link
+                href="/products"
+                className="pointer-events-auto mt-1 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-2 md:px-8 md:py-3 md:text-base"
+              >
+                Shop Now - এখনই কিনুন
+              </Link>
+            </div>
           </div>
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-2 left-2.5 top-0 z-30 w-px bg-black/10 md:hidden" />
           <div aria-hidden="true" className="pointer-events-none absolute -bottom-2 right-2.5 top-0 z-30 w-px bg-black/10 md:hidden" />
