@@ -288,8 +288,29 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)] md:leading-none">
-              <HighlightedWord className="font-display italic text-[1.65rem] leading-none md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ</HighlightedWord>
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.85rem,5.2vw,2.75rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(2rem,5.5vw,3rem)] md:leading-none">
+              <span className="font-medium">আমাদের</span>{" "}
+              <span
+                className="relative inline-block"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
+              >
+                ক্যাটাগরিসমূহ
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 120 60"
+                  preserveAspectRatio="none"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
+                  style={{ overflow: "visible" }}
+                >
+                  <path
+                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
             </h2>
           </motion.div>
 
@@ -350,11 +371,28 @@ export default function Home() {
             transition={transition}
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)] md:leading-none">
-              <span className="block md:inline">BEST SELLERS</span>
-              <span className="hidden md:inline">-</span>
-              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
-                <HighlightedWord className="font-display italic text-[1.65rem] leading-none md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">সবচেয়ে জনপ্রিয়</HighlightedWord>
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.75rem,4.8vw,2.6rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.9rem)] md:leading-none">
+              <span className="font-medium">সবচেয়ে</span>{" "}
+              <span
+                className="relative inline-block"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
+              >
+                জনপ্রিয়
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 120 60"
+                  preserveAspectRatio="none"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
+                  style={{ overflow: "visible" }}
+                >
+                  <path
+                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </span>
             </h2>
             <Link
@@ -405,12 +443,29 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
+              className="font-inter-28pt-semibold text-[clamp(1.75rem,4.8vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.9rem)]"
             >
-              <span className="block md:inline">NEWLY ADDED</span>
-              <span className="hidden md:inline">-</span>
-              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
-                <HighlightedWord className="font-display italic text-[1.65rem] md:text-[clamp(1.5rem,3.9vw,2.35rem)]" highlightColor="#FBBB14">আমাদের নতুন পণ্য</HighlightedWord>
+              <span className="font-medium">আমাদের</span>{" "}
+              <span
+                className="relative inline-block"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
+              >
+                নতুন পণ্য
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 120 60"
+                  preserveAspectRatio="none"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
+                  style={{ overflow: "visible" }}
+                >
+                  <path
+                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </span>
             </motion.h2>
 

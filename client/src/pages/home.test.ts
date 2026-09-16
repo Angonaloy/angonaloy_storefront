@@ -25,15 +25,20 @@ test("renders the Top Selling Products section after the hero", () => {
   assert.notEqual(latestDropIndex, -1);
   assert.ok(topSellingIndex > heroIndex);
   assert.ok(topSellingIndex < latestDropIndex);
-  assert.match(homeSource, /BEST SELLERS/);
+  assert.match(homeSource, /<span className="font-medium">সবচেয়ে<\/span>/);
+  assert.match(homeSource, /জনপ্রিয়/);
   assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
 });
 
-test("uses only the highlighted Bengali Featured Categories heading", () => {
+test("styles the Featured Categories heading like the product page circled title", () => {
   assert.doesNotMatch(homeSource, /FEATURED CATEGORIES/);
-  assert.match(homeSource, /আমাদের ক্যাটাগরিসমূহ/);
-  assert.match(homeSource, /<HighlightedWord className="font-display italic text-\[1\.65rem\]/);
-  assert.match(homeSource, /highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ/);
+  assert.match(homeSource, /<span className="font-medium">আমাদের<\/span>/);
+  assert.match(homeSource, /ক্যাটাগরিসমূহ/);
+  assert.match(homeSource, /IhtishamDeshlipi/);
+  assert.match(homeSource, /M14,32 C9,15 48,6 72,8/);
+  assert.match(homeSource, /h-\[220%\] w-\[145%\]/);
+  assert.match(homeSource, /text-\[clamp\(1\.85rem,5\.2vw,2\.75rem\)\][^"]*md:text-\[clamp\(2rem,5\.5vw,3rem\)\]/);
+  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
 });
 
 test("removes the requested homepage sections while keeping the editorial features", () => {
@@ -156,7 +161,9 @@ test("labels the product section Top Selling Products without a purchase CTA", (
     homeSource.indexOf("Latest Drop Section"),
   );
 
-  assert.match(whatsNewSource, /BEST SELLERS/);
+  assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
+  assert.match(whatsNewSource, /জনপ্রিয়/);
+  assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
   assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
   assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
 });
@@ -168,15 +175,15 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   );
 
   assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
-  assert.match(whatsNewSource, /BEST SELLERS/);
-  assert.match(whatsNewSource, /সবচেয়ে জনপ্রিয়/);
-  assert.match(whatsNewSource, /font-display italic[\s\S]*highlightColor="#FBBB14"/);
-  assert.match(whatsNewSource, /className="block md:inline">BEST SELLERS<\/span>/);
-  assert.match(whatsNewSource, /className="mt-1 block md:ml-1 md:mt-0 md:inline"/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\]/);
+  assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
+  assert.match(whatsNewSource, /জনপ্রিয়/);
+  assert.match(whatsNewSource, /IhtishamDeshlipi/);
+  assert.match(whatsNewSource, /M14,32 C9,15 48,6 72,8/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.75rem,4\.8vw,2\.6rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.9rem\)\]/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
-  assert.doesNotMatch(whatsNewSource, /<svg/);
+  assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
+  assert.doesNotMatch(whatsNewSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয়/);
 });
 
 test("styles Latest Drop as a compact newly-added catalog section", () => {
@@ -185,37 +192,40 @@ test("styles Latest Drop as a compact newly-added catalog section", () => {
     homeSource.indexOf("Category Section: Homemade"),
   );
 
-  assert.match(latestDropSource, /NEWLY ADDED/);
-  assert.match(latestDropSource, /আমাদের নতুন পণ্য/);
+  assert.match(latestDropSource, /<span className="font-medium">আমাদের<\/span>/);
+  assert.match(latestDropSource, /নতুন পণ্য/);
+  assert.doesNotMatch(latestDropSource, /NEWLY ADDED/);
   assert.match(latestDropSource, /See More/);
   assert.match(latestDropSource, /homepageProducts\.slice\(0, 4\)\.map/);
   assert.match(latestDropSource, /grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4/);
 });
 
-test("renders the Newly Added bilingual title with Bengali highlight", () => {
+test("renders the Newly Added title in Bengali only with circled style", () => {
   const latestDropSource = homeSource.slice(
     homeSource.indexOf("Latest Drop Section"),
     homeSource.indexOf("Category Section: Homemade"),
   );
 
-  assert.match(latestDropSource, /className="block md:inline">NEWLY ADDED<\/span>/);
-  assert.match(latestDropSource, /আমাদের নতুন পণ্য/);
-  assert.match(latestDropSource, /font-display italic/);
-  assert.match(latestDropSource, /highlightColor="#FBBB14"/);
-  assert.match(latestDropSource, /className="mt-1 block md:ml-1 md:mt-0 md:inline"/);
+  assert.match(latestDropSource, /<span className="font-medium">আমাদের<\/span>/);
+  assert.match(latestDropSource, /নতুন পণ্য/);
+  assert.match(latestDropSource, /IhtishamDeshlipi/);
+  assert.match(latestDropSource, /M14,32 C9,15 48,6 72,8/);
+  assert.doesNotMatch(latestDropSource, /NEWLY ADDED/);
+  assert.doesNotMatch(latestDropSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
 });
 
-test("styles Bengali homepage highlights with the italic display font", () => {
+test("uses circled Bengali for section titles and highlight for category labels", () => {
   assert.match(homeSource, /<HighlightedWord className="font-display italic" highlightColor="#FBBB14">\{bengaliLabel\}<\/HighlightedWord>/);
-  assert.match(homeSource, /সবচেয়ে জনপ্রিয়/);
-  assert.match(homeSource, /আমাদের নতুন পণ্য/);
+  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয়/);
+  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
+  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
 });
 
 test("uses a reduced type scale across homepage section headings", () => {
   const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
 
-  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 6);
-  assert.match(homeSource, /text-\[1\.65rem\] leading-none md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/);
+  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 3);
+  assert.doesNotMatch(homeSource, /text-\[1\.65rem\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
 });
