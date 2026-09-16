@@ -586,7 +586,7 @@ export default function OrderDialog({
 
                   <Button
                     disabled={orderSubmitting}
-                    className="h-14 w-full rounded-[8px] bg-[#FBBB14] text-black text-[13px] font-bold hover:bg-[#e5a80f] transition-all disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-14 w-full rounded-[8px] bg-[#d92c2d] text-white text-[13px] font-bold hover:bg-black transition-all disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
                   </Button>
