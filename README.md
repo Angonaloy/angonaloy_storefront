@@ -4,7 +4,7 @@ The public storefront for **Mango Lover BD**. React + Vite + Express, deployed o
 connected to the Merchant Suite dashboard (a separate repo) for catalog data and order submission.
 
 - **Repo:** `github.com/mangoloverbd/mangoloverbd_storefront`
-- **Live:** https://mangoloverbd.vercel.app (Vercel project `mangoloverbd`)
+- **Live:** https://angonaloy.shop (Vercel project `angonaloy-storefront`)
 - **Dashboard repo:** Merchant Suite / commerceos — separate repository, separate Vercel project
 
 > **Read `CLAUDE.md` before making changes.** It explains the two-repo boundary and what does

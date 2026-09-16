@@ -39,7 +39,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
     event: "view_item",
     pageType: "product",
     title: "Himsagar Mango | Mango Lover BD",
-    url: "https://mangoloverbd.vercel.app/product/himsagar-mango?utm=1",
+    url: "https://angonaloy.shop/product/himsagar-mango?utm=1",
     language: "en",
     value: 1850,
     items: [
@@ -57,7 +57,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
     event: "view_item",
     page_type: "product",
     page_title: "Himsagar Mango | Mango Lover BD",
-    page_url: "https://mangoloverbd.vercel.app/product/himsagar-mango",
+    page_url: "https://angonaloy.shop/product/himsagar-mango",
     page_path: "/product/himsagar-mango",
     page_language: "en",
     logged_in: false,
@@ -93,19 +93,19 @@ test("omits query and hash values from GTM page URLs", () => {
   const payload = buildGoogleEcommercePayload({
     event: "view_item",
     pageType: "product",
-    url: "https://mangoloverbd.vercel.app/product/himsagar-mango?contact=private-value#delivery",
+    url: "https://angonaloy.shop/product/himsagar-mango?contact=private-value#delivery",
     value: 1850,
     items: [],
   });
 
-  assert.equal(payload.page_url, "https://mangoloverbd.vercel.app/product/himsagar-mango");
+  assert.equal(payload.page_url, "https://angonaloy.shop/product/himsagar-mango");
   assert.equal(payload.page_path, "/product/himsagar-mango");
 });
 
 test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency", () => {
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
-    location: new URL("https://mangoloverbd.vercel.app/checkout"),
+    location: new URL("https://angonaloy.shop/checkout"),
     document: { title: "Checkout | Mango Lover BD", documentElement: { lang: "en" } },
   };
 
@@ -124,7 +124,7 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
       event: "begin_checkout",
       page_type: "checkout",
       page_title: "Checkout | Mango Lover BD",
-      page_url: "https://mangoloverbd.vercel.app/checkout",
+      page_url: "https://angonaloy.shop/checkout",
       page_path: "/checkout",
       page_language: "en",
       logged_in: false,
@@ -161,7 +161,7 @@ test("uses the GA4 select_item ecommerce shape for a selected live pack", () => 
   const event: GoogleEcommerceEventName = "select_item";
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
-    location: new URL("https://mangoloverbd.vercel.app/step/sundarbans-natural-honey"),
+    location: new URL("https://angonaloy.shop/step/sundarbans-natural-honey"),
     document: { title: "Sundarbans Honey", documentElement: { lang: "bn" } },
   };
 

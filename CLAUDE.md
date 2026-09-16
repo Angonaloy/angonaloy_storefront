@@ -13,7 +13,7 @@ The **public storefront for Mango Lover BD** (`ম্যাংগো লাভ�
 React 19 + Vite + Tailwind + wouter, with a small Express server for local dev and a Vercel
 serverless function for checkout.
 
-- Live: https://mangoloverbd.vercel.app (Vercel project `mangoloverbd`)
+- Live: https://angonaloy.shop (Vercel project `angonaloy-storefront`)
 - Deploys automatically from `main`
 
 This is **not** the dashboard. The Merchant Suite / commerceos dashboard is a separate repository
