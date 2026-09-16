@@ -273,15 +273,15 @@ test("prioritizes early live category images with lightweight thumbnails", () =>
 });
 
 test("uses the Angonaloy hero poster", () => {
-  assert.match(homeSource, /src="\/hero-mango-lover\.webp\?v=3"/);
-  assert.match(homeSource, /src="\/hero-desktop\.webp\?v=2"/);
+  assert.match(homeSource, /src="\/hero-mobile-v1\.webp"/);
+  assert.match(homeSource, /src="\/hero-desktop-v1\.webp"/);
   assert.doesNotMatch(homeSource, /hero1\.webp/);
 });
 
 test("renders a shorter edge-to-edge Angonaloy hero on mobile", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="relative w-full px-0 pt-4 md:px-0 md:pt-0"/);
-  assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-auto md:min-h-\[600px\] md:rounded-\[6px\]"/);
+  assert.match(homeSource, /className="relative w-full px-0 pt-2 md:px-0 md:pt-0"/);
+  assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-video md:rounded-\[6px\]"/);
   assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
   assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);
   assert.match(homeSource, /className="pointer-events-none absolute inset-y-0 left-0 z-30 w-px bg-black\/10 md:hidden"/);

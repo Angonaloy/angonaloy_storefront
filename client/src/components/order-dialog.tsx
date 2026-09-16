@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/dialog";
 
 const deliveryOptions = [
-  { label: "Standard Delivery", bn: "সাধারণ ডেলিভারি", charge: 100 }
+  { label: "Inside Dhaka", bn: "ঢাকার ভিতরে", charge: 80 },
+  { label: "Outside Dhaka", bn: "ঢাকার বাইরে", charge: 120 },
 ];
 
 const freeDeliveryThreshold = 2600;
@@ -65,7 +66,7 @@ export default function OrderDialog({
   onSuccess?: () => void;
 }) {
   const [openInstance, setOpenInstance] = useState(0);
-  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(100);
+  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(80);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
@@ -155,7 +156,7 @@ export default function OrderDialog({
 
     setOrderClosing(false);
     onOpenChange(nextOpen);
-    setDeliveryCharge(100);
+    setDeliveryCharge(80);
     setOrderSubmitted(false);
     setOrderSubmitting(false);
     setOrderError("");

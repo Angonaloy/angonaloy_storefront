@@ -16,7 +16,8 @@ export type SitePage = {
 };
 
 export const POLICY_FACTS = {
-  deliveryCharge: 100,
+  insideDhakaDeliveryCharge: 80,
+  outsideDhakaDeliveryCharge: 120,
   freeDeliveryThreshold: 2600,
   dhakaDeliveryDays: "1–2 days",
   outsideDhakaDeliveryDays: "2–3 days",
@@ -123,8 +124,8 @@ export const SITE_PAGES = {
       section(
         text("2. Review your cart", "২. কার্ট যাচাই করুন"),
         text(
-          "Check the products, quantities, and total amount in your cart. Delivery is ৳100, or free when the order value is over ৳2600.",
-          "কার্টে পণ্য, পরিমাণ ও মোট মূল্য যাচাই করুন। ডেলিভারি চার্জ ৳১০০, তবে অর্ডারের মূল্য ৳২৬০০-এর বেশি হলে ডেলিভারি ফ্রি।",
+          "Check the products, quantities, and total amount in your cart. Delivery is ৳80 inside Dhaka and ৳120 outside Dhaka, or free when the order value is over ৳2600.",
+          "কার্টে পণ্য, পরিমাণ ও মোট মূল্য যাচাই করুন। ঢাকার ভিতরে ডেলিভারি চার্জ ৳৮০ এবং ঢাকার বাইরে ৳১২০, তবে অর্ডারের মূল্য ৳২৬০০-এর বেশি হলে ডেলিভারি ফ্রি।",
         ),
       ),
       section(
@@ -154,8 +155,8 @@ export const SITE_PAGES = {
       section(
         text("Delivery charge", "ডেলিভারি চার্জ"),
         text(
-          "A standard delivery charge of ৳100 applies to orders below ৳2600. Delivery is free for orders over ৳2600.",
-          "৳২৬০০-এর কম মূল্যের অর্ডারের জন্য সাধারণ ডেলিভারি চার্জ ৳১০০। ৳২৬০০-এর বেশি অর্ডারে ডেলিভারি ফ্রি।",
+          "A delivery charge of ৳80 inside Dhaka and ৳120 outside Dhaka applies to orders below ৳2600. Delivery is free for orders over ৳2600.",
+          "৳২৬০০-এর কম মূল্যের অর্ডারের জন্য ঢাকার ভিতরে ডেলিভারি চার্জ ৳৮০ এবং ঢাকার বাইরে ৳১২০। ৳২৬০০-এর বেশি অর্ডারে ডেলিভারি ফ্রি।",
         ),
       ),
       section(
@@ -237,8 +238,8 @@ export const SITE_PAGES = {
       section(
         text("Payment and delivery", "পেমেন্ট ও ডেলিভারি"),
         text(
-          "Payment is Cash on Delivery only. Delivery costs ৳100 unless the order value is over ৳2600, in which case delivery is free. Estimated delivery is 1–2 days inside Dhaka and 2–3 days outside Dhaka.",
-          "পেমেন্টের একমাত্র পদ্ধতি ক্যাশ অন ডেলিভারি। অর্ডারের মূল্য ৳২৬০০-এর বেশি না হলে ডেলিভারি চার্জ ৳১০০; ৳২৬০০-এর বেশি হলে ডেলিভারি ফ্রি। ঢাকার ভেতরে সম্ভাব্য সময় ১–২ দিন এবং ঢাকার বাইরে ২–৩ দিন।",
+          "Payment is Cash on Delivery only. Delivery costs ৳80 inside Dhaka and ৳120 outside Dhaka unless the order value is over ৳2600, in which case delivery is free. Estimated delivery is 1–2 days inside Dhaka and 2–3 days outside Dhaka.",
+          "পেমেন্টের একমাত্র পদ্ধতি ক্যাশ অন ডেলিভারি। অর্ডারের মূল্য ৳২৬০০-এর বেশি না হলে ঢাকার ভিতরে ডেলিভারি চার্জ ৳৮০ এবং ঢাকার বাইরে ৳১২০; ৳২৬০০-এর বেশি হলে ডেলিভারি ফ্রি। ঢাকার ভেতরে সম্ভাব্য সময় ১–২ দিন এবং ঢাকার বাইরে ২–৩ দিন।",
         ),
       ),
       section(
@@ -392,7 +393,7 @@ export const SITE_PAGES = {
       ),
       section(
         text("How much is delivery?", "ডেলিভারি চার্জ কত?"),
-        text("Delivery is ৳100 for orders up to ৳2600 and free for orders over ৳2600.", "৳২৬০০ পর্যন্ত অর্ডারে ডেলিভারি চার্জ ৳১০০ এবং ৳২৬০০-এর বেশি অর্ডারে ডেলিভারি ফ্রি।"),
+        text("Delivery is ৳80 inside Dhaka and ৳120 outside Dhaka for orders up to ৳2600 and free for orders over ৳2600.", "৳২৬০০ পর্যন্ত অর্ডারে ঢাকার ভিতরে ডেলিভারি চার্জ ৳৮০ এবং ঢাকার বাইরে ৳১২০, আর ৳২৬০০-এর বেশি অর্ডারে ডেলিভারি ফ্রি।"),
       ),
       section(
         text("How long does delivery take?", "ডেলিভারি হতে কত সময় লাগে?"),

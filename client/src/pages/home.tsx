@@ -250,27 +250,27 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-0 pt-4 md:px-0 md:pt-0">
+        <div className="relative w-full px-0 pt-2 md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-auto md:min-h-[600px] md:rounded-[6px]"
+            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-video md:rounded-[6px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
-                src="/hero-mango-lover.webp?v=3"
+                src="/hero-mobile-v1.webp"
                 alt="আঙ্গনালয় — আপনার আঙ্গন থেকে রান্নাঘর, সবকিছুর জন্য একটি সম্পূর্ণ সমাধান"
                 className="h-full w-full object-cover object-top md:hidden"
               />
               <img
-                src="/hero-desktop.webp?v=2"
+                src="/hero-desktop-v1.webp"
                 alt="আঙ্গনালয় — আপনার আঙ্গন থেকে রান্নাঘর, সবকিছুর জন্য একটি সম্পূর্ণ সমাধান"
                 className="hidden md:block h-full w-full object-cover object-top"
               />
             </Link>
             {/* Foggy gradient bottom blend */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-32 md:h-48 pointer-events-none"
-              style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
+              className="absolute bottom-0 left-0 right-0 h-10 md:h-48 pointer-events-none"
+              style={{ background: "linear-gradient(to top, #f6f6f680 0%, transparent 100%)" }}
             />
           </div>
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-30 w-px bg-black/10 md:hidden" />

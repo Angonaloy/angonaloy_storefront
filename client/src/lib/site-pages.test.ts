@@ -32,7 +32,8 @@ test("defines every approved bilingual information page", () => {
 });
 
 test("keeps published policy facts aligned with checkout", () => {
-  assert.equal(POLICY_FACTS.deliveryCharge, 100);
+  assert.equal(POLICY_FACTS.insideDhakaDeliveryCharge, 80);
+  assert.equal(POLICY_FACTS.outsideDhakaDeliveryCharge, 120);
   assert.equal(POLICY_FACTS.freeDeliveryThreshold, 2600);
   assert.equal(POLICY_FACTS.dhakaDeliveryDays, "1–2 days");
   assert.equal(POLICY_FACTS.outsideDhakaDeliveryDays, "2–3 days");
