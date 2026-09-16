@@ -9,7 +9,6 @@ import { BagIcon } from "@/components/bag-icon";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
-import angonaloyLogo from "@assets/angonaloy-logo.webp";
 import {
   fetchStorefrontProducts,
   getProductImage,
@@ -208,20 +207,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Button>
             </div>
             <Link href="/">
-              <a className="hidden items-center text-black md:flex">
-                <img src={angonaloyLogo} alt="Angonaloy" className="h-14 w-auto" />
+              <a className="hidden items-center md:flex" aria-label="Angonaloy home">
+                <span
+                  className="text-[36px] font-bold leading-none text-[#FF2849]"
+                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                >
+                  আঙ্গনালয়
+                </span>
               </a>
             </Link>
           </div>
 
           <div className="flex items-center justify-center md:hidden">
             <Link href="/">
-              <a className="flex items-center text-black">
-                <img
-                  src={angonaloyLogo}
-                  alt="Angonaloy"
-                  className="h-[47px] w-auto md:h-11"
-                />
+              <a className="flex items-center" aria-label="Angonaloy home">
+                <span
+                  className="text-[34px] font-bold leading-none text-[#FF2849]"
+                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                >
+                  আঙ্গনালয়
+                </span>
               </a>
             </Link>
           </div>
@@ -547,11 +552,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-2.5 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
-            <img
-              src={angonaloyLogo}
-              alt="Angonaloy"
-              className="h-14 w-auto md:hidden"
-            />
+            <span
+              className="text-[34px] font-bold leading-none text-[#FF2849] md:hidden"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+            >
+              আঙ্গনালয়
+            </span>
             <p className="text-[13px] font-bold leading-[2] text-black/60 md:max-w-md">
               "আঙ্গনালয়" অর্থ আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান । আপনার আঙ্গন থেকে রান্নাঘর – সবকিছুর জন্য আঙ্গনালয়!
             </p>

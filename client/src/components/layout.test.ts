@@ -111,6 +111,20 @@ test("connects footer information and support links to real pages", () => {
   assert.doesNotMatch(layoutSource, /href="#"/);
 });
 
+test("uses the footer text wordmark in the header instead of the logo image", () => {
+  const navStart = layoutSource.indexOf("{/* Navigation */}");
+  const navEnd = layoutSource.indexOf("{/* Mobile bottom navigation */}");
+  assert.notEqual(navStart, -1);
+  assert.notEqual(navEnd, -1);
+  const navSource = layoutSource.slice(navStart, navEnd);
+
+  assert.match(navSource, />\s*আঙ্গনালয়\s*<\/span>/);
+  assert.match(navSource, /IhtishamDeshlipi/);
+  assert.match(navSource, /text-\[#FF2849\]/);
+  assert.doesNotMatch(navSource, /angonaloyLogo/);
+  assert.doesNotMatch(layoutSource, /angonaloyLogo/);
+});
+
 test("uses Angonaloy WhatsApp in customer navigation and Arc Labs WhatsApp only for the developer credit", () => {
   const bottomBarIndex = layoutSource.indexOf("/* Bottom Bar */");
   assert.notEqual(bottomBarIndex, -1);
