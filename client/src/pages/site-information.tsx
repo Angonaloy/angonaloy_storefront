@@ -11,12 +11,12 @@ export default function SiteInformationPage({ page }: { page: SitePage }) {
         <article className="mx-auto max-w-4xl">
           <Link href="/">
             <a className="text-[10px] font-semibold uppercase tracking-[0.28em] text-black/50 transition-colors hover:text-black">
-              ← Back to Mango Lover
+              ← Back to Angonaloy
             </a>
           </Link>
 
           <header className="mt-12 border-b border-black/10 pb-10 md:mt-16 md:pb-14">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#b98500]">Mango Lover BD</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#b98500]">Angonaloy-আঙ্গনালয়</p>
             <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-black sm:text-5xl md:text-6xl">
               {page.title.en}
               <span className="mt-3 block text-2xl font-normal tracking-[-0.03em] text-black/55 sm:text-3xl">{page.title.bn}</span>
@@ -51,7 +51,7 @@ export default function SiteInformationPage({ page }: { page: SitePage }) {
               </p>
             </div>
             <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.12em]">
-              <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={`tel:+8801301636461`}>Call us</a>
+              <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={`tel:${CONTACT_DETAILS.whatsapp}`}>Call us</a>
               <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={CONTACT_DETAILS.whatsappHref}>WhatsApp</a>
             </div>
           </aside>

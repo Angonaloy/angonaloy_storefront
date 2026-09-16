@@ -89,7 +89,7 @@ const INFORMATION_LINKS = [
   ["About Us", "/about-us"],
   ["Contact", "/contact-us"],
   ["Company Information", "/about-us"],
-  ["The Mango Lover Story", "/about-us"],
+  ["The Angonaloy-আঙ্গনালয়", "/about-us"],
   ["Terms & Conditions", "/terms-and-conditions"],
   ["Privacy Policy", "/privacy-policy"],
   ["Careers", "/contact-us"],
@@ -202,11 +202,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Announcement Bar */}
-      <div className="border-b border-black bg-[#FBBB14] px-4 text-black sm:px-10 lg:px-16">
+      <div className="border-b border-black bg-[#d92c2d] px-4 text-white sm:px-10 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
           <div className="flex min-h-[34px] items-center justify-center overflow-hidden py-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.12em] sm:min-h-[42px] sm:py-2.5 sm:text-xs" aria-label="Free shipping announcement">
             <p className="whitespace-nowrap">
-              Free shipping on orders over <strong className="text-[#163B33]">৳2600</strong> <span aria-hidden="true">—</span>{" "}
+              Free shipping on orders over <strong className="text-white">৳2600</strong> <span aria-hidden="true">—</span>{" "}
               <Link href="/products">
                 <a className="underline decoration-[#e53935] decoration-2 underline-offset-4 transition-colors hover:text-[#e53935]">Shop now</a>
               </Link>
@@ -225,7 +225,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             <Link href="/">
               <a className="hidden items-center text-black md:flex">
-                <img src={angonaloyLogo} alt="Angonaloy" className="h-10 w-auto" />
+                <img src={angonaloyLogo} alt="Angonaloy" className="h-14 w-auto" />
               </a>
             </Link>
           </div>
@@ -236,7 +236,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <img
                   src={angonaloyLogo}
                   alt="Angonaloy"
-                  className="h-7 w-auto md:h-11"
+                  className="h-[47px] w-auto md:h-11"
                 />
               </a>
             </Link>
@@ -507,7 +507,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </span>
                   </div>
                   <div className="text-white/60 text-sm">
-                    © 2026 ম্যাংগো লাভার - Mango Lover
+                    © 2026 Angonaloy-আঙ্গনালয়
                   </div>
                 </div>
               </div>
@@ -566,20 +566,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <img
               src={angonaloyLogo}
               alt="Angonaloy"
-              className="h-9 w-auto md:hidden"
+              className="h-14 w-auto md:hidden"
             />
             <p className="text-[13px] font-bold leading-[2] text-black/60 md:max-w-md">
-              সাধ্যের মধ্যে সেরা মানের পন্য আপনার ও আপনার পরিবারের জন্য, যা আমরা পাঠাই একদম মাঠ পর্যায় থেকে, তাই পাচ্ছেন সাশ্রয়ী দামে সেরা মানের পন্যের নিশ্চয়তা।
+              "আঙ্গনালয়" অর্থ আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান । আপনার আঙ্গন থেকে রান্নাঘর – সবকিছুর জন্য আঙ্গনালয়!
             </p>
             <div className="flex gap-6 items-center">
-              <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
+              <a href="https://www.facebook.com/angonaloyofficial" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
                 <img src="https://cdn.reicon.dev/logos/facebook/original.svg" alt="Facebook" width={20} height={20} className="w-5 h-5" />
               </a>
-              <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
+              <a href="https://www.instagram.com/angonaloyofficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
                 <img src="https://cdn.reicon.dev/logos/instagram/original.svg" alt="Instagram" width={20} height={20} className="w-5 h-5" />
               </a>
-              <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:opacity-80 transition-opacity">
-                <img src="https://cdn.reicon.dev/logos/youtube/original.svg" alt="Youtube" width={24} height={24} className="w-6 h-6" />
+              <a href="https://api.whatsapp.com/send/?phone=8801819502705" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="hover:opacity-80 transition-opacity">
+                <img src="https://cdn.reicon.dev/logos/whatsapp/original.svg" alt="WhatsApp" width={20} height={20} className="w-5 h-5" />
               </a>
             </div>
             <div className="space-y-6 pt-2">
@@ -641,10 +641,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           {/* Bengali Brand Name */}
           <p
-            className="text-center text-[54px] md:text-[58px] font-bold text-[#FBBB14] mb-8 tracking-wide"
+            className="text-center text-[68px] md:text-[76px] font-bold text-[#FBBB14] mb-8 tracking-wide"
             style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
           >
-            ম্যাংগো লাভার
+            আঙ্গনালয়
           </p>
           {/* Trust Badges */}
           <div className="flex flex-wrap justify-center gap-6 md:gap-10">
@@ -687,7 +687,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               </a>
               <span className="mt-2 block text-[8px] tracking-normal text-black/40">
-                © 2026 ম্যাংগো লাভার - Mango Lover
+                © 2026 Angonaloy-আঙ্গনালয়
               </span>
             </div>
             <div className="flex gap-8 text-[9px] uppercase tracking-[0.4em] text-black/40">

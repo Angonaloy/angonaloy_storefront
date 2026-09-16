@@ -24,11 +24,11 @@ export const POLICY_FACTS = {
 } as const;
 
 export const CONTACT_DETAILS = {
-  address: "Nowhata, Paba, Rajshahi, Bangladesh – 6213",
-  phone: "01301-636461",
-  whatsapp: "+8801301636461",
-  whatsappHref: "https://wa.me/8801301636461",
-  email: "mangolover.com.bd@gmail.com",
+  address: "Dhanmondi 27, Dhaka, Bangladesh",
+  phone: "01819-502705",
+  whatsapp: "+8801819502705",
+  whatsappHref: "https://wa.me/8801819502705",
+  email: "shopangonaloy@gmail.com",
 } as const;
 
 const text = (en: string, bn: string): BilingualText => ({ en, bn });
@@ -45,17 +45,17 @@ const page = (slug: string, title: BilingualText, intro: BilingualText, sections
 export const SITE_PAGES = {
   "about-us": page(
     "about-us",
-    text("About Mango Lover", "ম্যাংগো লাভার সম্পর্কে"),
+    text("About Angonaloy", "আঙ্গনালয় সম্পর্কে"),
     text(
-      "Mango Lover BD brings carefully selected food products from Bangladesh to your home with honesty, care, and dependable service.",
-      "ম্যাংগো লাভার বিডি সততা, যত্ন ও নির্ভরযোগ্য সেবার সঙ্গে বাংলাদেশের বাছাই করা খাদ্যপণ্য আপনার ঘরে পৌঁছে দেয়।",
+      "Angonaloy brings carefully selected food products from Bangladesh to your home with honesty, care, and dependable service.",
+      "আঙ্গনালয় সততা, যত্ন ও নির্ভরযোগ্য সেবার সঙ্গে বাংলাদেশের বাছাই করা খাদ্যপণ্য আপনার ঘরে পৌঁছে দেয়।",
     ),
     [
       section(
         text("Our story", "আমাদের গল্প"),
         text(
-          "Mango Lover started with a simple idea: good food should be easy to discover and safe to order. We work to bring authentic everyday products, seasonal favorites, and thoughtful food choices together in one place.",
-          "ম্যাংগো লাভারের শুরু একটি সহজ ভাবনা থেকে: ভালো খাবার খুঁজে পাওয়া ও অর্ডার করা সহজ হওয়া উচিত। আমরা খাঁটি দৈনন্দিন পণ্য, মৌসুমি পছন্দ এবং যত্নসহকারে বাছাই করা খাবার এক জায়গায় নিয়ে আসার চেষ্টা করি।",
+          "Angonaloy started with a simple idea: good food should be easy to discover and safe to order. We work to bring authentic everyday products, seasonal favorites, and thoughtful food choices together in one place.",
+          "আঙ্গনালয়ের শুরু একটি সহজ ভাবনা থেকে: ভালো খাবার খুঁজে পাওয়া ও অর্ডার করা সহজ হওয়া উচিত। আমরা খাঁটি দৈনন্দিন পণ্য, মৌসুমি পছন্দ এবং যত্নসহকারে বাছাই করা খাবার এক জায়গায় নিয়ে আসার চেষ্টা করি।",
         ),
       ),
       section(
@@ -68,8 +68,8 @@ export const SITE_PAGES = {
       section(
         text("Our location", "আমাদের ঠিকানা"),
         text(
-          "Mango Lover BD is based in Nowhata, Paba, Rajshahi, Bangladesh. We serve customers across Bangladesh according to our current delivery coverage.",
-          "ম্যাংগো লাভার বিডির ঠিকানা নওহাটা, পবা, রাজশাহী, বাংলাদেশ। আমাদের বর্তমান ডেলিভারি কাভারেজ অনুযায়ী আমরা বাংলাদেশের বিভিন্ন স্থানে সেবা দিয়ে থাকি।",
+          "Angonaloy is based in Dhanmondi 27, Dhaka, Bangladesh. We serve customers across Bangladesh according to our current delivery coverage.",
+          "আঙ্গনালয়ের ঠিকানা ধানমন্ডি ২৭, ঢাকা, বাংলাদেশ। আমাদের বর্তমান ডেলিভারি কাভারেজ অনুযায়ী আমরা বাংলাদেশের বিভিন্ন স্থানে সেবা দিয়ে থাকি।",
         ),
       ),
     ],
@@ -109,8 +109,8 @@ export const SITE_PAGES = {
     "how-to-order",
     text("How to Order", "কীভাবে অর্ডার করবেন"),
     text(
-      "Ordering from Mango Lover is simple. Browse the catalog, add your products to the cart, and complete checkout with your delivery details.",
-      "ম্যাংগো লাভার থেকে অর্ডার করা সহজ। ক্যাটালগ দেখুন, পছন্দের পণ্য কার্টে যোগ করুন এবং ডেলিভারির তথ্য দিয়ে চেকআউট সম্পন্ন করুন।",
+      "Ordering from Angonaloy is simple. Browse the catalog, add your products to the cart, and complete checkout with your delivery details.",
+      "আঙ্গনালয় থেকে অর্ডার করা সহজ। ক্যাটালগ দেখুন, পছন্দের পণ্য কার্টে যোগ করুন এবং ডেলিভারির তথ্য দিয়ে চেকআউট সম্পন্ন করুন।",
     ),
     [
       section(
@@ -137,8 +137,8 @@ export const SITE_PAGES = {
       section(
         text("4. Confirm with Cash on Delivery", "৪. ক্যাশ অন ডেলিভারিতে কনফার্ম করুন"),
         text(
-          "Mango Lover currently accepts Cash on Delivery only. Our team may contact you to confirm the order before dispatch.",
-          "ম্যাংগো লাভারে বর্তমানে শুধু ক্যাশ অন ডেলিভারি গ্রহণ করা হয়। ডিসপ্যাচের আগে অর্ডার নিশ্চিত করতে আমাদের টিম আপনার সঙ্গে যোগাযোগ করতে পারে।",
+          "Angonaloy currently accepts Cash on Delivery only. Our team may contact you to confirm the order before dispatch.",
+          "আঙ্গনালয়ে বর্তমানে শুধু ক্যাশ অন ডেলিভারি গ্রহণ করা হয়। ডিসপ্যাচের আগে অর্ডার নিশ্চিত করতে আমাদের টিম আপনার সঙ্গে যোগাযোগ করতে পারে।",
         ),
       ),
     ],
@@ -185,8 +185,8 @@ export const SITE_PAGES = {
     "payment-policy",
     text("Payment Policy", "পেমেন্ট নীতিমালা"),
     text(
-      "Mango Lover currently offers one payment method: Cash on Delivery.",
-      "ম্যাংগো লাভারে বর্তমানে একটি পেমেন্ট পদ্ধতি চালু আছে: ক্যাশ অন ডেলিভারি।",
+      "Angonaloy currently offers one payment method: Cash on Delivery.",
+      "আঙ্গনালয়ে বর্তমানে একটি পেমেন্ট পদ্ধতি চালু আছে: ক্যাশ অন ডেলিভারি।",
     ),
     [
       section(
@@ -206,8 +206,8 @@ export const SITE_PAGES = {
       section(
         text("No online payment at this time", "এই মুহূর্তে অনলাইন পেমেন্ট নেই"),
         text(
-          "Online card, mobile-wallet, or advance payment is not currently required or available through this storefront. Never send money to an unofficial account claiming to represent Mango Lover.",
-          "এই স্টোরফ্রন্টে বর্তমানে অনলাইন কার্ড, মোবাইল ওয়ালেট বা অগ্রিম পেমেন্টের প্রয়োজন বা ব্যবস্থা নেই। ম্যাংগো লাভারের পরিচয়ে কোনো অননুমোদিত অ্যাকাউন্টে টাকা পাঠাবেন না।",
+          "Online card, mobile-wallet, or advance payment is not currently required or available through this storefront. Never send money to an unofficial account claiming to represent Angonaloy.",
+          "এই স্টোরফ্রন্টে বর্তমানে অনলাইন কার্ড, মোবাইল ওয়ালেট বা অগ্রিম পেমেন্টের প্রয়োজন বা ব্যবস্থা নেই। আঙ্গনালয়ের পরিচয়ে কোনো অননুমোদিত অ্যাকাউন্টে টাকা পাঠাবেন না।",
         ),
       ),
     ],
@@ -216,8 +216,8 @@ export const SITE_PAGES = {
     "terms-and-conditions",
     text("Terms & Conditions", "শর্তাবলি"),
     text(
-      "These terms explain the basic conditions for browsing, ordering, receiving, and contacting Mango Lover BD.",
-      "এই শর্তাবলিতে ম্যাংগো লাভার বিডির ওয়েবসাইট ব্যবহার, অর্ডার, পণ্য গ্রহণ এবং যোগাযোগের মৌলিক নিয়মগুলো ব্যাখ্যা করা হয়েছে।",
+      "These terms explain the basic conditions for browsing, ordering, receiving, and contacting Angonaloy.",
+      "এই শর্তাবলিতে আঙ্গনালয়ের ওয়েবসাইট ব্যবহার, অর্ডার, পণ্য গ্রহণ এবং যোগাযোগের মৌলিক নিয়মগুলো ব্যাখ্যা করা হয়েছে।",
     ),
     [
       section(
@@ -230,8 +230,8 @@ export const SITE_PAGES = {
       section(
         text("Orders and acceptance", "অর্ডার ও গ্রহণ"),
         text(
-          "Submitting an order is a request to purchase. An order becomes confirmed when Mango Lover verifies the order and accepts it for dispatch. We may contact you to clarify details or decline an order that cannot be fulfilled.",
-          "অর্ডার দেওয়া একটি পণ্য কেনার অনুরোধ। ম্যাংগো লাভার অর্ডার যাচাই করে ডিসপ্যাচের জন্য গ্রহণ করলে অর্ডার কনফার্ম হয়। তথ্য পরিষ্কার করতে বা পূরণ করা সম্ভব নয় এমন অর্ডার বাতিল করতে আমরা আপনার সঙ্গে যোগাযোগ করতে পারি।",
+          "Submitting an order is a request to purchase. An order becomes confirmed when Angonaloy verifies the order and accepts it for dispatch. We may contact you to clarify details or decline an order that cannot be fulfilled.",
+          "অর্ডার দেওয়া একটি পণ্য কেনার অনুরোধ। আঙ্গনালয় অর্ডার যাচাই করে ডিসপ্যাচের জন্য গ্রহণ করলে অর্ডার কনফার্ম হয়। তথ্য পরিষ্কার করতে বা পূরণ করা সম্ভব নয় এমন অর্ডার বাতিল করতে আমরা আপনার সঙ্গে যোগাযোগ করতে পারি।",
         ),
       ),
       section(
@@ -261,8 +261,8 @@ export const SITE_PAGES = {
     "privacy-policy",
     text("Privacy Policy", "গোপনীয়তা নীতিমালা"),
     text(
-      "This policy explains what information Mango Lover may receive when you browse, contact us, or place an order.",
-      "আপনি ব্রাউজ, যোগাযোগ বা অর্ডার করার সময় ম্যাংগো লাভার কী ধরনের তথ্য পেতে পারে, এই নীতিমালায় তা ব্যাখ্যা করা হয়েছে।",
+      "This policy explains what information Angonaloy may receive when you browse, contact us, or place an order.",
+      "আপনি ব্রাউজ, যোগাযোগ বা অর্ডার করার সময় আঙ্গনালয় কী ধরনের তথ্য পেতে পারে, এই নীতিমালায় তা ব্যাখ্যা করা হয়েছে।",
     ),
     [
       section(
@@ -289,8 +289,8 @@ export const SITE_PAGES = {
       section(
         text("Sharing and service providers", "তথ্য শেয়ার ও সেবা প্রদানকারী"),
         text(
-          "We may share the information needed to fulfill an order with delivery or technology service providers working for Mango Lover. We do not sell customer information. We may disclose information when required to prevent fraud, protect our service, or comply with applicable law.",
-          "অর্ডার পূরণ করতে প্রয়োজনীয় তথ্য ম্যাংগো লাভারের হয়ে কাজ করা ডেলিভারি বা প্রযুক্তি সেবা প্রদানকারীর সঙ্গে শেয়ার করা হতে পারে। আমরা গ্রাহকের তথ্য বিক্রি করি না। জালিয়াতি রোধ, সেবা সুরক্ষা বা প্রযোজ্য আইন মেনে চলার জন্য প্রয়োজন হলে তথ্য প্রকাশ করা হতে পারে।",
+          "We may share the information needed to fulfill an order with delivery or technology service providers working for Angonaloy. We do not sell customer information. We may disclose information when required to prevent fraud, protect our service, or comply with applicable law.",
+          "অর্ডার পূরণ করতে প্রয়োজনীয় তথ্য আঙ্গনালয়ের হয়ে কাজ করা ডেলিভারি বা প্রযুক্তি সেবা প্রদানকারীর সঙ্গে শেয়ার করা হতে পারে। আমরা গ্রাহকের তথ্য বিক্রি করি না। জালিয়াতি রোধ, সেবা সুরক্ষা বা প্রযোজ্য আইন মেনে চলার জন্য প্রয়োজন হলে তথ্য প্রকাশ করা হতে পারে।",
         ),
       ),
       section(
@@ -388,7 +388,7 @@ export const SITE_PAGES = {
     [
       section(
         text("What payment methods do you accept?", "আপনারা কোন পেমেন্ট পদ্ধতি গ্রহণ করেন?"),
-        text("Mango Lover currently accepts Cash on Delivery only.", "ম্যাংগো লাভারে বর্তমানে শুধু ক্যাশ অন ডেলিভারি গ্রহণ করা হয়।"),
+        text("Angonaloy currently accepts Cash on Delivery only.", "আঙ্গনালয়ে বর্তমানে শুধু ক্যাশ অন ডেলিভারি গ্রহণ করা হয়।"),
       ),
       section(
         text("How much is delivery?", "ডেলিভারি চার্জ কত?"),
@@ -412,8 +412,8 @@ export const SITE_PAGES = {
     "track-order",
     text("Track Your Order", "অর্ডার ট্র্যাক করুন"),
     text(
-      "Our support team can help you check the latest status of your Mango Lover order.",
-      "ম্যাংগো লাভারের অর্ডারের সর্বশেষ অবস্থা জানতে আমাদের সাপোর্ট টিম আপনাকে সাহায্য করতে পারে।",
+      "Our support team can help you check the latest status of your Angonaloy order.",
+      "আঙ্গনালয়ের অর্ডারের সর্বশেষ অবস্থা জানতে আমাদের সাপোর্ট টিম আপনাকে সাহায্য করতে পারে।",
     ),
     [
       section(

@@ -764,7 +764,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           setOrderOpen(true);
                         }
                       }}
-                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#FBBB14] px-2 text-[14px] md:text-[10px] font-bold text-black transition-all hover:bg-[#e5a80f] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#d92c2d] px-2 text-[14px] md:text-[10px] font-bold text-white transition-all hover:bg-[#e5a80f] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       ক্যাশ অন ডেলিভারিতে অর্ডার করুন।
                     </Button>

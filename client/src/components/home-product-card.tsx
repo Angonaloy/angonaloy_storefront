@@ -104,7 +104,7 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
             "Default",
           );
         }}
-        className="mt-auto w-full border border-black/15 bg-[#FBBB14] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-auto w-full border border-black/15 bg-[#d92c2d] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
       >
         Add to Cart
       </button>

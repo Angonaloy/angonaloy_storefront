@@ -44,8 +44,8 @@ test("the Katimon hero button has the requested lift and press states", () => {
   assert.match(globalCssSource, /\.katimon-hero-button:focus:not\(:focus-visible\)\s*\{\s*outline: none;/);
 });
 
-test("the document background stays white behind the Katimon page", () => {
-  assert.match(globalCssSource, /html,\s*body\s*\{\s*background-color: #fff;\s*\}/);
+test("the document background stays the brand red behind the Katimon page", () => {
+  assert.match(globalCssSource, /html,\s*body\s*\{\s*background-color: #d92c2d;\s*\}/);
   assert.doesNotMatch(globalCssSource, /html,\s*body\s*\{\s*background-color: #FBBB14;/);
 });
 

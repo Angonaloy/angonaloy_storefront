@@ -252,13 +252,13 @@ test("prioritizes early live category images with lightweight thumbnails", () =>
   assert.doesNotMatch(homeSource, /image: "\/categories\//);
 });
 
-test("uses the Mango Lover hero poster", () => {
-  assert.match(homeSource, /src="\/hero-mango-lover\.webp\?v=2"/);
-  assert.match(homeSource, /src="\/hero-desktop\.webp"/);
+test("uses the Angonaloy hero poster", () => {
+  assert.match(homeSource, /src="\/hero-mango-lover\.webp\?v=3"/);
+  assert.match(homeSource, /src="\/hero-desktop\.webp\?v=2"/);
   assert.doesNotMatch(homeSource, /hero1\.webp/);
 });
 
-test("renders a responsive Mango Lover hero inside the mobile page gutter", () => {
+test("renders a responsive Angonaloy hero inside the mobile page gutter", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
   assert.match(homeSource, /className="relative w-full px-4 pt-4 md:px-0 md:pt-0"/);
   assert.match(homeSource, /className="relative z-10 aspect-\[940\/1080\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-auto md:min-h-\[600px\] md:rounded-\[6px\]"/);
