@@ -772,7 +772,7 @@ Expected: record the actual delivered `Cache-Control`, CDN cache status, and con
 
 - [ ] **Step 7: Validate first-visit behavior in a clean browser profile after deploy**
 
-Confirm all of the following on `https://mangoloverbd.vercel.app/`:
+Confirm all of the following on `https://angonaloy.shop/`:
 
 1. The parser starts `/hero-mango-lover.webp` before React finishes mounting.
 2. The eight category requests use versioned 256 px WebP files.
