@@ -340,7 +340,7 @@ export default function Home() {
       <section className="w-full overflow-hidden bg-[#f6f6f6] pb-10 pt-4 md:py-16">
         <motion.div
           ref={whatsNewRef}
-          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
           initial="hidden"
           animate={whatsNewInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
@@ -394,7 +394,7 @@ export default function Home() {
       <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           ref={latestDropRef}
-          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
           initial="hidden"
           animate={latestDropInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
