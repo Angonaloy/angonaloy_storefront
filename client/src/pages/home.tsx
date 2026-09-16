@@ -253,7 +253,7 @@ export default function Home() {
         <div className="relative w-full px-0 pt-2 md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-video md:rounded-[6px]"
+            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none bg-white md:aspect-video md:rounded-[6px] md:border md:border-black/10"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -294,11 +294,6 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-2 left-2.5 top-0 z-30 w-px bg-black/10 md:hidden" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-2 right-2.5 top-0 z-30 w-px bg-black/10 md:hidden" />
-          {/* Extended horizontal border lines — mobile only, overhang the image corners to form plus marks */}
-          <div aria-hidden="true" className="pointer-events-none absolute left-[2px] right-[2px] top-2 z-30 h-px bg-black/10 md:hidden" />
-          <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-[2px] right-[2px] z-30 h-px bg-black/10 md:hidden" />
         </div>
       </section>
 

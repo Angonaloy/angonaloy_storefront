@@ -105,12 +105,10 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
             "Default",
           );
         }}
-        className="add-to-cart-button mt-auto flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] border-none bg-[#d92c2d] px-3 transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d92c2d]"
+        className="add-to-cart-button mt-auto flex w-full cursor-pointer items-center justify-center gap-2 border border-black/15 bg-[#d92c2d] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d92c2d]"
       >
         <BagIcon className="add-to-cart-icon h-4 w-4 text-white" />
-        <span className="font-sans text-[15px] leading-[20px] tracking-[1px] text-white">
-          Add to Cart
-        </span>
+        Add to Cart
       </button>
     </motion.article>
   );

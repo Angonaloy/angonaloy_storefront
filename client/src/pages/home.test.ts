@@ -281,13 +281,11 @@ test("uses the Angonaloy hero poster", () => {
 test("renders a shorter edge-to-edge Angonaloy hero on mobile", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
   assert.match(homeSource, /className="relative w-full px-0 pt-2 md:px-0 md:pt-0"/);
-  assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none border border-black\/10 bg-white md:aspect-video md:rounded-\[6px\]"/);
+  assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none bg-white md:aspect-video md:rounded-\[6px\] md:border md:border-black\/10"/);
   assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
   assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);
-  assert.match(homeSource, /className="pointer-events-none absolute -bottom-2 left-2\.5 top-0 z-30 w-px bg-black\/10 md:hidden"/);
-  assert.match(homeSource, /className="pointer-events-none absolute -bottom-2 right-2\.5 top-0 z-30 w-px bg-black\/10 md:hidden"/);
-  assert.match(homeSource, /className="pointer-events-none absolute left-\[2px\] right-\[2px\] top-2 z-30 h-px bg-black\/10 md:hidden"/);
-  assert.match(homeSource, /className="pointer-events-none absolute bottom-0 left-\[2px\] right-\[2px\] z-30 h-px bg-black\/10 md:hidden"/);
+  assert.doesNotMatch(homeSource, /-bottom-2 (left|right)-2\.5 top-0 z-30 w-px/);
+  assert.doesNotMatch(homeSource, /(left-\[2px\] right-\[2px\] top-2|bottom-0 left-\[2px\] right-\[2px\]) z-30 h-px/);
   assert.doesNotMatch(homeSource, /inset-x-0 top-4 z-30 h-px/);
   assert.match(homeSource, /Foggy gradient bottom blend/);
   assert.match(homeSource, /<h1/);

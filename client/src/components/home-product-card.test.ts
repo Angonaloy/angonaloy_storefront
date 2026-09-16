@@ -17,7 +17,7 @@ test("uses one styled product card across all homepage catalog sections", () => 
   assert.match(cardSource, /Add to Cart/);
   assert.match(cardSource, /add-to-cart-button/);
   assert.match(cardSource, /bg-\[#d92c2d\]/);
-  assert.match(cardSource, /rounded-\[4px\]/);
+  assert.match(cardSource, /uppercase tracking-\[0\.2em\]/);
   assert.match(cardSource, /add-to-cart-icon/);
   assert.match(cardSource, /<BagIcon className="add-to-cart-icon/);
   assert.match(cardSource, /addToCart/);
