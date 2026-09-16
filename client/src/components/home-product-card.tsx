@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { BagIcon } from "@/components/bag-icon";
 
 import { useCart } from "@/contexts/cart-context";
 import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
@@ -104,9 +105,12 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
             "Default",
           );
         }}
-        className="mt-auto w-full border border-black/15 bg-[#d92c2d] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="add-to-cart-button mt-auto flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] border-none bg-[#d92c2d] px-3 transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d92c2d]"
       >
-        Add to Cart
+        <BagIcon className="add-to-cart-icon h-5 w-5 text-white" />
+        <span className="font-sans text-[17px] leading-[22px] tracking-[1px] text-white">
+          Add to Cart
+        </span>
       </button>
     </motion.article>
   );

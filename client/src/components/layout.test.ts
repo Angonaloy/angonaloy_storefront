@@ -20,8 +20,10 @@ test("hides the mobile navigation dock at the document bottom with Framer Motion
 });
 
 test("uses the Solar cart icon in both desktop and mobile navigation", () => {
-  assert.match(layoutSource, /viewBox="0 0 24 24"/);
-  assert.match(layoutSource, /M16 9a1 1 0 1 1-2 0/);
+  const bagIconSource = readFileSync(new URL("./bag-icon.tsx", import.meta.url), "utf8");
+  assert.match(layoutSource, /from "@\/components\/bag-icon"/);
+  assert.match(bagIconSource, /viewBox="0 0 24 24"/);
+  assert.match(bagIconSource, /M16 9a1 1 0 1 1-2 0/);
   assert.equal((layoutSource.match(/<BagIcon /g) ?? []).length, 2);
 });
 

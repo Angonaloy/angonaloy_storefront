@@ -217,6 +217,66 @@ section.mx-auto.max-w-4xl.px-5.pb-8.text-center > img[src="/katimon-description-
   scrollbar-width: none;
 }
 
+@keyframes add-to-cart-flicker {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 1;
+  }
+
+  54% {
+    opacity: 0;
+  }
+
+  56% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 0;
+  }
+
+  94% {
+    opacity: 1;
+  }
+
+  96% {
+    opacity: 0;
+  }
+
+  98% {
+    opacity: 1;
+  }
+
+  99% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.add-to-cart-button:hover .add-to-cart-icon {
+  animation: add-to-cart-flicker 2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-to-cart-button:hover .add-to-cart-icon {
+    animation: none;
+  }
+}
+
 @keyframes image-auto-slider-scroll {
   0% {
     transform: translateX(0);
