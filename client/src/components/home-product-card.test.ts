@@ -12,6 +12,7 @@ test("uses one styled product card across all homepage catalog sections", () => 
   assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map\(\(product\) => <HomeProductCard/);
   assert.match(homeSource, /homepageProducts\.slice\(0, 4\)\.map\(\(product\) => <HomeProductCard/);
   assert.match(cardSource, /Save/);
+  assert.match(cardSource, /rounded-\[6px\] bg-\[#d92c2d\][\s\S]*?text-white/);
   assert.match(cardSource, /compareAtPrice/);
   assert.match(cardSource, /Add to Cart/);
   assert.match(cardSource, /add-to-cart-button/);

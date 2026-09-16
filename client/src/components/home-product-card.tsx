@@ -62,7 +62,7 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
         </div>
 
         <div className="space-y-2 pl-0 pr-0 pb-4 pt-3 md:pl-0 md:pr-0 md:pb-5">
-          <h3 className="line-clamp-1 min-h-[1.2em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[1.2em] md:text-base md:tracking-[0.08em]">
+          <h3 className="line-clamp-1 min-h-[1.2em] text-[13px] font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[1.2em] md:text-[15px] md:tracking-[0.08em]">
             {product.name}
           </h3>
           <div className="mt-2 flex flex-nowrap items-center gap-x-1">
@@ -75,7 +75,7 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
               </span>
             ) : null}
             {hasDiscount ? (
-              <span className="ml-1 inline-flex shrink-0 whitespace-nowrap rounded-full bg-[#FBBB14]/35 px-2.5 py-1 text-[10px] font-medium text-black">
+              <span className="ml-1 inline-flex shrink-0 whitespace-nowrap rounded-[6px] bg-[#d92c2d] px-2.5 py-1 text-[10px] font-medium text-white">
                 Save {formatCardAmount(compareAtPrice - currentPrice)}
               </span>
             ) : null}
@@ -107,8 +107,8 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
         }}
         className="add-to-cart-button mt-auto flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] border-none bg-[#d92c2d] px-3 transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d92c2d]"
       >
-        <BagIcon className="add-to-cart-icon h-5 w-5 text-white" />
-        <span className="font-sans text-[17px] leading-[22px] tracking-[1px] text-white">
+        <BagIcon className="add-to-cart-icon h-4 w-4 text-white" />
+        <span className="font-sans text-[15px] leading-[20px] tracking-[1px] text-white">
           Add to Cart
         </span>
       </button>
