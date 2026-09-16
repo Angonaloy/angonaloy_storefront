@@ -567,7 +567,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </a>
             </div>
             <div className="space-y-6 pt-2">
-              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Newsletter</span>
+              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FF2849] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Newsletter</span>
               <div className="flex border-b border-black/10 pb-4">
                 <input
                   type="email"
@@ -582,7 +582,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Link Columns */}
           <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-8">
             <div className="space-y-8">
-              <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Information</span>
+              <span className="text-[28px] md:text-[22px] font-bold text-[#FF2849] block">Information</span>
               <ul className="space-y-3 text-[15px] md:text-[15px] font-bold text-black">
                 {INFORMATION_LINKS.map(([label, href]) => (
                   <li key={label}><Link href={href}><a className="hover:text-black transition-colors block">{label}</a></Link></li>
@@ -591,7 +591,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-8">
-              <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Shop</span>
+              <span className="text-[28px] md:text-[22px] font-bold text-[#FF2849] block">Shop</span>
               <ul className="space-y-3 text-[17px] md:text-[15px] font-bold text-black">
                 {visibleCollections.map(({ slug, label }) => (
                   <li key={slug}>
@@ -604,7 +604,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="space-y-8">
-              <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Support</span>
+              <span className="text-[28px] md:text-[22px] font-bold text-[#FF2849] block">Support</span>
               <ul className="space-y-3 text-[17px] md:text-[15px] font-bold text-black">
                 {SUPPORT_LINKS.map(([label, href]) => (
                   <li key={label}><Link href={href}><a className="hover:text-black transition-colors block">{label}</a></Link></li>
@@ -625,7 +625,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           {/* Bengali Brand Name */}
           <p
-            className="text-center text-[68px] md:text-[76px] font-bold text-[#FBBB14] mb-8 tracking-wide"
+            className="text-center text-[84px] md:text-[96px] font-bold text-[#FF2849] mb-8 tracking-wide"
             style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
           >
             আঙ্গনালয়
