@@ -39,6 +39,18 @@ export const FEATURED_COLLECTIONS = [
     productSlugs: ["katimon-mango"],
   },
   {
+    slug: "home-essentials",
+    label: "Home Essentials",
+    image: "/categories/home-essentials-1-320.webp",
+    productSlugs: ["glass-water-bottles-with-time-marker"],
+  },
+  {
+    slug: "kitchen-essentials",
+    label: "Kitchen Essentials",
+    image: "/categories/kitchen-essentials-1-320.webp",
+    productSlugs: ["2-in-1-glass-oil-bottle-with-sprayer"],
+  },
+  {
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",

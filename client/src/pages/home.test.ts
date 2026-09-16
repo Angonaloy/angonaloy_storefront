@@ -128,6 +128,16 @@ test("centers Featured Categories on desktop", () => {
   assert.match(categoriesSection, /lg:flex lg:justify-center/);
 });
 
+test("uses larger 120px category imagery with matching mobile tap targets", () => {
+  const categoriesSection = homeSource.slice(
+    homeSource.indexOf("{/* Categories Section */}"),
+    homeSource.indexOf("{/* What's New Section */}"),
+  );
+
+  assert.match(categoriesSection, /group flex w-\[120px\][\s\S]*sm:w-auto/);
+  assert.match(categoriesSection, /aspect-square w-\[120px\][\s\S]*sm:w-\[112px\]/);
+});
+
 test("uses the shorter Functional Food title only in Featured Categories", () => {
   const categoriesSection = homeSource.slice(
     homeSource.indexOf("{/* Categories Section */}"),

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { test } from "node:test";
 import {
   FEATURED_COLLECTIONS,
@@ -10,9 +11,11 @@ import {
   getVisibleFeaturedCollections,
 } from "./featured-collections";
 
-test("defines the nine homepage collections", () => {
+test("defines the eleven homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
     "fresh-mango",
+    "home-essentials",
+    "kitchen-essentials",
     "homemade",
     "functional-food",
     "honey",
@@ -45,10 +48,60 @@ test("assigns every current product to exactly one collection", () => {
     "sugarcane-juice-powder",
     "amsotto-pickle",
     "lachcha-semai",
+    "glass-water-bottles-with-time-marker",
+    "2-in-1-glass-oil-bottle-with-sprayer",
   ];
 
   assert.equal(new Set(assignments.map(({ productSlug }) => productSlug)).size, assignments.length);
   assert.deepEqual(assignments.map(({ productSlug }) => productSlug).sort(), productSlugs.sort());
+});
+
+test("maps Glass Water Bottles to the visible Home Essentials collection", () => {
+  const homeEssentials = getFeaturedCollection("home-essentials");
+  const waterBottle = {
+    slug: "glass-water-bottles-with-time-marker",
+    name: "Glass Water Bottles With Time Marker",
+  };
+
+  assert.ok(homeEssentials);
+  assert.equal(homeEssentials.label, "Home Essentials");
+  assert.equal(homeEssentials.image, "/categories/home-essentials-1-320.webp");
+  assert.deepEqual(homeEssentials.productSlugs, [waterBottle.slug]);
+  assert.deepEqual(
+    getVisibleFeaturedCollections([waterBottle]).map(({ slug }) => slug),
+    ["home-essentials"],
+  );
+});
+
+test("ships Home Essentials category artwork", () => {
+  assert.equal(
+    existsSync(new URL("../../public/categories/home-essentials-1-320.webp", import.meta.url)),
+    true,
+  );
+});
+
+test("maps Glass Oil Bottle With Sprayer to the visible Kitchen Essentials collection", () => {
+  const kitchenEssentials = getFeaturedCollection("kitchen-essentials");
+  const oilBottle = {
+    slug: "2-in-1-glass-oil-bottle-with-sprayer",
+    name: "2-in-1 Glass Oil Bottle With Sprayer",
+  };
+
+  assert.ok(kitchenEssentials);
+  assert.equal(kitchenEssentials.label, "Kitchen Essentials");
+  assert.equal(kitchenEssentials.image, "/categories/kitchen-essentials-1-320.webp");
+  assert.deepEqual(kitchenEssentials.productSlugs, [oilBottle.slug]);
+  assert.deepEqual(
+    getVisibleFeaturedCollections([oilBottle]).map(({ slug }) => slug),
+    ["kitchen-essentials"],
+  );
+});
+
+test("ships Kitchen Essentials category artwork", () => {
+  assert.equal(
+    existsSync(new URL("../../public/categories/kitchen-essentials-1-320.webp", import.meta.url)),
+    true,
+  );
 });
 
 test("assigns Honey Nut to Nuts & Seeds instead of Honey", () => {
@@ -161,7 +214,6 @@ test("orders Top Selling Products with the three hero products first", () => {
       "kalojira-mixed",
       "litchi-flower-honey",
       "black-seed-flower-honey",
-      "seed-nut-mix",
     ],
   );
 });
