@@ -253,7 +253,7 @@ export default function Home() {
         <div className="relative w-full px-0 pt-4 md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/1000] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-auto md:min-h-[600px] md:rounded-[6px]"
+            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-auto md:min-h-[600px] md:rounded-[6px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
