@@ -10,14 +10,14 @@ import {
 
 const baseHtml = `<!doctype html>
 <html><head>
-  <title>ম্যাংগো লাভার - Mango Lover</title>
+  <title>Angonaloy-আঙ্গনালয়</title>
   <meta name="description" content="Default description" />
   <meta property="og:title" content="Default title" />
   <meta property="og:description" content="Default description" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.mangolover.com.bd/" />
-  <meta property="og:image" content="https://www.mangolover.com.bd/opengraph.jpg" />
-  <link rel="canonical" href="https://www.mangolover.com.bd/" />
+  <meta property="og:url" content="https://angonaloy.shop/" />
+  <meta property="og:image" content="https://angonaloy.shop/opengraph.jpg" />
+  <link rel="canonical" href="https://angonaloy.shop/" />
 </head><body></body></html>`;
 
 test("uses an empty successful public catalog as an empty catalog", async () => {
@@ -106,7 +106,7 @@ test("uses the fixed Open Graph image for an unsafe product image URL", () => {
     image_url: "javascript:alert(1)",
   });
 
-  assert.match(html, /https:\/\/www\.mangolover\.com\.bd\/opengraph\.jpg/);
+  assert.match(html, /https:\/\/angonaloy\.shop\/opengraph\.jpg/);
   assert.doesNotMatch(html, /javascript:alert/);
 });
 

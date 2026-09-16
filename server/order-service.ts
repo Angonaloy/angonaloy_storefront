@@ -76,7 +76,7 @@ function getCanonicalOrderRef(value: unknown) {
 export async function processOrder(order: OrderRequest, dependencies: OrderServiceDependencies = {}) {
   const configuredMerchantSuiteUrl = (dependencies.merchantSuiteUrl
     ?? process.env.MERCHANT_SUITE_URL
-    ?? (process.env.NODE_ENV === "production" ? "https://admin.mangolover.com.bd" : undefined)
+    ?? (process.env.NODE_ENV === "production" ? "https://angonaloy-commerceos.vercel.app" : undefined)
     ?? "").replace(/\/$/, "");
   const fetchImpl = dependencies.fetchImpl ?? fetch;
   try {

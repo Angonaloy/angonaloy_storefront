@@ -14,7 +14,7 @@ test("renders semantic bilingual site information content", () => {
   assert.match(pageSource, /section\.body\.bn/);
 });
 
-test("links customer support to Mango Lover WhatsApp", () => {
+test("links customer support to Angonaloy WhatsApp", () => {
   assert.match(pageSource, /CONTACT_DETAILS\.whatsappHref/);
   assert.doesNotMatch(pageSource, /8801733670129/);
 });

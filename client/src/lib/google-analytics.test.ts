@@ -21,7 +21,7 @@ test("normalizes storefront items into the merchant team's GA4 item shape", () =
     {
       item_id: "mango-himsagar",
       item_name: "Himsagar Mango — 10kg",
-      item_brand: "Mango Lover BD",
+      item_brand: "Angonaloy",
       item_category: "",
       item_variant: "10kg",
       item_list_name: "",
@@ -38,7 +38,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
   const payload = buildGoogleEcommercePayload({
     event: "view_item",
     pageType: "product",
-    title: "Himsagar Mango | Mango Lover BD",
+    title: "Himsagar Mango | Angonaloy",
     url: "https://angonaloy.shop/product/himsagar-mango?utm=1",
     language: "en",
     value: 1850,
@@ -56,7 +56,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
   assert.deepEqual(payload, {
     event: "view_item",
     page_type: "product",
-    page_title: "Himsagar Mango | Mango Lover BD",
+    page_title: "Himsagar Mango | Angonaloy",
     page_url: "https://angonaloy.shop/product/himsagar-mango",
     page_path: "/product/himsagar-mango",
     page_language: "en",
@@ -74,7 +74,7 @@ test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
         {
           item_id: "mango-himsagar",
           item_name: "Himsagar Mango — 10kg",
-          item_brand: "Mango Lover BD",
+          item_brand: "Angonaloy",
           item_category: "",
           item_variant: "10kg",
           item_list_name: "",
@@ -106,7 +106,7 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
     location: new URL("https://angonaloy.shop/checkout"),
-    document: { title: "Checkout | Mango Lover BD", documentElement: { lang: "en" } },
+    document: { title: "Checkout | Angonaloy", documentElement: { lang: "en" } },
   };
 
   trackGoogleEcommerceEvent(
@@ -123,7 +123,7 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
     {
       event: "begin_checkout",
       page_type: "checkout",
-      page_title: "Checkout | Mango Lover BD",
+      page_title: "Checkout | Angonaloy",
       page_url: "https://angonaloy.shop/checkout",
       page_path: "/checkout",
       page_language: "en",
@@ -141,7 +141,7 @@ test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency
           {
             item_id: "mango-himsagar",
             item_name: "Himsagar Mango",
-            item_brand: "Mango Lover BD",
+            item_brand: "Angonaloy",
             item_category: "",
             item_variant: "",
             item_list_name: "",
@@ -180,7 +180,7 @@ test("uses the GA4 select_item ecommerce shape for a selected live pack", () => 
   assert.deepEqual(payload?.ecommerce.items, [{
     item_id: "honey-1kg",
     item_name: "Sundarbans Natural Honey — 1KG",
-    item_brand: "Mango Lover BD",
+    item_brand: "Angonaloy",
     item_category: "",
     item_variant: "1KG",
     item_list_name: "",
@@ -233,7 +233,7 @@ test("builds the merchant purchase shape with transaction, shipping, and custome
     items: [{
       item_id: "honey-1kg",
       item_name: "Sundarbans Natural Honey — 1KG",
-      item_brand: "Mango Lover BD",
+      item_brand: "Angonaloy",
       item_category: "",
       item_variant: "1KG",
       item_list_name: "",

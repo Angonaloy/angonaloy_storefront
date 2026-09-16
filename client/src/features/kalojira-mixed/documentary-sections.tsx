@@ -260,7 +260,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
               quote: review.text,
               name: review.name,
               role: "কালোজিরা মিক্সড",
-              company: "ম্যাংগো লাভার",
+              company: "আঙ্গনালয়",
             }))}
             className="mt-12"
           />

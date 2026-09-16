@@ -12,7 +12,7 @@ import {
   trackGoogleEcommerceEvent,
 } from "@/lib/google-analytics";
 
-const WHATSAPP_HREF = `https://wa.me/8801301636461?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধুর অর্ডার সম্পর্কে জানতে চাই।")}`;
+const WHATSAPP_HREF = `https://wa.me/8801819502705?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধুর অর্ডার সম্পর্কে জানতে চাই।")}`;
 
 function getSessionStorage() {
   if (typeof window === "undefined") return undefined;
@@ -27,11 +27,11 @@ function SupportActions() {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
       <a
-        href="tel:+8801301636461"
+        href="tel:+8801819502705"
         className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#285240] bg-white px-5 py-3 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       >
         <Phone className="size-4" aria-hidden="true" />
-        কল করুন: 01301636461
+        কল করুন: 01819502705
       </a>
       <a
         href={WHATSAPP_HREF}

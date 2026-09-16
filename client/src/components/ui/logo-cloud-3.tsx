@@ -16,7 +16,7 @@ const itemIcons: LucideIcon[] = [TreePine, PackageCheck, HandCoins];
 export default function LogoCloudBlock({ items }: LogoCloudBlockProps) {
   return (
     <section
-      aria-label="ম্যাংগো লাভারের প্রতিশ্রুতি"
+      aria-label="আঙ্গনালয়ের প্রতিশ্রুতি"
       className="flex w-full items-center overflow-hidden border-b border-[#19382d]/25 bg-[#FBBB14] px-4 py-3 text-[#19382d]"
     >
       <style>{`

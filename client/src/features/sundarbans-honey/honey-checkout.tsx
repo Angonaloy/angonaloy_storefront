@@ -39,9 +39,9 @@ import {
   type HoneyPackOption,
 } from "./order";
 
-const PHONE_NUMBER = "01301636461";
-const PHONE_HREF = "tel:+8801301636461";
-const WHATSAPP_HREF = `https://wa.me/8801301636461?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধু অর্ডার করতে চাই।")}`;
+const PHONE_NUMBER = "01819502705";
+const PHONE_HREF = "tel:+8801819502705";
+const WHATSAPP_HREF = `https://wa.me/8801819502705?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধু অর্ডার করতে চাই।")}`;
 const AVAILABILITY_ERROR = "এই প্যাকটি এখন অর্ডারের জন্য পাওয়া যাচ্ছে না। অন্য প্যাক বেছে নিন বা আমাদের কল করুন।";
 
 type RefreshResult<T> = {

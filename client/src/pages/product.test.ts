@@ -8,7 +8,7 @@ const indexSource = readFileSync(new URL("../index.css", import.meta.url), "utf8
 test("uses distinct vibrant channel colors for phone and WhatsApp order actions", () => {
   assert.match(
     productSource,
-    /href="tel:\+8801301636461"[\s\S]*?bg-\[#f26b4f\][\s\S]*?text-white[\s\S]*?hover:bg-\[#d9573d\]/,
+    /href="tel:\+8801819502705"[\s\S]*?bg-\[#f26b4f\][\s\S]*?text-white[\s\S]*?hover:bg-\[#d9573d\]/,
   );
   assert.match(
     productSource,

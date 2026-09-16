@@ -12,7 +12,7 @@ import {
 const storefrontId = process.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
 const configuredMerchantSuiteUrl = (process.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
 const MERCHANT_SUITE_URL = configuredMerchantSuiteUrl
-  || (process.env.NODE_ENV === "production" ? "https://admin.mangolover.com.bd" : "");
+  || (process.env.NODE_ENV === "production" ? "https://angonaloy-commerceos.vercel.app" : "");
 if (!MERCHANT_SUITE_URL) {
   throw new Error("VITE_MERCHANT_SUITE_URL environment variable is not set");
 }

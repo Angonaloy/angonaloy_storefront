@@ -11,7 +11,7 @@ test("registers Kalojira landing and thank-you routes in specific-first order", 
   assert.ok(thankYouRoute >= 0);
   assert.ok(landingRoute >= 0);
   assert.ok(thankYouRoute < landingRoute);
-  assert.match(app, /কালোজিরা মিক্সড \| ম্যাংগো লাভার/);
-  assert.match(app, /কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার/);
+  assert.match(app, /কালোজিরা মিক্সড \| আঙ্গনালয়/);
+  assert.match(app, /কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ \| আঙ্গনালয়/);
   assert.match(build, /"kalojira-mixed"/);
 });

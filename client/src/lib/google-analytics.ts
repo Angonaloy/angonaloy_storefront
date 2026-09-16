@@ -8,7 +8,7 @@ export type GoogleEcommerceEventName =
 export type GoogleAnalyticsItem = {
   item_id: string;
   item_name: string;
-  item_brand: "Mango Lover BD";
+  item_brand: "Angonaloy";
   item_category: string;
   item_variant: string;
   item_list_name: string;
@@ -118,7 +118,7 @@ export function toGoogleAnalyticsItem(input: GoogleAnalyticsItemInput): GoogleAn
   const item: GoogleAnalyticsItem = {
     item_id: String(input.id || input.name),
     item_name: variant ? `${input.name} — ${variant}` : input.name,
-    item_brand: "Mango Lover BD",
+    item_brand: "Angonaloy",
     item_category: category,
     item_variant: variant,
     item_list_name: "",

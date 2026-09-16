@@ -6,7 +6,7 @@ const LEGACY_GONE_HTML = `<!doctype html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, follow" />
-  <title>Product no longer available | ম্যাংগো লাভার - Mango Lover</title>
+  <title>Product no longer available | Angonaloy-আঙ্গনালয়</title>
 </head>
 <body>
   <main>

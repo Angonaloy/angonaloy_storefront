@@ -53,8 +53,8 @@ test("owns campaign metadata outside the animated route lifecycle", () => {
   assert.match(app, /robots\.content = "noindex, nofollow"/);
   assert.match(app, /document\.title = previousTitle/);
   assert.match(app, /robots\.content = previousRobotsContent/);
-  assert.match(app, /সুন্দরবনের প্রাকৃতিক মধু \| ম্যাংগো লাভার/);
-  assert.match(app, /অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার/);
+  assert.match(app, /সুন্দরবনের প্রাকৃতিক মধু \| আঙ্গনালয়/);
+  assert.match(app, /অর্ডারের জন্য ধন্যবাদ \| আঙ্গনালয়/);
 
   for (const page of [landingPage, thankYouPage]) {
     assert.doesNotMatch(page, /document\.(?:title|head)/);

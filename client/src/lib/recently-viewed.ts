@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { StorefrontProduct } from "./storefront-products";
 
-export const RECENTLY_VIEWED_STORAGE_KEY = "mango-lover-recently-viewed-v1";
+export const RECENTLY_VIEWED_STORAGE_KEY = "angonaloy-recently-viewed-v1";
 export const MAX_RECENTLY_VIEWED = 8;
 const RECENTLY_VIEWED_EVENT = "recently-viewed-products:changed";
 

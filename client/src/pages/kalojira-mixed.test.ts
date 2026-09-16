@@ -100,7 +100,7 @@ test("review section uses the supplied testimonial card treatment without fake p
   assert.doesNotMatch(contentSource, /ডেমো রিভিউ — প্রকৃত গ্রাহক মতামত নয়/);
   assert.doesNotMatch(sectionsSource, /নিচের কার্ডগুলো ডেমো কনটেন্ট/);
   assert.match(sectionsSource, /role: "কালোজিরা মিক্সড"/);
-  assert.match(sectionsSource, /company: "ম্যাংগো লাভার"/);
+  assert.match(sectionsSource, /company: "আঙ্গনালয়"/);
   assert.doesNotMatch(sectionsSource, /role: "ডেমো রিভিউ"/);
   assert.match(testimonialsSource, /md:grid-cols-3/);
   assert.match(testimonialsSource, /Quote/);

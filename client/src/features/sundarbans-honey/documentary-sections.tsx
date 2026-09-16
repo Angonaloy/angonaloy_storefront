@@ -24,7 +24,7 @@ import {
   waysToEnjoyPoints,
   whoCanConsumeHeading,
   whoCanConsumePoints,
-  whyMangoLoverHeading,
+  whyAngonaloyHeading,
   whySpecialHeading,
   whySpecialLead,
   whySpecialPoints,
@@ -461,12 +461,12 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
       </section>
 
       <section aria-labelledby="honey-why-brand-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading id="honey-why-brand-heading" label="স্বচ্ছতার সঙ্গে" heading={whyMangoLoverHeading} description={comparisonHeading} />
+        <SectionHeading id="honey-why-brand-heading" label="স্বচ্ছতার সঙ্গে" heading={whyAngonaloyHeading} description={comparisonHeading} />
         <div className="mx-auto max-w-5xl px-4 pb-6 sm:px-6 sm:pb-8">
           <div>
             <img
               src="/step/sundarbans-natural-honey/mango-lover-vs-other-brands-v1.webp"
-              alt="Mango Lover vs অন্যান্য Brands — পার্থক্যটা নিজেই দেখুন"
+              alt="Angonaloy vs অন্যান্য Brands — পার্থক্যটা নিজেই দেখুন"
               className="mx-auto h-auto w-full max-w-full"
               width="1536"
               height="1024"

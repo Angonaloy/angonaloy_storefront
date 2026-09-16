@@ -1,4 +1,4 @@
-# CLAUDE.md — Mango Lover BD Storefront Agent Guide
+# CLAUDE.md — Angonaloy-আঙ্গনালয় Storefront Agent Guide
 
 Authoritative guide for AI agents working in this repository. Read it fully before changing anything.
 The **Hard Rules** are non-negotiable.
@@ -9,7 +9,7 @@ The **Hard Rules** are non-negotiable.
 
 ## 1. What this repo is
 
-The **public storefront for Mango Lover BD** (`ম্যাংগো লাভার`) — the site customers shop on.
+The **public storefront for Angonaloy-আঙ্গনালয়** (`আঙ্গনালয়`) — the site customers shop on.
 React 19 + Vite + Tailwind + wouter, with a small Express server for local dev and a Vercel
 serverless function for checkout.
 
@@ -109,7 +109,7 @@ build-time config or from the API key, never from user input.
 
 ## 4. Supabase and product data
 
-Products live in the **Mango Lover BD Supabase project** (`ldiktvcavyabivpxfwpn`), which the dashboard
+Products live in the **Angonaloy Supabase project** (`ldiktvcavyabivpxfwpn`), which the dashboard
 and this storefront share. But they reach it very differently.
 
 ### You cannot add products from this repo
@@ -255,11 +255,11 @@ what this codebase already does.
 
 | Asset | File | Wired into |
 |---|---|---|
-| Nav logo | `attached_assets/mango-lover-logo.avif` | `client/src/components/layout.tsx` |
+| Nav logo | `attached_assets/angonaloy-logo.webp` | `client/src/components/layout.tsx` |
 | Hero poster | `client/public/hero-mango-lover.webp` | `client/src/pages/home.tsx` (~line 289) |
 | Brand yellow | `#FBBB14` | hero background |
 | Brand ink | `#163B33` | hero CTA |
-| Wordmark | `ম্যাংগো লাভার - Mango Lover` | `layout.tsx` footer, `client/index.html` |
+| Wordmark | `Angonaloy-আঙ্গনালয়` | `layout.tsx` footer, `client/index.html` |
 
 **The homepage hero is inline in `client/src/pages/home.tsx`.**
 `client/src/components/hero.tsx` is **dead code** — nothing imports it. Editing it changes nothing on
@@ -277,8 +277,8 @@ Stepprs/template cleanup is done: the hardcoded `stepprs-massage-insoles` fallba
 (`bundle-section`, `booking-section`, `customer-reviews`, `categories`, `video-reel`)
 and their orphaned media (`hero-insoles.png`, `insoles.png`, `peptide-lip-benefits.png`,
 `vid_0*.mp4`, unreferenced `AQP*.mp4`, `makeup_pen_4_in_1.png`, `peptide_lip_tint_*.png`)
-were removed, and `client/index.html` now uses canonical Mango Lover meta with
-`https://www.mangolover.com.bd/` OG URLs.
+were removed, and `client/index.html` now uses canonical Angonaloy meta with
+`https://angonaloy.shop/` OG URLs.
 No loaded webfont has Bengali glyphs, so the Bangla wordmark falls back
 to a system font — Hind Siliguri or Anek Bangla would fix it.
 

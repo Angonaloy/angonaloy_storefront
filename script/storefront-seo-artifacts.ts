@@ -12,8 +12,8 @@ export type BuildCatalogResult = {
   source: "live" | "fallback";
 };
 
-const SITE_URL = "https://www.mangolover.com.bd";
-const DEFAULT_DESCRIPTION = "ম্যাংগো লাভার — Mango Lover BD. Fresh, authentic products delivered across Bangladesh.";
+const SITE_URL = "https://angonaloy.shop";
+const DEFAULT_DESCRIPTION = "Angonaloy-আঙ্গনালয়. Fresh, authentic products delivered across Bangladesh.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/opengraph.jpg`;
 const PRODUCT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LEGACY_GONE_PRODUCT_SLUGS = new Set([
@@ -168,7 +168,7 @@ export function injectProductMeta(baseHtml: string, product: BuildProduct) {
   const description = (typeof product.description === "string" && product.description.trim()
     ? product.description
     : DEFAULT_DESCRIPTION).slice(0, 160);
-  const title = `${product.name} | ম্যাংগো লাভার - Mango Lover`;
+  const title = `${product.name} | Angonaloy-আঙ্গনালয়`;
   const url = `${SITE_URL}/product/${encodeURIComponent(product.slug)}`;
   const image = safeProductImage(product.image_url);
   const price = getCatalogPrice(product.price);
@@ -190,7 +190,7 @@ export function injectProductMeta(baseHtml: string, product: BuildProduct) {
     description,
     image,
     url,
-    brand: { "@type": "Brand", name: "Mango Lover" },
+    brand: { "@type": "Brand", name: "Angonaloy" },
     ...(price
       ? {
         offers: {

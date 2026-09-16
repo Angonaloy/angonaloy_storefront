@@ -63,9 +63,9 @@ test("a canonical confirmation is consumed and emits one deduped GA4 purchase", 
 });
 
 test("support is available by phone and WhatsApp without page-owned metadata or Meta", () => {
-  assert.match(pageSource, /href="tel:\+8801301636461"/);
+  assert.match(pageSource, /href="tel:\+8801819502705"/);
   assert.match(pageSource, /href=\{WHATSAPP_HREF\}/);
-  assert.match(pageSource, /https:\/\/wa\.me\/8801301636461/);
+  assert.match(pageSource, /https:\/\/wa\.me\/8801819502705/);
   assert.doesNotMatch(pageSource, /document\.(?:title|head)/);
   assert.doesNotMatch(pageSource, /meta\[name=["']robots/);
   assert.doesNotMatch(pageSource, /(?:fbq|trackMetaEvent|initMetaPixel)/);

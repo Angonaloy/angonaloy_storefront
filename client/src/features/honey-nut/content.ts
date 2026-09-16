@@ -1,6 +1,6 @@
-export const HONEY_NUT_CAMPAIGN_PHONE_NUMBER = "01301636461";
-export const HONEY_NUT_CAMPAIGN_PHONE_HREF = "tel:+8801301636461";
-export const HONEY_NUT_CAMPAIGN_WHATSAPP_HREF = `https://wa.me/8801301636461?text=${encodeURIComponent("হানি নাট অর্ডার করতে চাই।")}`;
+export const HONEY_NUT_CAMPAIGN_PHONE_NUMBER = "01819502705";
+export const HONEY_NUT_CAMPAIGN_PHONE_HREF = "tel:+8801819502705";
+export const HONEY_NUT_CAMPAIGN_WHATSAPP_HREF = `https://wa.me/8801819502705?text=${encodeURIComponent("হানি নাট অর্ডার করতে চাই।")}`;
 
 export const heroEyebrow = "বাদাম, বীজ ও মধুর প্রাকৃতিক সমন্বয়";
 export const heroHeadline = "প্রতিদিনের পুষ্টিতে বাদাম, বীজ ও মধুর প্রাকৃতিক সমন্বয়";

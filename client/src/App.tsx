@@ -23,13 +23,13 @@ import { SITE_PAGES } from "@/lib/site-pages";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
-  "/step/sundarbans-natural-honey": "সুন্দরবনের প্রাকৃতিক মধু | ম্যাংগো লাভার",
-  "/step/sundarbans-natural-honey/thank-you": "অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
-  "/step/kalojira-mixed": "কালোজিরা মিক্সড | ম্যাংগো লাভার",
-  "/step/kalojira-mixed/thank-you": "কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
-  "/step/honey-nut": "হানি নাট | ম্যাংগো লাভার",
-  "/step/honey-nut/thank-you": "হানি নাট অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
-  "/step/katimon-mango": "কাটিমন আম | ম্যাংগো লাভার",
+  "/step/sundarbans-natural-honey": "সুন্দরবনের প্রাকৃতিক মধু | আঙ্গনালয়",
+  "/step/sundarbans-natural-honey/thank-you": "অর্ডারের জন্য ধন্যবাদ | আঙ্গনালয়",
+  "/step/kalojira-mixed": "কালোজিরা মিক্সড | আঙ্গনালয়",
+  "/step/kalojira-mixed/thank-you": "কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ | আঙ্গনালয়",
+  "/step/honey-nut": "হানি নাট | আঙ্গনালয়",
+  "/step/honey-nut/thank-you": "হানি নাট অর্ডারের জন্য ধন্যবাদ | আঙ্গনালয়",
+  "/step/katimon-mango": "কাটিমন আম | আঙ্গনালয়",
 };
 
 function CampaignMetadata({ location }: { location: string }) {

@@ -1,7 +1,7 @@
 const storefrontEnv = import.meta.env ?? {};
 
 export const STOREFRONT_ID = storefrontEnv.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
-const PRODUCTION_MERCHANT_SUITE_URL = "https://admin.mangolover.com.bd";
+const PRODUCTION_MERCHANT_SUITE_URL = "https://angonaloy-commerceos.vercel.app";
 const configuredMerchantSuiteUrl = (storefrontEnv.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
 const MERCHANT_SUITE_URL = configuredMerchantSuiteUrl
   || (storefrontEnv.PROD ? PRODUCTION_MERCHANT_SUITE_URL : "");

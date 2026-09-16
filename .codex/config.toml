@@ -1,4 +1,4 @@
-# Supabase MCP for the Mango Lover BD storefront repo.
+# Supabase MCP for the Angonaloy-আঙ্গনালয় storefront repo.
 #
 # Read-only and scoped to the shared project. This repo only ever READS commerce
 # data; product/schema writes belong in the Merchant Suite dashboard repo, whose

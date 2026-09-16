@@ -395,7 +395,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   // products. Unknown slugs get noindex instead of a fake Stepprs fallback.
   useEffect(() => {
     if (isLoading) return;
-    const siteUrl = "https://www.mangolover.com.bd";
+    const siteUrl = "https://angonaloy.shop";
     const setMeta = (selector: string, attr: string, value: string) => {
       let el = document.head.querySelector(selector) as HTMLMetaElement | null;
       if (!el) {
@@ -413,13 +413,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     document.head.querySelectorAll('script[data-seo="product"]').forEach((n) => n.remove());
     document.head.querySelectorAll('link[data-seo="canonical"]').forEach((n) => n.remove());
     if (!product) {
-      document.title = "Product not found | ম্যাংগো লাভার - Mango Lover";
+      document.title = "Product not found | Angonaloy-আঙ্গনালয়";
       setMeta('meta[name="robots"]', "content", "noindex, follow");
       return;
     }
     const price = Number(selectedBundle.amount) || Number(product.price) || 0;
-    const desc = (product.description || "ম্যাংগো লাভার — Mango Lover BD. Fresh, authentic products delivered across Bangladesh.").slice(0, 160);
-    const title = `${product.name} | ম্যাংগো লাভার - Mango Lover`;
+    const desc = (product.description || "Angonaloy-আঙ্গনালয়. Fresh, authentic products delivered across Bangladesh.").slice(0, 160);
+    const title = `${product.name} | Angonaloy-আঙ্গনালয়`;
     const url = `${siteUrl}/product/${product.slug}`;
     document.title = title;
     setMeta('meta[name="description"]', "content", desc);
@@ -449,7 +449,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       description: desc,
       image: displayGallery.length ? displayGallery : undefined,
       url,
-      brand: { "@type": "Brand", name: "Mango Lover" },
+      brand: { "@type": "Brand", name: "Angonaloy" },
       offers: {
         "@type": "Offer",
         priceCurrency: "BDT",
@@ -780,14 +780,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
                   <div className="grid grid-cols-2 gap-3">
                     <a
-                      href="tel:+8801301636461"
+                      href="tel:+8801819502705"
                       className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#f26b4f] px-2 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#d9573d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f26b4f]/40"
                     >
                       <Phone className="h-4 w-4 stroke-[1.5px]" />
                       ফোনে অর্ডার
                     </a>
                     <a
-                      href={`https://wa.me/8801301636461?text=${encodeURIComponent(
+                      href={`https://wa.me/8801819502705?text=${encodeURIComponent(
                         `Hello, I'd like to order: ${product.name} (${selectedBundle.title})`,
                       )}`}
                       target="_blank"
@@ -984,7 +984,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                               {i === currentReel ? (
                                 <video
                                   src={src}
-                                  title={`Mango Lover BD reel ${i + 1}`}
+                                  title={`Angonaloy reel ${i + 1}`}
                                   poster={poster}
                                   controls={activeReelVideo === i}
                                   playsInline

@@ -53,7 +53,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-
 const MAX_MONEY = 10_000_000;
 const DEFAULT_DEBOUNCE_MS = 500;
 const DEFAULT_TIMEOUT_MS = 3_500;
-const DRAFT_STORAGE_PREFIX = "mangolover-abandoned-cart-v1:";
+const DRAFT_STORAGE_PREFIX = "angonaloy-abandoned-cart-v1:";
 const memoryDraftKeys = new Map<AbandonedCartSource, string>();
 
 const CAMPAIGN_QUERY_KEYS: Array<[string, keyof AbandonedCartCampaign]> = [

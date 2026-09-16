@@ -1,9 +1,9 @@
-# ম্যাংগো লাভার — Mango Lover BD Storefront
+# Angonaloy-আঙ্গনালয় Storefront
 
-The public storefront for **Mango Lover BD**. React + Vite + Express, deployed on Vercel,
+The public storefront for **Angonaloy-আঙ্গনালয়**. React + Vite + Express, deployed on Vercel,
 connected to the Merchant Suite dashboard (a separate repo) for catalog data and order submission.
 
-- **Repo:** `github.com/mangoloverbd/mangoloverbd_storefront`
+- **Repo:** `github.com/Angonaloy/angonaloy_storefront`
 - **Live:** https://angonaloy.shop (Vercel project `angonaloy-storefront`)
 - **Dashboard repo:** Merchant Suite / commerceos — separate repository, separate Vercel project
 
@@ -48,7 +48,7 @@ never commit it. `.env.example` is the committed template.
 | Variable | Scope | Purpose |
 |---|---|---|
 | `VITE_MERCHANT_SUITE_URL` | client (browser) | Base URL of the Merchant Suite. Catalog/inventory reads. **Baked into the bundle at build time.** |
-| `VITE_STOREFRONT_ID` | client (browser) | The fixed Mango Lover BD workspace id: `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
+| `VITE_STOREFRONT_ID` | client (browser) | The fixed Angonaloy workspace id: `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
 | `MERCHANT_SUITE_URL` | server | Same URL as above, for the server-side checkout POST |
 | `CUSTOM_ORDERS_API_KEY` | server, **secret** | Authenticates the order webhook. Must match `<orgId>:custom_store_api_key` in the Suite's `app_settings`. Never expose this via a `VITE_` variable. |
 
@@ -77,7 +77,7 @@ Start the Suite first (`npm run dev` in the commerceos repo, port 5002), then th
 
 ### Production (Vercel)
 
-The Vercel project `mangoloverbd` already has all four required variables set on production,
+The Vercel project `angonaloy-storefront` already has all four required variables set on production,
 preview, and development targets. `CUSTOM_ORDERS_API_KEY` and `MERCHANT_SUITE_URL` are encrypted;
 the two `VITE_` ones are plaintext by nature.
 
@@ -139,7 +139,7 @@ published in the dashboard yet — that is a dashboard-side task, not a storefro
 
 ## Supabase and products — where product data actually lives
 
-Products live in the **Mango Lover BD Supabase project** (`ldiktvcavyabivpxfwpn`), shared with the
+Products live in the **Angonaloy Supabase project** (`ldiktvcavyabivpxfwpn`), shared with the
 dashboard. This repo has **no Supabase client and no database credentials**; it reads products over
 the Suite's public HTTP API and writes nothing.
 
@@ -193,7 +193,7 @@ card renders greyed out.
 | `product_images` | gallery rows: `image_url`, `storage_path`, `alt_text`, `sort_order`, `is_primary` |
 | `product_variants` | `attributes` jsonb, `stock_quantity`, `cog`, `price_adjustment` (variant price = product `selling_price` + adjustment) |
 
-Every row carries `org_id`, the fixed Mango Lover BD workspace. Note the rename across the boundary:
+Every row carries `org_id`, the fixed Angonaloy workspace. Note the rename across the boundary:
 Supabase stores `selling_price`, the public API emits `price`. Code here should follow the API shape
 (`StorefrontProduct` in `client/src/lib/storefront-products.ts`).
 
@@ -265,11 +265,11 @@ Current brand assets and where they are wired:
 
 | Asset | File | Used in |
 |---|---|---|
-| Nav logo | `attached_assets/mango-lover-logo.avif` | `client/src/components/layout.tsx` |
+| Nav logo | `attached_assets/angonaloy-logo.webp` | `client/src/components/layout.tsx` |
 | Hero poster | `client/public/hero-mango-lover.webp` | `client/src/pages/home.tsx` (inline, ~line 289) |
 | Brand yellow | `#FBBB14` | hero background |
 | Brand ink | `#163B33` | hero CTA |
-| Wordmark | `ম্যাংগো লাভার - Mango Lover` | `layout.tsx` footer, `client/index.html` titles |
+| Wordmark | `Angonaloy-আঙ্গনালয়` | `layout.tsx` footer, `client/index.html` titles |
 
 **The homepage hero is inline in `client/src/pages/home.tsx`.** `client/src/components/hero.tsx`
 exists but is dead code — nothing imports it. Editing it has no visible effect.
@@ -279,7 +279,7 @@ Currency is always `৳`, never "BDT" or "Tk".
 ### Known branding gaps
 
 Template cleanup is done (Stepprs fallback, makeup-template components and their
-orphaned media removed; canonical Mango Lover meta in `client/index.html`).
+orphaned media removed; canonical Angonaloy meta in `client/index.html`).
 Still open: no loaded webfont contains Bengali glyphs — the Bangla wordmark
 falls back to a system font. Adding Hind Siliguri or Anek Bangla would fix that.
 

@@ -6,7 +6,7 @@ export function OrderProtectionMessage({ decision, retryable = true }: { decisio
     <div role="alert" className="rounded-xl border border-red-300/60 bg-red-50 px-4 py-3 text-sm leading-6 text-red-900">
       <p>তথ্যগুলো একবার দেখে আবার চেষ্টা করুন। {retryable ? "সমস্যা থাকলে কিছুক্ষণ পরে চেষ্টা করুন।" : "প্রয়োজনে আমাদের সঙ্গে যোগাযোগ করুন।"}</p>
       <a
-        href="https://wa.me/8801301636461"
+        href="https://wa.me/8801819502705"
         target="_blank"
         rel="noopener noreferrer"
         className="group mx-auto mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#25d366] px-4 text-center text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"

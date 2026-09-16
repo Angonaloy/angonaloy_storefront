@@ -120,7 +120,7 @@ test("reference-inspired narrative renders the centered conversion sections in o
     "বনের গল্প, বাস্তব ভিডিওতে",
     "কেন সুন্দরবনের চাকের মধু বিশেষ?",
     "অর্ডারের আগে যা জানা দরকার",
-     "Mango Lover vs অন্যান্য Brands",
+     "Angonaloy vs অন্যান্য Brands",
      "আপনার প্রশ্নের উত্তর",
     "এক বছরের কম বয়সী শিশুকে মধু দেওয়া যাবে না।",
   ];
@@ -146,12 +146,12 @@ test("approved content data uses strong source, handling, and responsible copy",
   assert.match(contentSource, /মৌচাক থেকে বোতল পর্যন্ত/);
 });
 
-test("why Mango Lover section renders the supplied comparison artwork", () => {
+test("why Angonaloy section renders the supplied comparison artwork", () => {
   assert.match(sectionsSource, /mango-lover-vs-other-brands-v1\.webp/);
-  assert.match(sectionsSource, /alt="Mango Lover vs অন্যান্য Brands — পার্থক্যটা নিজেই দেখুন"/);
+  assert.match(sectionsSource, /alt="Angonaloy vs অন্যান্য Brands — পার্থক্যটা নিজেই দেখুন"/);
   assert.doesNotMatch(sectionsSource, /ComparisonMatrix|honey-comparison-matrix/);
   assert.match(sectionsSource, /placement="content_bottom"/);
-  assert.match(contentSource, /Mango Lover vs অন্যান্য Brands/);
+  assert.match(contentSource, /Angonaloy vs অন্যান্য Brands/);
 });
 
 test("family and everyday-use points use an editorial mobile rail", () => {
@@ -253,9 +253,9 @@ test("trust ribbon uses the reusable reduced-motion marquee", () => {
 });
 
 test("minimal campaign chrome links phone and WhatsApp without full layout", () => {
-  assert.match(contentSource, /tel:\+8801301636461/);
-  assert.match(contentSource, /https:\/\/wa\.me\/8801301636461/);
-  assert.match(layoutSource, /@assets\/mango-lover-logo\.avif/);
+  assert.match(contentSource, /tel:\+8801819502705/);
+  assert.match(contentSource, /https:\/\/wa\.me\/8801819502705/);
+  assert.match(layoutSource, /@assets\/angonaloy-logo\.webp/);
   assert.match(layoutSource, /কোনো কিছু জানতে কিংবা/);
   assert.match(layoutSource, / সরাসরি অর্ডার করতে যোগাযোগ করুন/);
   assert.match(layoutSource, /fontFamily: "'KaiumSimanto', serif"/);

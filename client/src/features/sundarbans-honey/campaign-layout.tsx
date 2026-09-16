@@ -1,7 +1,7 @@
 import { Copyright, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 
-import mangoLoverLogo from "@assets/mango-lover-logo.avif";
+import angonaloyLogo from "@assets/angonaloy-logo.webp";
 
 import {
   HONEY_CAMPAIGN_PHONE_HREF,
@@ -47,12 +47,12 @@ export function CampaignHeader() {
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:h-[72px] sm:px-6">
         <a
           href="/step/sundarbans-natural-honey"
-          aria-label="ম্যাংগো লাভার সুন্দরবন মধু পেজ"
+          aria-label="আঙ্গনালয় সুন্দরবন মধু পেজ"
           className="flex min-h-11 min-w-0 items-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c456]"
         >
           <img
-            src={mangoLoverLogo}
-            alt="ম্যাংগো লাভার"
+            src={angonaloyLogo}
+            alt="আঙ্গনালয়"
             className="h-8 w-auto sm:h-9"
             decoding="async"
           />
@@ -98,7 +98,7 @@ export function CampaignFooter() {
 
         <nav aria-label="সামাজিক যোগাযোগ ও অর্ডার" className="mt-5 flex flex-wrap justify-center gap-3">
           <a
-            href="https://www.facebook.com/WeAreMangoLover"
+            href="https://www.facebook.com/angonaloyofficial"
             aria-label="Facebook পেজ"
             target="_blank"
             rel="noopener noreferrer"
@@ -125,7 +125,7 @@ export function CampaignFooter() {
         <div className="mt-5 flex flex-col items-center gap-2 text-sm font-semibold text-[#19382d]/80 sm:flex-row sm:justify-center sm:gap-6">
           <p className="inline-flex items-center gap-2">
             <Copyright className="size-4 text-[#19382d]" aria-hidden="true" />
-            ২০২৬ ম্যাংগো লাভার — সর্বস্বত্ব সংরক্ষিত
+            ২০২৬ আঙ্গনালয় — সর্বস্বত্ব সংরক্ষিত
           </p>
           <p className="inline-flex items-center gap-2">
             <MapPin className="size-4 text-[#19382d]" aria-hidden="true" />
