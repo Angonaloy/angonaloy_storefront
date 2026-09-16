@@ -216,9 +216,8 @@ function getCanonicalOrderRef(value: unknown) {
 
 export async function processOrder(order: OrderRequest, dependencies: OrderServiceDependencies = {}) {
   const merchantSuiteUrl = (dependencies.merchantSuiteUrl
-    ?? (process.env.NODE_ENV === "production"
-      ? "https://admin.mangolover.com.bd"
-      : process.env.MERCHANT_SUITE_URL)
+    ?? process.env.MERCHANT_SUITE_URL
+    ?? (process.env.NODE_ENV === "production" ? "https://admin.mangolover.com.bd" : undefined)
     ?? "").replace(/\/$/, "");
   const fetchImpl = dependencies.fetchImpl ?? fetch;
   try {

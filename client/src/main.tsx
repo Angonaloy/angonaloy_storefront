@@ -8,9 +8,8 @@ import { getMerchantSuiteTrackerUrl } from "./lib/tracker";
 // storefront per merchant with VITE_MERCHANT_SUITE_URL + VITE_STOREFRONT_ID
 // baked in, so the tracker points at that merchant's own dashboard — no manual
 // copy/paste needed. Skipped when those env vars are absent (local dev without them).
-const TRACKER_SUITE = import.meta.env.PROD
-  ? "https://admin.mangolover.com.bd"
-  : import.meta.env.VITE_MERCHANT_SUITE_URL;
+const TRACKER_SUITE = import.meta.env.VITE_MERCHANT_SUITE_URL
+  ?? (import.meta.env.PROD ? "https://admin.mangolover.com.bd" : undefined);
 const TRACKER_ORG = import.meta.env.VITE_STOREFRONT_ID;
 const trackerUrl = getMerchantSuiteTrackerUrl(TRACKER_SUITE, TRACKER_ORG);
 if (trackerUrl && !document.getElementById("merchant-suite-tracker")) {

@@ -4,21 +4,15 @@ import { test } from "node:test";
 
 const html = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
 
-test("installs Google Tag Manager high in the page head", () => {
-  const headStart = html.indexOf("<head>");
-  const viewportMeta = html.indexOf('<meta name="viewport"');
-  const gtmScript = html.indexOf("GTM-5KKTRHFD");
-
-  assert.ok(gtmScript > headStart, "GTM script should be inside <head>");
-  assert.ok(gtmScript < viewportMeta, "GTM should be as high in <head> as possible");
-  assert.match(html, /googletagmanager\.com\/gtm\.js\?id=/);
+// GTM/PostHog were removed for the Angonaloy deploy — the prior snippets pointed
+// at another merchant's (Mango Lover BD) analytics accounts. Re-add these tests
+// once real Angonaloy container/project IDs are wired back in.
+test("does not load another merchant's Google Tag Manager container", () => {
+  assert.doesNotMatch(html, /googletagmanager\.com\/(gtm\.js|ns\.html)/);
 });
 
-test("installs the GTM noscript fallback immediately after the body opens", () => {
-  assert.match(
-    html,
-    /<body>\s*<!-- Google Tag Manager \(noscript\) -->\s*<noscript><iframe src="https:\/\/www\.googletagmanager\.com\/ns\.html\?id=GTM-5KKTRHFD"/,
-  );
+test("does not ship another merchant's PostHog project key", () => {
+  assert.doesNotMatch(html, /phc_uREr7jcnWTVmA38gg2t3LfFM7fwM5bTrNxGzEg8Pixnf/);
 });
 
 test("leaves GA4 loading and configuration to GTM", () => {
