@@ -307,9 +307,9 @@ export default function Home() {
                 <Link
                   key={label}
                   href={`/collection/${slug}`}
-                  className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
+                  className="group flex w-[120px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
                 >
-                  <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
+                  <div className="aspect-square w-[120px] overflow-hidden rounded-full sm:w-[112px]">
                     <img
                       src={image}
                       alt={label}
