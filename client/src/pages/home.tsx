@@ -552,7 +552,7 @@ export default function Home() {
                   className="block w-full object-cover"
                 />
               </picture>
-              <div className="pointer-events-none absolute inset-0 flex items-end justify-center p-4 md:items-center md:justify-start md:p-12 lg:p-16">
+              <div className="pointer-events-none absolute inset-0 flex items-start justify-center p-8 text-center md:items-center md:justify-start md:p-12 lg:p-16">
                 <div className="max-w-[24rem] text-center text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] md:max-w-[28rem] md:text-left">
                   <p className="text-[9px] font-medium uppercase tracking-[0.38em] text-white/75 md:text-[10px]">ANGONALOY HOME &amp; KITCHEN</p>
                   <h2 className="mt-3 font-inter-28pt-semibold text-[clamp(1.45rem,4.5vw,2.5rem)] leading-[0.98] tracking-[-0.03em] text-white">

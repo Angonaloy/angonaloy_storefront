@@ -109,6 +109,7 @@ test("renders responsive linked editorial image sections without old copy", () =
   assert.match(editorialSource, /FOR THE HEART OF HOME/);
   assert.match(editorialSource, /ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।/);
   assert.match(editorialSource, /EXPLORE HOME &amp; KITCHEN/);
+  assert.match(editorialSource, /absolute inset-0 flex items-start justify-center p-8 text-center md:items-center md:justify-start md:p-12 lg:p-16/);
   assert.doesNotMatch(editorialSource, /curated-edit-bg-mobile\.webp|curated-edit-bg\.webp/);
   assert.doesNotMatch(editorialSource, /Shop Now|absolute inset-0 bg-black\/35|rounded-\[16px\] border border-white\/35 bg-black\/20/);
   assert.match(essentialsSource, /href="\/product\/glass-water-bottles-with-time-marker"/);
