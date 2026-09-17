@@ -538,44 +538,17 @@ export default function Home() {
           transition={{ staggerChildren: 0.12 }}
         >
           <div className="relative w-full overflow-hidden">
-            <img
-              src="/curated-edit-bg-mobile.webp"
-              alt="Editorial collection"
-              loading="lazy"
-              className="w-full object-cover md:hidden"
-            />
-            <img
-              src="/curated-edit-bg.webp"
-              alt="Editorial collection"
-              loading="lazy"
-              className="hidden md:block w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/35" />
-            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
-              <motion.h2
-                variants={reveal}
-                transition={transition}
-                className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
-              >
-                <HighlightedWord highlightColor="#F4A261">PURE GHEE</HighlightedWord>
-              </motion.h2>
-              <motion.p
-                variants={reveal}
-                transition={transition}
-                className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-              >
-                উন্নত মানের দুধ থেকে তৈরি, সমৃদ্ধ স্বাদ ও সুগন্ধের খাঁটি ঘি
-              </motion.p>
-              <motion.div variants={reveal} transition={transition} className="mt-8">
-                <Link
-                  href="/product/pure-ghee"
-                  className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
-              >
-                Shop Now
-                </Link>
-              </motion.div>
-            </div>
+            <Link href="/products" className="block w-full">
+              <picture>
+                <source media="(min-width: 768px)" srcSet="/pure-ghee-editorial-desktop-20260917.webp" />
+                <img
+                  src="/pure-ghee-editorial-mobile-20260917.webp"
+                  alt="Explore all Angonaloy products"
+                  loading="lazy"
+                  className="block w-full object-cover"
+                />
+              </picture>
+            </Link>
           </div>
         </motion.div>
       </section>

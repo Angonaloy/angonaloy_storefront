@@ -89,7 +89,7 @@ test("uses left-right category headers with underlined View All links and four p
   assert.match(categorySource, /collection\.label/);
  });
 
-test("links editorial sections to their products and aligns their text at the bottom", () => {
+test("links the Pure Ghee editorial image to all products without visible copy", () => {
   const editorialSource = homeSource.slice(
     homeSource.indexOf("{/* Editorial Section */}"),
     homeSource.indexOf("{/* Category Section: Oil & Ghee */}"),
@@ -99,8 +99,12 @@ test("links editorial sections to their products and aligns their text at the bo
     homeSource.indexOf("{/* Category Section: Semai */}"),
   );
 
-  assert.match(editorialSource, /href="\/product\/pure-ghee"/);
-  assert.match(editorialSource, /absolute inset-0 flex flex-col items-center justify-end/);
+  assert.match(editorialSource, /href="\/products"/);
+  assert.match(editorialSource, /pure-ghee-editorial-mobile-20260917\.webp/);
+  assert.match(editorialSource, /pure-ghee-editorial-desktop-20260917\.webp/);
+  assert.match(editorialSource, /<picture>/);
+  assert.doesNotMatch(editorialSource, /curated-edit-bg-mobile\.webp|curated-edit-bg\.webp/);
+  assert.doesNotMatch(editorialSource, /PURE GHEE|Shop Now|bg-black/);
   assert.match(essentialsSource, /href="\/product\/kalojira-mixed"/);
   assert.match(essentialsSource, /absolute inset-0 flex flex-col items-center justify-end/);
 });
@@ -224,7 +228,7 @@ test("uses circled Bengali for section titles and highlight for category labels"
 test("uses a reduced type scale across homepage section headings", () => {
   const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
 
-  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 3);
+  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 2);
   assert.doesNotMatch(homeSource, /text-\[1\.65rem\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
