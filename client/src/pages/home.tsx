@@ -538,7 +538,11 @@ export default function Home() {
           transition={{ staggerChildren: 0.12 }}
         >
           <div className="relative w-full overflow-hidden">
-            <Link href="/products" className="block w-full">
+            <Link
+              href="/products"
+              aria-label="Explore Angonaloy home and kitchen products"
+              className="group relative block w-full"
+            >
               <picture>
                 <source media="(min-width: 768px)" srcSet="/pure-ghee-editorial-desktop-20260917.webp" />
                 <img
@@ -548,6 +552,23 @@ export default function Home() {
                   className="block w-full object-cover"
                 />
               </picture>
+              <div className="pointer-events-none absolute inset-0 flex items-end justify-center p-4 md:items-center md:justify-start md:p-12 lg:p-16">
+                <div className="max-w-[24rem] text-center text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] md:max-w-[28rem] md:text-left">
+                  <p className="text-[9px] font-medium uppercase tracking-[0.38em] text-white/75 md:text-[10px]">ANGONALOY HOME &amp; KITCHEN</p>
+                  <h2 className="mt-3 font-inter-28pt-semibold text-[clamp(1.45rem,4.5vw,2.5rem)] leading-[0.98] tracking-[-0.03em] text-white">
+                    FOR THE HEART OF HOME
+                  </h2>
+                  <p
+                    className="mt-3 max-w-sm text-sm leading-relaxed text-white/85 md:text-base"
+                    style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                  >
+                    ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-6 md:px-8 md:py-3 md:text-base">
+                    EXPLORE HOME &amp; KITCHEN
+                  </span>
+                </div>
+              </div>
             </Link>
           </div>
         </motion.div>
@@ -560,7 +581,7 @@ export default function Home() {
       {renderCategorySection("jaggery")}
 
       {/* Essentials Section */}
-      <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
+      <section className="w-full bg-[#f6f6f6]">
         <motion.div
           ref={essentialsRef}
           className="w-full"
@@ -569,45 +590,34 @@ export default function Home() {
           transition={{ staggerChildren: 0.12 }}
         >
           <div className="relative w-full overflow-hidden">
-            <img
-              src="/essentials-bg-mobile.webp"
-              alt="Daily essentials"
-              loading="lazy"
-              className="w-full object-cover md:hidden"
-            />
-            <img
-              src="/essentials-bg.webp"
-              alt="Daily essentials"
-              loading="lazy"
-              className="hidden md:block w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
-              <motion.h2
-                variants={reveal}
-                transition={transition}
-                className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]"
-              >
-                <span>BLACK SEED</span>{" "}
-                <HighlightedWord highlightColor="#B8D8BA">MIX</HighlightedWord>
-              </motion.h2>
-              <motion.p
-                variants={reveal}
-                transition={transition}
-                className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-              >
-                প্রাকৃতিক কালোজিরার গুণে তৈরি, অনন্য স্বাদ ও পুষ্টিগুণে ভরপুর স্বাস্থ্যকর মিশ্রণ
-              </motion.p>
-              <motion.div variants={reveal} transition={transition} className="mt-8">
-                <Link
-                  href="/product/kalojira-mixed"
-                  className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
-                >
-                  Shop Now
-                </Link>
-              </motion.div>
-            </div>
+            <Link
+              href="/product/glass-water-bottles-with-time-marker"
+              aria-label="View Glass Water Bottles With Time Marker"
+              className="block w-full"
+            >
+              <picture>
+                <source media="(min-width: 768px)" srcSet="/glass-bottle-editorial-desktop-20260917.webp" />
+                <img
+                  src="/glass-bottle-editorial-mobile-20260917.webp"
+                  alt="Glass Water Bottles With Time Marker"
+                  loading="lazy"
+                  className="block w-full object-cover"
+                />
+              </picture>
+              <div className="absolute inset-0 flex items-end justify-start p-5 pb-8 md:p-12 md:pb-14">
+                <div className="max-w-[21rem] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:max-w-[27rem]">
+                  <h2 className="font-inter-28pt-semibold text-[clamp(1.7rem,5vw,3rem)] leading-[0.95] tracking-[-0.04em]">
+                    HYDRATE WITH INTENTION
+                  </h2>
+                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/90 md:text-base">
+                    A beautiful daily ritual for home, work, and everywhere in between.
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-6 md:px-8 md:py-3 md:text-base">
+                    SHOP GLASS BOTTLES
+                  </span>
+                </div>
+              </div>
+            </Link>
           </div>
         </motion.div>
       </section>
