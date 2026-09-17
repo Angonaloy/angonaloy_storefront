@@ -552,19 +552,19 @@ export default function Home() {
                   className="block w-full object-cover"
                 />
               </picture>
-              <div className="pointer-events-none absolute inset-0 flex items-start justify-center p-8 text-center md:items-center md:justify-start md:p-12 lg:p-16">
-                <div className="max-w-[24rem] text-center text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)] md:max-w-[28rem] md:text-left">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.38em] text-white/75 md:text-[10px]">ANGONALOY HOME &amp; KITCHEN</p>
+              <div className="pointer-events-none absolute inset-0 flex items-start justify-center bg-gradient-to-b from-black/40 via-black/10 to-transparent p-8 text-center md:items-center md:justify-start md:bg-none md:p-12 lg:p-16">
+                <div className="max-w-[24rem] text-center text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:max-w-[28rem] md:text-left">
+                  <p className="text-[9px] font-medium uppercase tracking-[0.38em] text-white md:text-[10px]">ANGONALOY HOME &amp; KITCHEN</p>
                   <h2 className="mt-3 font-inter-28pt-semibold text-[clamp(1.45rem,4.5vw,2.5rem)] leading-[0.98] tracking-[-0.03em] text-white">
                     FOR THE HEART OF HOME
                   </h2>
                   <p
-                    className="mt-3 max-w-sm text-sm leading-relaxed text-white/85 md:text-base"
+                    className="mt-3 max-w-sm text-sm leading-relaxed text-white md:text-base"
                     style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                   >
                     ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-6 md:px-8 md:py-3 md:text-base">
+                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/35 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,0,0,0.28)] backdrop-blur-md transition-colors hover:bg-white/45 md:mt-6 md:px-8 md:py-3 md:text-base">
                     EXPLORE HOME &amp; KITCHEN
                   </span>
                 </div>
