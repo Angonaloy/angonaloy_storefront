@@ -152,16 +152,6 @@ const GLASS_WATER_BOTTLE_REEL_MEDIA = GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS.map((p
   poster: `https://image.mux.com/${playbackId}/thumbnail.jpg`,
 }));
 
-// Quantity-bundle pricing for this product only — replaces the plain quantity
-// stepper + single-variant "Select Size" card every other product still uses.
-// `pieces` doubles as the value written into `quantity` state when a tier is
-// picked, so the rest of the checkout/cart/analytics pipeline (which already
-// keys off `quantity`) needs no separate bundle-tier state of its own.
-const GLASS_WATER_BOTTLE_BUNDLE_TIERS = [
-  { pieces: 1, totalPrice: 750, label: "1 Piece" },
-  { pieces: 2, totalPrice: 1400, label: "2 Pieces" },
-] as const;
-
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
   const honeyNutReelMedia = slug === "honey-nut" ? HONEY_NUT_REEL_MEDIA : null;
@@ -299,6 +289,15 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     ? null
     : mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
 
+  const glassBottleOffers = isGlassWaterBottleMuxProduct ? product?.bundle_offers ?? [] : [];
+  const isBundleOfferProduct = isGlassWaterBottleMuxProduct && glassBottleOffers.length > 0;
+
+  useEffect(() => {
+    if (!isBundleOfferProduct || glassBottleOffers.some((offer) => offer.quantity === quantity)) return;
+    const firstOffer = glassBottleOffers[0];
+    if (firstOffer) setQuantity(firstOffer.quantity);
+  }, [glassBottleOffers, isBundleOfferProduct, quantity]);
+
   const relatedSource =
     catalogProducts && catalogProducts.length ? catalogProducts : generatedStorefrontProducts;
   const relatedProducts = relatedSource
@@ -335,26 +334,25 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     return label === selectedBundle.title;
   }) || null;
 
-  // For the bundle product, `quantity` doubles as the selected tier's piece
-  // count. `pricedBundle` overrides only the per-unit price used for real
-  // order math (so amount * quantity lands on the tier's exact total, e.g.
-  // 700 * 2 = 1400) — `.title` is left alone so it still names the real
-  // "1000ml" variant. `heroDisplayAmount`/`heroCompareAtAmount` are separate:
-  // the prominent price shown above the bundle picker shows the tier's total
-  // (750 / 1400), not a per-unit figure.
-  const activeGlassBottleTier = isGlassWaterBottleMuxProduct
-    ? GLASS_WATER_BOTTLE_BUNDLE_TIERS.find((tier) => tier.pieces === quantity) ?? GLASS_WATER_BOTTLE_BUNDLE_TIERS[0]
+  // Bundle offer totals come from Merchant Suite's public catalog. The
+  // storefront only selects the offer ID; checkout recalculates its price on
+  // the Merchant Suite server.
+  const activeGlassBottleOffer = isBundleOfferProduct
+    ? glassBottleOffers.find((offer) => offer.quantity === quantity) ?? glassBottleOffers[0]
     : null;
-  const pricedBundle = activeGlassBottleTier
+  const pricedBundle = activeGlassBottleOffer
     ? {
         ...selectedBundle,
-        amount: activeGlassBottleTier.totalPrice / activeGlassBottleTier.pieces,
-        price: `৳${Math.round(activeGlassBottleTier.totalPrice / activeGlassBottleTier.pieces).toLocaleString()}`,
+        amount: activeGlassBottleOffer.total_price / activeGlassBottleOffer.quantity,
+        price: `৳${Math.round(activeGlassBottleOffer.total_price / activeGlassBottleOffer.quantity).toLocaleString()}`,
       }
     : selectedBundle;
-  const heroDisplayAmount = activeGlassBottleTier ? activeGlassBottleTier.totalPrice : selectedBundle.amount;
-  const heroCompareAtAmount = activeGlassBottleTier
-    ? activeGlassBottleTier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice
+  const checkoutSubtotal = activeGlassBottleOffer
+    ? activeGlassBottleOffer.total_price * (quantity / activeGlassBottleOffer.quantity)
+    : pricedBundle.amount * quantity;
+  const heroDisplayAmount = activeGlassBottleOffer ? activeGlassBottleOffer.total_price : selectedBundle.amount;
+  const heroCompareAtAmount = activeGlassBottleOffer
+    ? activeGlassBottleOffer.compare_at_total
     : Number(product?.compare_at_price);
 
   const productAnalyticsItem = useMemo(() => toGoogleAnalyticsItem({
@@ -551,7 +549,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const orderBundle: OrderDialogBundle | null = product ? {
         title: product.name,
         details: selectedBundle.title,
-        price: pricedBundle.amount * quantity,
+        price: checkoutSubtotal,
         quantity,
         unitPrice: pricedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
@@ -563,8 +561,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           unitPrice: pricedBundle.amount,
         }],
         items: selectedVariant?.id !== undefined && product.id !== undefined
-          ? [{ productId: String(product.id), variantId: String(selectedVariant.id), quantity }]
-          : undefined,
+           ? [{
+               productId: String(product.id),
+               variantId: String(selectedVariant.id),
+               quantity,
+               ...(activeGlassBottleOffer ? { offerId: activeGlassBottleOffer.id } : {}),
+             }]
+           : undefined,
       } : null;
 
   if (isLoading) {
@@ -715,21 +718,20 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   ) : null}
                 </div>
 
-                {isGlassWaterBottleMuxProduct ? (
+                 {isBundleOfferProduct ? (
                   <div className="space-y-2.5 md:space-y-3">
                     <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                       Bundle &amp; Save
                     </span>
                     <div className="grid grid-cols-2 gap-2">
-                      {GLASS_WATER_BOTTLE_BUNDLE_TIERS.map((tier) => {
-                        const selected = quantity === tier.pieces;
-                        const regularTotal = tier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice;
-                        const savings = regularTotal - tier.totalPrice;
+                      {glassBottleOffers.map((offer) => {
+                        const selected = quantity === offer.quantity;
+                        const savings = offer.compare_at_total - offer.total_price;
                         return (
                           <button
-                            key={tier.pieces}
+                            key={offer.id}
                             type="button"
-                            onClick={() => setQuantity(tier.pieces)}
+                            onClick={() => setQuantity(offer.quantity)}
                             aria-pressed={selected}
                             className={`relative flex flex-col items-center gap-0.5 rounded-[10px] border-2 px-3 py-2.5 text-center transition-all duration-200 ${
                               selected
@@ -742,12 +744,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 Save ৳{savings.toLocaleString()}
                               </span>
                             ) : null}
-                            <span className="text-[12px] font-semibold text-black">{tier.label}</span>
-                            <span className="flex items-baseline gap-1.5">
-                              <span className="text-[18px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
-                              {savings > 0 ? (
-                                <span className="text-[10px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
-                              ) : null}
+                             <span className="text-[12px] font-semibold text-black">{offer.label}</span>
+                             <span className="flex items-baseline gap-1.5">
+                               <span className="text-[18px] font-bold text-black">৳{offer.total_price.toLocaleString()}</span>
+                               {savings > 0 ? (
+                                 <span className="text-[10px] text-black/35 line-through">৳{offer.compare_at_total.toLocaleString()}</span>
+                               ) : null}
                             </span>
                           </button>
                         );
@@ -844,10 +846,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             title: `${product.name} (${selectedBundle.title})`,
                             price: pricedBundle.price,
                             image: displayImage,
-                            analyticsItem: productAnalyticsItem,
-                            productUuid: String(product.id ?? ""),
-                            variantId: String(selectedVariant?.id ?? ""),
-                          },
+                             analyticsItem: productAnalyticsItem,
+                             productUuid: String(product.id ?? ""),
+                             variantId: String(selectedVariant?.id ?? ""),
+                             ...(activeGlassBottleOffer ? {
+                               offerId: activeGlassBottleOffer.id,
+                               quantityStep: activeGlassBottleOffer.quantity,
+                             } : {}),
+                           },
                           selectedBundle.title,
                           quantity,
                         );
@@ -1081,25 +1087,26 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
                               {isGlassWaterBottleMuxProduct ? (
                                 i === currentReel ? (
-                                  <div className="absolute inset-0" onPointerDown={(event) => event.stopPropagation()}>
+                                  <div className="absolute inset-0">
                                     <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
                                       <VideoSkin className="absolute inset-0 h-full w-full [--media-border-radius:0px]">
                                         <MuxVideo
                                           src={src}
                                           playsInline
                                           preload="metadata"
-                                          onPlay={() => setPlayingReel(i)}
-                                          onPlaying={() => setPlayingReel(i)}
-                                          onPause={() => setPlayingReel((active) => (active === i ? null : active))}
-                                          onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
                                           className="h-full w-full object-contain bg-black"
-                                          ref={(video) => {
-                                            activeReelVideoRef.current = video;
-                                          }}
                                         />
                                         <PlayButton
-                                          className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 [&_.media-button-icon]:h-7 [&_.media-button-icon]:w-7"
-                                          onPointerDown={(event) => event.stopPropagation()}
+                                          className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                          render={(props, state) => (
+                                            <button {...props}>
+                                              {state.paused ? (
+                                                <Play className="ml-1 h-7 w-7 fill-current" />
+                                              ) : (
+                                                <Pause className="h-7 w-7 fill-current" />
+                                              )}
+                                            </button>
+                                          )}
                                         />
                                       </VideoSkin>
                                     </VideoPlayer>

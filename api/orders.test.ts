@@ -52,7 +52,7 @@ test("rejects invalid quantities", () => {
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  storefrontHandle: "mangolover",
+  storefrontHandle: "angonaloy",
   timeoutSignal: () => new AbortController().signal,
 };
 
@@ -89,6 +89,14 @@ test("accepts bounded order-protection signals and canonical items", () => {
   assert.deepEqual(order.items, canonicalItems);
   assert.equal(order.shippingZoneId, "inside-dhaka");
   assert.equal(order.turnstileToken, "turnstile-token");
+});
+
+test("preserves a validated bundle offer ID for Merchant-Suite pricing", () => {
+  const order = validateOrder({
+    ...validOrder,
+    items: [{ ...canonicalItems[0], quantity: 2, offerId: "double" }],
+  });
+  assert.deepEqual(order.items, [{ ...canonicalItems[0], quantity: 2, offerId: "double" }]);
 });
 
 test("matches the reviewed bounded validation contract without coercion", () => {
@@ -171,7 +179,7 @@ test("posts canonical checkout data to the public handle endpoint", async () => 
     },
   });
 
-  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
+  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/angonaloy/orders");
   assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
   assert.deepEqual(outboundBody, {

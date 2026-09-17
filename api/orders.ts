@@ -25,7 +25,7 @@ export type OrderRequest = {
   clientSessionId?: string;
   checkoutStartedAt?: string;
   landingPagePath?: string;
-  items?: Array<{ productId: string; variantId: string; quantity: number }>;
+  items?: Array<{ productId: string; variantId: string; quantity: number; offerId?: string }>;
   shippingZoneId?: string;
 };
 
@@ -176,12 +176,21 @@ export function validateOrder(body: unknown): OrderRequest {
     items = value.items.map((item) => {
       if (!item || typeof item !== "object" || Array.isArray(item)) throw new OrderValidationError();
       const candidate = item as Record<string, unknown>;
-      if (typeof candidate.productId !== "string" || candidate.productId.trim().length < 1 || candidate.productId.length > 120
-        || typeof candidate.variantId !== "string" || candidate.variantId.trim().length < 1 || candidate.variantId.length > 120
-        || typeof candidate.quantity !== "number" || !Number.isSafeInteger(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 100) {
-        throw new OrderValidationError();
-      }
-      return { productId: candidate.productId.trim(), variantId: candidate.variantId.trim(), quantity: candidate.quantity };
+       if (typeof candidate.productId !== "string" || candidate.productId.trim().length < 1 || candidate.productId.length > 120
+         || typeof candidate.variantId !== "string" || candidate.variantId.trim().length < 1 || candidate.variantId.length > 120
+         || typeof candidate.quantity !== "number" || !Number.isSafeInteger(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 100) {
+         throw new OrderValidationError();
+       }
+       if (candidate.offerId !== undefined
+         && (typeof candidate.offerId !== "string" || candidate.offerId.trim().length < 1 || candidate.offerId.length > 80)) {
+         throw new OrderValidationError();
+       }
+       return {
+         productId: candidate.productId.trim(),
+         variantId: candidate.variantId.trim(),
+         quantity: candidate.quantity,
+         ...(candidate.offerId !== undefined ? { offerId: candidate.offerId.trim() } : {}),
+       };
     });
   }
   const shippingZoneId = optionalString("shippingZoneId", 120);

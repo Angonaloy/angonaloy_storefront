@@ -49,15 +49,16 @@ catalog, and deploy the storefront commit to `main`.
 
 ## 2. Environment
 
-Four variables. `.env` locally (gitignored), Vercel project settings for deploys. `.env.example` is
-the committed template.
+Connection variables live in `.env` locally (gitignored) and Vercel project settings for deploys.
+`.env.example` is the committed template.
 
 | Variable | Scope | Purpose |
 |---|---|---|
 | `VITE_MERCHANT_SUITE_URL` | client | Suite base URL for catalog reads. **Baked into the bundle at build time.** |
-| `VITE_STOREFRONT_ID` | client | Fixed workspace id `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
+| `VITE_STOREFRONT_ID` | client | Fixed workspace id for the visitor tracker only; never use it for catalog URLs. |
 | `MERCHANT_SUITE_URL` | server | Same URL, for the checkout POST |
-| `CUSTOM_ORDERS_API_KEY` | server, **secret** | Order webhook auth; matches `<orgId>:custom_store_api_key` in the Suite's `app_settings` |
+| `STOREFRONT_HANDLE` | server | Fixed checkout handle: `angonaloy` |
+| `CUSTOM_ORDERS_API_KEY` | server, **secret** | Authenticates abandoned-checkout capture; matches `<orgId>:custom_store_api_key` in the Suite's `app_settings` |
 
 `VITE_`-prefixed values are compiled into public JavaScript and readable by anyone. Never move a
 secret behind a `VITE_` prefix, and never read `CUSTOM_ORDERS_API_KEY` from client code.
@@ -83,7 +84,9 @@ verify checkout specifically. See README "Verifying the connection" for the two 
 
 **Catalog — browser → Suite, public and unauthenticated.**
 `client/src/lib/storefront-products.ts` is the only place that talks to the catalog API. Base:
-`${VITE_MERCHANT_SUITE_URL}/api/public/v1/storefronts/${VITE_STOREFRONT_ID}`.
+`${VITE_MERCHANT_SUITE_URL}/api/public/v1/angonaloy`. The fixed handle and URL builder live in
+`shared/angonaloy-catalog-api.ts`; `VITE_STOREFRONT_ID` is tracker-only. In production, the canonical
+base is `https://angonaloy-commerceos.vercel.app/api/public/v1/angonaloy`.
 
 - `fetchStorefrontProducts()` → `GET .../products`
 - `fetchStorefrontProduct(slug)` → `GET .../products/:slug`
@@ -95,15 +98,15 @@ verify checkout specifically. See README "Verifying the connection" for the two 
 Add new Suite calls to this module. Do not scatter `fetch` calls to the Suite through components.
 Requests send `ngrok-skip-browser-warning: true` so tunnels return JSON, not HTML.
 
-**Checkout — storefront server → Suite, authenticated.**
+**Checkout — storefront server → Suite, server-side order API.**
 `api/orders.ts` (Vercel) and `server/order-service.ts` (local Express) both POST to
-`${MERCHANT_SUITE_URL}/api/custom-orders/webhook` with `x-api-key`. The Suite resolves the workspace
-from the key and returns the canonical `order_id`; the order lands in the dashboard as
-`source: custom_store`. Both paths must stay behaviourally identical — if you change the payload in
-one, change it in the other.
+`${MERCHANT_SUITE_URL}/api/public/v1/angonaloy/orders` through the server-only
+`STOREFRONT_HANDLE=angonaloy` configuration. The Suite returns the canonical `order_id`; the order
+lands in the dashboard as `source: custom_store`. Both paths must stay behaviourally identical — if
+you change the payload in one, change it in the other.
 
-**The storefront never sends a workspace/org id it was given by a visitor.** The workspace comes from
-build-time config or from the API key, never from user input.
+**The storefront never sends a workspace/org id it was given by a visitor.** Catalog reads use the
+fixed Angonaloy handle, and checkout uses server-side configuration, never visitor input.
 
 ---
 

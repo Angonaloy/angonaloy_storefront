@@ -42,15 +42,16 @@ Other commands:
 
 ## Environment
 
-Four variables, in `.env` locally and in Vercel project settings for deploys. `.env` is gitignored —
-never commit it. `.env.example` is the committed template.
+Connection variables live in `.env` locally and in Vercel project settings for deploys. `.env` is
+gitignored — never commit it. `.env.example` is the committed template.
 
 | Variable | Scope | Purpose |
 |---|---|---|
 | `VITE_MERCHANT_SUITE_URL` | client (browser) | Base URL of the Merchant Suite. Catalog/inventory reads. **Baked into the bundle at build time.** |
-| `VITE_STOREFRONT_ID` | client (browser) | The fixed Angonaloy workspace id: `3cd26e57-85ef-4970-94a4-cd99c0f1b554` |
+| `VITE_STOREFRONT_ID` | client (browser) | Fixed workspace ID for the visitor tracker only; never use it for catalog URLs. |
 | `MERCHANT_SUITE_URL` | server | Same URL as above, for the server-side checkout POST |
-| `CUSTOM_ORDERS_API_KEY` | server, **secret** | Authenticates the order webhook. Must match `<orgId>:custom_store_api_key` in the Suite's `app_settings`. Never expose this via a `VITE_` variable. |
+| `STOREFRONT_HANDLE` | server | Fixed checkout handle: `angonaloy` |
+| `CUSTOM_ORDERS_API_KEY` | server, **secret** | Authenticates abandoned-checkout capture. Must match `<orgId>:custom_store_api_key` in the Suite's `app_settings`. Never expose this via a `VITE_` variable. |
 
 Anything prefixed `VITE_` is compiled into the public JavaScript bundle and is readable by
 anyone. Only put non-secret values there.
@@ -77,9 +78,9 @@ Start the Suite first (`npm run dev` in the commerceos repo, port 5002), then th
 
 ### Production (Vercel)
 
-The Vercel project `angonaloy-storefront` already has all four required variables set on production,
-preview, and development targets. `CUSTOM_ORDERS_API_KEY` and `MERCHANT_SUITE_URL` are encrypted;
-the two `VITE_` ones are plaintext by nature.
+The Vercel project `angonaloy-storefront` already has its required connection variables set on
+production, preview, and development targets. `CUSTOM_ORDERS_API_KEY` and `MERCHANT_SUITE_URL` are
+encrypted; `VITE_` values are plaintext by nature.
 
 **While the Suite runs on localhost, an ngrok tunnel bridges Vercel to it.** Vercel's serverless
 checkout handler posts from Vercel's own infrastructure, so a `localhost` URL there always fails —
@@ -96,7 +97,9 @@ Two directions, two different mechanisms:
 
 **Catalog reads — browser → Suite, unauthenticated public API.**
 `client/src/lib/storefront-products.ts` builds every URL from
-`${VITE_MERCHANT_SUITE_URL}/api/public/v1/storefronts/${VITE_STOREFRONT_ID}`:
+`${VITE_MERCHANT_SUITE_URL}/api/public/v1/angonaloy`. The fixed handle is owned by
+`shared/angonaloy-catalog-api.ts`; `VITE_STOREFRONT_ID` remains tracker-only. In production, this is
+`https://angonaloy-commerceos.vercel.app/api/public/v1/angonaloy`:
 
 | Call | Endpoint |
 |---|---|
@@ -112,28 +115,26 @@ require a redeploy.**
 Requests carry an `ngrok-skip-browser-warning: true` header so free-tier tunnels return JSON
 instead of their HTML interstitial. Harmless once the Suite is on a real domain.
 
-**Checkout — storefront server → Suite, authenticated webhook.**
+**Checkout — storefront server → Suite, server-side order API.**
 `api/orders.ts` (Vercel serverless) and `server/order-service.ts` (local Express) both POST to
-`${MERCHANT_SUITE_URL}/api/custom-orders/webhook` with an `x-api-key: ${CUSTOM_ORDERS_API_KEY}`
-header. The Suite matches that key against `app_settings` to resolve the workspace and returns the
-canonical `order_id`. The order then appears in the dashboard with `source: custom_store`.
+`${MERCHANT_SUITE_URL}/api/public/v1/angonaloy/orders` through the server-only
+`STOREFRONT_HANDLE=angonaloy` configuration. The Suite returns the canonical `order_id`, and the
+order then appears in the dashboard with `source: custom_store`.
 
-This never happens from the browser — the API key must stay server-side.
+This never happens directly from the browser — the storefront's server-side handlers forward the
+validated order payload.
 
 ### Verifying the connection
 
 ```bash
 # Catalog reachable?
-curl -s "$MERCHANT_SUITE_URL/api/public/v1/storefronts/3cd26e57-85ef-4970-94a4-cd99c0f1b554/products" | head -c 300
-
-# Checkout wired up? (creates a REAL order in the dashboard — delete it afterwards)
-curl -s -X POST "$MERCHANT_SUITE_URL/api/custom-orders/webhook" \
-  -H "Content-Type: application/json" -H "x-api-key: $CUSTOM_ORDERS_API_KEY" \
-  -d '{"customer_name":"Test","phone":"01700000000","address":"Test address, Dhaka","product":"Test","quantity":1,"price":100,"delivery_rate":60}'
+curl -s "$MERCHANT_SUITE_URL/api/public/v1/angonaloy/products" | head -c 300
 ```
 
-A 201 with an `order_id` means the link is live. An empty `products` array means nothing is
-published in the dashboard yet — that is a dashboard-side task, not a storefront bug.
+For checkout, place a test order through the storefront's normal checkout flow; it uses the same
+handle-based order endpoint and creates a **REAL** dashboard order that must be cleaned up afterward.
+An empty `products` array means nothing is published in the dashboard yet — that is a dashboard-side
+task, not a storefront bug.
 
 ---
 

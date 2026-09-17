@@ -1,7 +1,20 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fetchStorefrontProduct, findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
+import {
+  fetchStorefrontProduct,
+  fetchStorefrontProductInventory,
+  fetchStorefrontProducts,
+  findGeneratedStorefrontProduct,
+  getCachedStorefrontProduct,
+  getProductGallery,
+  getProductImage,
+  hasPublishedProducts,
+  isProductOrderable,
+  searchStorefrontProducts,
+  setCachedStorefrontProduct,
+  STOREFRONT_API_BASE,
+} from "./storefront-products.ts";
 
 test("matches product names without case sensitivity", () => {
   const products = [
@@ -160,6 +173,53 @@ test("does not accept a 200 response for a different product slug", async () => 
     }), { status: 200 });
 
     await assert.rejects(() => fetchStorefrontProduct("active-mango"), /Could not load product/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("uses Angonaloy's canonical handle-based catalog API base", () => {
+  assert.equal(STOREFRONT_API_BASE, "/api/public/v1/angonaloy");
+});
+
+test("sends catalog reads through Angonaloy's canonical handle endpoint", async () => {
+  const originalFetch = globalThis.fetch;
+  const requestUrls: string[] = [];
+  try {
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      requestUrls.push(url);
+
+      if (url.endsWith("/products")) {
+        return new Response(JSON.stringify({ products: [] }), { status: 200 });
+      }
+
+      if (url.endsWith("/products/seasonal-mango")) {
+        return new Response(JSON.stringify({
+          product: { name: "Seasonal Mango", slug: "seasonal-mango" },
+        }), { status: 200 });
+      }
+
+      if (url.endsWith("/products/seasonal-mango/inventory")) {
+        return new Response(JSON.stringify({
+          inventory: null,
+          as_of: "2026-09-17T00:00:00.000Z",
+        }), { status: 200 });
+      }
+
+      throw new Error(`Unexpected request: ${url}`);
+    };
+
+    await fetchStorefrontProducts();
+    await fetchStorefrontProduct("seasonal-mango");
+    await fetchStorefrontProductInventory("seasonal-mango");
+
+    assert.deepEqual(requestUrls, [
+      "/api/public/v1/angonaloy/products",
+      "/api/public/v1/angonaloy/products/seasonal-mango",
+      "/api/public/v1/angonaloy/products/seasonal-mango/inventory",
+    ]);
+    assert.ok(requestUrls.every((url) => !url.includes("/api/public/v1/storefronts/")));
   } finally {
     globalThis.fetch = originalFetch;
   }

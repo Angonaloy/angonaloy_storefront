@@ -63,7 +63,7 @@ test("lets customers choose a quantity for cart and direct checkout", () => {
   assert.match(productSource, /disabled=\{quantity === 1\}/);
   assert.match(productSource, /aria-label="Increase quantity"/);
   assert.match(productSource, /Math\.max\(1, current - 1\)/);
-  assert.match(productSource, /price: pricedBundle\.amount \* quantity/);
+  assert.match(productSource, /price: checkoutSubtotal/);
   assert.match(productSource, /selectedBundle\.title,\s*quantity/);
 });
 
@@ -182,8 +182,14 @@ test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () =
   assert.match(productSource, /import \{ VideoPlayer, VideoSkin \} from "@videojs\/react\/video";/);
   assert.match(productSource, /<VideoPlayer poster=\{poster\} title=\{`Angonaloy reel \$\{i \+ 1\}`\}>/);
   assert.match(productSource, /<VideoSkin className="absolute inset-0 h-full w-full \[--media-border-radius:0px\]">\s*<MuxVideo/);
-  assert.match(productSource, /<PlayButton[\s\S]*?className="absolute left-1\/2 top-1\/2/);
-  assert.match(productSource, /onPlaying=\{\(\) => setPlayingReel\(i\)\}/);
+  assert.match(productSource, /<PlayButton\s+className="absolute left-1\/2 top-1\/2/);
+  assert.match(productSource, /render=\{\(props, state\) =>/);
+  assert.match(productSource, /state\.paused\s*\?\s*\(\s*<Play className/);
+  assert.match(productSource, /\) : \(\s*<Pause className/);
+  const muxPlayButton = productSource.match(/<PlayButton[\s\S]*?\/>/)?.[0] ?? "";
+  assert.doesNotMatch(muxPlayButton, /onPointerDown/);
+  const muxVideo = productSource.match(/<MuxVideo[\s\S]*?\/>/)?.[0] ?? "";
+  assert.doesNotMatch(muxVideo, /onPlay|onPlaying|onPause|onEnded/);
   // Every other product, including Honey Nut, still renders the original
   // poster + tap-to-play + plain <video> combo, untouched.
   assert.match(productSource, /\) : \(\s*<>\s*\{i === currentReel \? \(\s*<video/);
@@ -213,7 +219,6 @@ test("uses the poster while the active native video is loading", () => {
   assert.match(productSource, /poster=\{poster\}/);
   assert.doesNotMatch(productSource, /loadedHoneyNutReel/);
 });
-
 
 test("puts reel radius on media and provides a centered play-pause toggle", () => {
   assert.match(productSource, /const \[playingReel, setPlayingReel\] = useState<number \| null>\(null\)/);

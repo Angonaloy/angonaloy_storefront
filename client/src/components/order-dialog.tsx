@@ -37,7 +37,7 @@ export type OrderDialogBundle = {
   images: { src: string; alt: string }[];
   analyticsItems?: GoogleAnalyticsItem[];
   captureItems?: AbandonedCartItem[];
-  items?: Array<{ productId: string; variantId: string; quantity: number }>;
+  items?: Array<{ productId: string; variantId: string; quantity: number; offerId?: string }>;
 };
 
 function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
