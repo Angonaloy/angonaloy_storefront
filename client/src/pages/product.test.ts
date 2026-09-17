@@ -63,7 +63,7 @@ test("lets customers choose a quantity for cart and direct checkout", () => {
   assert.match(productSource, /disabled=\{quantity === 1\}/);
   assert.match(productSource, /aria-label="Increase quantity"/);
   assert.match(productSource, /Math\.max\(1, current - 1\)/);
-  assert.match(productSource, /price: selectedBundle\.amount \* quantity/);
+  assert.match(productSource, /price: pricedBundle\.amount \* quantity/);
   assert.match(productSource, /selectedBundle\.title,\s*quantity/);
 });
 
@@ -160,11 +160,29 @@ test("uses native Cloudinary reels only for Honey Nut", () => {
   assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__8e09\.mp4/);
   assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
   assert.match(productSource, /const honeyNutReelMedia = slug === "honey-nut" \? HONEY_NUT_REEL_MEDIA : null/);
-  assert.match(productSource, /const reelMedia = honeyNutReelMedia \? honeyNutReelMedia : REEL_MEDIA/);
+  assert.match(productSource, /const reelMedia = honeyNutReelMedia \?\? glassWaterBottleReelMedia \?\? REEL_MEDIA/);
   assert.match(productSource, /reelMedia\.map\(\(\{ src, poster \}, i\) =>/);
   assert.match(productSource, /video\/upload\/so_1,w_480,f_auto,q_auto/);
   assert.match(productSource, /poster=\{poster\}/);
   assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden rounded-\[6px\] bg-black"/);
+});
+
+test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () => {
+  assert.match(productSource, /import \{ MuxVideo \} from "@videojs\/react\/media\/mux-video";/);
+  assert.match(productSource, /const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = \[/);
+  assert.match(productSource, /https:\/\/stream\.mux\.com\/\$\{playbackId\}\.m3u8/);
+  assert.match(productSource, /https:\/\/image\.mux\.com\/\$\{playbackId\}\/thumbnail\.jpg/);
+  assert.match(
+    productSource,
+    /const isGlassWaterBottleMuxProduct = slug === "glass-water-bottles-with-time-marker"/,
+  );
+  assert.match(productSource, /import "@videojs\/react\/video\/skin\.css";/);
+  assert.match(productSource, /import \{ VideoPlayer, VideoSkin \} from "@videojs\/react\/video";/);
+  assert.match(productSource, /<VideoPlayer poster=\{poster\} title=\{`Angonaloy reel \$\{i \+ 1\}`\}>/);
+  assert.match(productSource, /<VideoSkin className="absolute inset-0 h-full w-full">\s*<MuxVideo/);
+  // Every other product, including Honey Nut, still renders the original
+  // poster + tap-to-play + plain <video> combo, untouched.
+  assert.match(productSource, /\) : \(\s*<>\s*\{i === currentReel \? \(\s*<video/);
 });
 
 test("navigates reels with arrow keys without hijacking editable controls", () => {
