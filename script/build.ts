@@ -8,15 +8,15 @@ import {
   resolveStorefrontBuildCatalog,
   type BuildProduct,
 } from "./storefront-seo-artifacts";
+import { getAngonaloyCatalogApiBase } from "../shared/angonaloy-catalog-api.ts";
 
-const storefrontId = process.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
 const configuredMerchantSuiteUrl = (process.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
 const MERCHANT_SUITE_URL = configuredMerchantSuiteUrl
   || (process.env.NODE_ENV === "production" ? "https://angonaloy-commerceos.vercel.app" : "");
 if (!MERCHANT_SUITE_URL) {
   throw new Error("VITE_MERCHANT_SUITE_URL environment variable is not set");
 }
-const storefrontProductsUrl = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${storefrontId}/products`;
+const storefrontProductsUrl = `${getAngonaloyCatalogApiBase(MERCHANT_SUITE_URL)}/products`;
 const generatedProductsFile = "client/src/lib/generated-storefront-products.ts";
 
 // server deps to bundle to reduce openat(2) syscalls
