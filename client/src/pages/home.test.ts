@@ -37,7 +37,7 @@ test("styles the Featured Categories heading like the product page circled title
   assert.match(homeSource, /IhtishamDeshlipi/);
   assert.match(homeSource, /M14,32 C9,15 48,6 72,8/);
   assert.match(homeSource, /h-\[220%\] w-\[145%\]/);
-  assert.match(homeSource, /text-\[clamp\(1\.85rem,5\.2vw,2\.75rem\)\][^"]*md:text-\[clamp\(2rem,5\.5vw,3rem\)\]/);
+  assert.match(homeSource, /text-\[clamp\(1\.4rem,4vw,2.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
   assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
 });
 
@@ -203,7 +203,7 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   assert.match(whatsNewSource, /জনপ্রিয় পণ্য/);
   assert.match(whatsNewSource, /IhtishamDeshlipi/);
   assert.match(whatsNewSource, /M14,32 C9,15 48,6 72,8/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.75rem,4\.8vw,2\.6rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.9rem\)\]/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.4rem,4vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
@@ -236,6 +236,7 @@ test("renders the Newly Added title in Bengali only with circled style", () => {
   assert.match(latestDropSource, /M14,32 C9,15 48,6 72,8/);
   assert.doesNotMatch(latestDropSource, /NEWLY ADDED/);
   assert.doesNotMatch(latestDropSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
+  assert.match(latestDropSource, /text-\[clamp\(1\.4rem,4vw,2.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
 });
 
 test("uses circled Bengali for section titles and highlight for category labels", () => {
