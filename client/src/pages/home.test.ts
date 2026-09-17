@@ -89,7 +89,7 @@ test("uses left-right category headers with underlined View All links and four p
   assert.match(categorySource, /collection\.label/);
  });
 
-test("links editorial sections to their products and aligns their text at the bottom", () => {
+test("renders responsive linked editorial image sections without old copy", () => {
   const editorialSource = homeSource.slice(
     homeSource.indexOf("{/* Editorial Section */}"),
     homeSource.indexOf("{/* Category Section: Oil & Ghee */}"),
@@ -99,10 +99,27 @@ test("links editorial sections to their products and aligns their text at the bo
     homeSource.indexOf("{/* Category Section: Semai */}"),
   );
 
-  assert.match(editorialSource, /href="\/product\/pure-ghee"/);
-  assert.match(editorialSource, /absolute inset-0 flex flex-col items-center justify-end/);
-  assert.match(essentialsSource, /href="\/product\/kalojira-mixed"/);
-  assert.match(essentialsSource, /absolute inset-0 flex flex-col items-center justify-end/);
+  assert.match(editorialSource, /href="\/products"/);
+  assert.match(editorialSource, /pure-ghee-editorial-mobile-20260917\.webp/);
+  assert.match(editorialSource, /pure-ghee-editorial-desktop-20260917\.webp/);
+  assert.match(editorialSource, /<picture>/);
+  assert.match(editorialSource, /rounded-full border border-white\/50 bg-white\/20[^\"]*shadow-lg backdrop-blur-md/);
+  assert.match(editorialSource, /transition-colors hover:bg-white\/30/);
+  assert.doesNotMatch(editorialSource, /group-hover:bg-white\/30/);
+  assert.match(editorialSource, /FOR THE HEART OF HOME/);
+  assert.match(editorialSource, /ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।/);
+  assert.match(editorialSource, /EXPLORE HOME &amp; KITCHEN/);
+  assert.doesNotMatch(editorialSource, /curated-edit-bg-mobile\.webp|curated-edit-bg\.webp/);
+  assert.doesNotMatch(editorialSource, /Shop Now|absolute inset-0 bg-black\/35|rounded-\[16px\] border border-white\/35 bg-black\/20/);
+  assert.match(essentialsSource, /href="\/product\/glass-water-bottles-with-time-marker"/);
+  assert.match(essentialsSource, /glass-bottle-editorial-mobile-20260917\.webp/);
+  assert.match(essentialsSource, /glass-bottle-editorial-desktop-20260917\.webp/);
+  assert.match(essentialsSource, /<picture>/);
+  assert.match(essentialsSource, /HYDRATE WITH INTENTION/);
+  assert.match(essentialsSource, /A beautiful daily ritual for home, work, and everywhere in between\./);
+  assert.match(essentialsSource, /SHOP GLASS BOTTLES/);
+  assert.match(essentialsSource, /backdrop-blur-md/);
+  assert.doesNotMatch(essentialsSource, /essentials-bg-mobile\.webp|essentials-bg\.webp|BLACK SEED/);
 });
 
 test("links Featured Categories to their collection pages", () => {
@@ -224,7 +241,7 @@ test("uses circled Bengali for section titles and highlight for category labels"
 test("uses a reduced type scale across homepage section headings", () => {
   const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
 
-  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 3);
+  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 1);
   assert.doesNotMatch(homeSource, /text-\[1\.65rem\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
   assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
