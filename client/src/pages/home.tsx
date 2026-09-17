@@ -604,15 +604,15 @@ export default function Home() {
                   className="block w-full object-cover"
                 />
               </picture>
-              <div className="absolute inset-0 flex items-end justify-start p-5 pb-8 md:p-12 md:pb-14">
-                <div className="max-w-[21rem] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] md:max-w-[27rem]">
+              <div className="absolute inset-0 flex items-end justify-start bg-gradient-to-t from-black/40 via-black/10 to-transparent p-5 pb-8 md:bg-none md:p-12 md:pb-14">
+                <div className="max-w-[21rem] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:max-w-[27rem]">
                   <h2 className="font-inter-28pt-semibold text-[clamp(1.7rem,5vw,3rem)] leading-[0.95] tracking-[-0.04em]">
                     HYDRATE WITH INTENTION
                   </h2>
-                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/90 md:text-base">
+                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-white md:text-base">
                     A beautiful daily ritual for home, work, and everywhere in between.
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-6 md:px-8 md:py-3 md:text-base">
+                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/35 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,0,0,0.28)] backdrop-blur-md transition-colors hover:bg-white/45 md:mt-6 md:px-8 md:py-3 md:text-base">
                     SHOP GLASS BOTTLES
                   </span>
                 </div>

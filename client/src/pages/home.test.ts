@@ -122,6 +122,9 @@ test("renders responsive linked editorial image sections without old copy", () =
   assert.match(essentialsSource, /HYDRATE WITH INTENTION/);
   assert.match(essentialsSource, /A beautiful daily ritual for home, work, and everywhere in between\./);
   assert.match(essentialsSource, /SHOP GLASS BOTTLES/);
+  assert.match(essentialsSource, /absolute inset-0 flex items-end justify-start bg-gradient-to-t from-black\/40 via-black\/10 to-transparent p-5 pb-8 md:bg-none md:p-12 md:pb-14/);
+  assert.match(essentialsSource, /drop-shadow-\[0_2px_12px_rgba\(0,0,0,0\.6\)\]/);
+  assert.match(essentialsSource, /border-white\/80 bg-white\/35[^\"]*shadow-\[0_4px_18px_rgba\(0,0,0,0\.28\)\] backdrop-blur-md/);
   assert.match(essentialsSource, /backdrop-blur-md/);
   assert.doesNotMatch(essentialsSource, /essentials-bg-mobile\.webp|essentials-bg\.webp|BLACK SEED/);
 });
