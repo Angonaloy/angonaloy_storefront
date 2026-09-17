@@ -51,6 +51,15 @@ export const FEATURED_COLLECTIONS = [
     productSlugs: ["2-in-1-glass-oil-bottle-with-sprayer"],
   },
   {
+    slug: "home-gadgets",
+    label: "Home Gadgets",
+    image: "/categories/home-gadgets-20260917-blended.webp",
+    productSlugs: [
+      "glass-water-bottles-with-time-marker",
+      "2-in-1-glass-oil-bottle-with-sprayer",
+    ],
+  },
+  {
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",

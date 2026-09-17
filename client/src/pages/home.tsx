@@ -17,6 +17,9 @@ import {
   getVisibleFeaturedCollections,
 } from "@/lib/featured-collections";
 
+const HERO_CTA_CLASS_NAME =
+  "hero-frosted-cta pointer-events-auto mt-1 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-2 md:px-8 md:py-3 md:text-base";
+
 function HighlightedWord({
   children,
   className = "",
@@ -288,7 +291,7 @@ export default function Home() {
               </p>
               <Link
                 href="/products"
-                className="pointer-events-auto mt-1 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-2 md:px-8 md:py-3 md:text-base"
+                className={HERO_CTA_CLASS_NAME}
               >
                 Shop Now - এখনই কিনুন
               </Link>
@@ -298,7 +301,7 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="w-full bg-[#f5f5f5] pb-2 pt-8 md:pb-3 md:pt-12">
+      <section className="w-full bg-[#f5f5f5] pb-8 pt-8 md:pb-10 md:pt-12">
         <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -337,10 +340,14 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
             ref={categoriesRef}
-            className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
+            className="no-scrollbar -mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:mt-10 sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
           >
             {visibleFeaturedCollections.map(({ slug, label, image }, index) => {
               const featuredCategoryLabel = slug === "functional-food" ? "Functional-ফুড" : label;
+              const separator = featuredCategoryLabel.includes("-") ? "-" : " ";
+              const separatorIndex = featuredCategoryLabel.indexOf(separator);
+              const primaryCategoryLabel = featuredCategoryLabel.slice(0, separatorIndex);
+              const secondaryCategoryLabel = featuredCategoryLabel.slice(separatorIndex + 1);
 
               return (
                 <Link
@@ -357,21 +364,25 @@ export default function Home() {
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   </div>
-                  <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                    {featuredCategoryLabel.includes("-") ? (
-                      <>
-                        <span className="block md:inline">{featuredCategoryLabel.split("-")[0]}</span>
-                        <span className="hidden md:inline">-</span>
-                        <span className="block md:inline">{featuredCategoryLabel.split("-")[1]}</span>
-                      </>
-                    ) : (
-                      <span>{featuredCategoryLabel}</span>
-                    )}
+                  <span className="mt-1 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
+                    <span className="block md:inline">{primaryCategoryLabel}</span>
+                    <span className="hidden md:inline">{separator}</span>
+                    <span className="block md:inline">{secondaryCategoryLabel}</span>
                   </span>
                 </Link>
               );
             })}
           </motion.div>
+          <div className="mx-auto mt-6 flex w-full items-center gap-3 md:mt-8 md:gap-4" aria-hidden="true">
+            <span className="h-px flex-1 bg-black/10" />
+            <span
+              className="whitespace-nowrap text-[10px] font-medium tracking-[0.12em] text-black/45"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+            >
+              শেষ
+            </span>
+            <span className="h-px flex-1 bg-black/10" />
+          </div>
         </div>
       </section>
 
@@ -564,7 +575,7 @@ export default function Home() {
                   >
                     ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/35 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,0,0,0.28)] backdrop-blur-md transition-colors hover:bg-white/45 md:mt-6 md:px-8 md:py-3 md:text-base">
+                  <span className={HERO_CTA_CLASS_NAME}>
                     EXPLORE HOME &amp; KITCHEN
                   </span>
                 </div>
@@ -612,7 +623,7 @@ export default function Home() {
                   <p className="mt-3 max-w-sm text-sm leading-relaxed text-white md:text-base">
                     A beautiful daily ritual for home, work, and everywhere in between.
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/35 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_18px_rgba(0,0,0,0.28)] backdrop-blur-md transition-colors hover:bg-white/45 md:mt-6 md:px-8 md:py-3 md:text-base">
+                  <span className={HERO_CTA_CLASS_NAME}>
                     SHOP GLASS BOTTLES
                   </span>
                 </div>

@@ -11,11 +11,12 @@ import {
   getVisibleFeaturedCollections,
 } from "./featured-collections";
 
-test("defines the eleven homepage collections", () => {
+test("defines the twelve homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
     "fresh-mango",
     "home-essentials",
     "kitchen-essentials",
+    "home-gadgets",
     "homemade",
     "functional-food",
     "honey",
@@ -27,7 +28,7 @@ test("defines the eleven homepage collections", () => {
   ]);
 });
 
-test("assigns every current product to exactly one collection", () => {
+test("assigns every current product to at least one collection", () => {
   const assignments = FEATURED_COLLECTIONS.flatMap((collection) =>
     collection.productSlugs.map((productSlug) => ({ collection: collection.slug, productSlug })),
   );
@@ -52,8 +53,10 @@ test("assigns every current product to exactly one collection", () => {
     "2-in-1-glass-oil-bottle-with-sprayer",
   ];
 
-  assert.equal(new Set(assignments.map(({ productSlug }) => productSlug)).size, assignments.length);
-  assert.deepEqual(assignments.map(({ productSlug }) => productSlug).sort(), productSlugs.sort());
+  assert.deepEqual(
+    [...new Set(assignments.map(({ productSlug }) => productSlug))].sort(),
+    productSlugs.sort(),
+  );
 });
 
 test("maps Glass Water Bottles to the visible Home Essentials collection", () => {
@@ -69,7 +72,7 @@ test("maps Glass Water Bottles to the visible Home Essentials collection", () =>
   assert.deepEqual(homeEssentials.productSlugs, [waterBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([waterBottle]).map(({ slug }) => slug),
-    ["home-essentials"],
+    ["home-essentials", "home-gadgets"],
   );
 });
 
@@ -93,13 +96,29 @@ test("maps Glass Oil Bottle With Sprayer to the visible Kitchen Essentials colle
   assert.deepEqual(kitchenEssentials.productSlugs, [oilBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([oilBottle]).map(({ slug }) => slug),
-    ["kitchen-essentials"],
+    ["kitchen-essentials", "home-gadgets"],
   );
 });
 
 test("ships Kitchen Essentials category artwork", () => {
   assert.equal(
     existsSync(new URL("../../public/categories/kitchen-essentials-1-320.webp", import.meta.url)),
+    true,
+  );
+});
+
+test("ships Home Gadgets category artwork and aggregates household gadgets", () => {
+  const homeGadgets = getFeaturedCollection("home-gadgets");
+
+  assert.ok(homeGadgets);
+  assert.equal(homeGadgets.label, "Home Gadgets");
+  assert.equal(homeGadgets.image, "/categories/home-gadgets-20260917-blended.webp");
+  assert.deepEqual(homeGadgets.productSlugs, [
+    "glass-water-bottles-with-time-marker",
+    "2-in-1-glass-oil-bottle-with-sprayer",
+  ]);
+  assert.equal(
+    existsSync(new URL("../../public/categories/home-gadgets-20260917-blended.webp", import.meta.url)),
     true,
   );
 });
