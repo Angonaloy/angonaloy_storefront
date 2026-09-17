@@ -309,7 +309,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.85rem,5.2vw,2.75rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(2rem,5.5vw,3rem)] md:leading-none">
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)] md:leading-none">
               <span className="font-medium">আমাদের</span>{" "}
               <span
                 className="relative inline-block"
@@ -400,7 +400,7 @@ export default function Home() {
             transition={transition}
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.75rem,4.8vw,2.6rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.9rem)] md:leading-none">
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)] md:leading-none">
               <span className="font-medium">সবচেয়ে</span>{" "}
               <span
                 className="relative inline-block"
@@ -472,7 +472,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="font-inter-28pt-semibold text-[clamp(1.75rem,4.8vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.9rem)]"
+              className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)]"
             >
               <span className="font-medium">আমাদের</span>{" "}
               <span
