@@ -82,6 +82,18 @@
   @apply border-border;
 }
 
+.hero-frosted-cta {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background-color: rgb(255 255 255 / 0.2);
+  border-color: rgb(255 255 255 / 0.5);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.hero-frosted-cta:hover {
+  background-color: rgb(255 255 255 / 0.3);
+}
+
 .katimon-hero-button {
   position: relative;
   border: none;
