@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import "@videojs/react/video/skin.css";
+import { PlayButton } from "@videojs/react";
 import { VideoPlayer, VideoSkin } from "@videojs/react/video";
 import { MuxVideo } from "@videojs/react/media/mux-video";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Pause, Play, Plus } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
   // decoders to layers that Embla re-transforms every frame, which is what makes the
   // horizontal drag stutter on real phones but not on a desktop localhost.
-  const [activeReelVideo, setActiveReelVideo] = useState<number | null>(null);
+  const [playingReel, setPlayingReel] = useState<number | null>(null);
   const activeReelVideoRef = useRef<HTMLVideoElement | null>(null);
   const viewedGoogleItemRef = useRef("");
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
@@ -269,8 +270,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   useEffect(() => {
     // Leaving a slide tears its <video> down so no decoder stays attached to an
     // off-screen slide while the track is being dragged.
-    setActiveReelVideo((active) => (active === null || active === currentReel ? active : null));
-  }, [currentReel]);
+    setPlayingReel(null);
+  }, [currentReel, isGlassWaterBottleMuxProduct]);
   const { data: merchantProduct, isFetchedAfterMount, isSuccess, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -1077,22 +1078,32 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       <div className="flex will-change-transform gap-0 px-0 md:px-6">
                         {reelMedia.map(({ src, poster }, i) => (
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
-                            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
+                            <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
                               {isGlassWaterBottleMuxProduct ? (
                                 i === currentReel ? (
-                                  <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
-                                    <VideoSkin className="absolute inset-0 h-full w-full">
-                                      <MuxVideo
-                                        src={src}
-                                        playsInline
-                                        preload="metadata"
-                                        className="h-full w-full object-contain bg-black"
-                                        ref={(video) => {
-                                          activeReelVideoRef.current = video;
-                                        }}
-                                      />
-                                    </VideoSkin>
-                                  </VideoPlayer>
+                                  <div className="absolute inset-0" onPointerDown={(event) => event.stopPropagation()}>
+                                    <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
+                                      <VideoSkin className="absolute inset-0 h-full w-full [--media-border-radius:0px]">
+                                        <MuxVideo
+                                          src={src}
+                                          playsInline
+                                          preload="metadata"
+                                          onPlay={() => setPlayingReel(i)}
+                                          onPlaying={() => setPlayingReel(i)}
+                                          onPause={() => setPlayingReel((active) => (active === i ? null : active))}
+                                          onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
+                                          className="h-full w-full object-contain bg-black"
+                                          ref={(video) => {
+                                            activeReelVideoRef.current = video;
+                                          }}
+                                        />
+                                        <PlayButton
+                                          className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 [&_.media-button-icon]:h-7 [&_.media-button-icon]:w-7"
+                                          onPointerDown={(event) => event.stopPropagation()}
+                                        />
+                                      </VideoSkin>
+                                    </VideoPlayer>
+                                  </div>
                                 ) : (
                                   <img
                                     src={poster}
@@ -1110,49 +1121,57 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                       src={src}
                                       title={`Angonaloy reel ${i + 1}`}
                                       poster={poster}
-                                      controls={activeReelVideo === i}
+                                      controls
                                       playsInline
                                       preload="metadata"
-                                      onPlay={() => setActiveReelVideo(i)}
-                                      onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                      onPlay={() => setPlayingReel(i)}
+                                      onPlaying={() => setPlayingReel(i)}
+                                      onPause={() => setPlayingReel((active) => (active === i ? null : active))}
+                                      onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
                                       ref={(video) => {
                                         activeReelVideoRef.current = video;
                                       }}
-                                      className="h-full w-full object-contain bg-black"
+                                      onPointerDown={(event) => event.stopPropagation()}
+                                      className="h-full w-full rounded-[6px] object-contain bg-black"
                                     />
                                   ) : null}
-                                  {activeReelVideo !== i ? (
+                                  {i !== currentReel ? (
                                     <img
                                       src={poster}
                                       alt=""
                                       aria-hidden="true"
                                       loading="lazy"
                                       decoding="async"
-                                      className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                      className="pointer-events-none absolute inset-0 h-full w-full rounded-[6px] object-cover"
                                     />
-                                  ) : null}
-                                  {activeReelVideo !== i ? (
-                                    <button
-                                      type="button"
-                                      aria-label={`Play reel ${i + 1}`}
-                                      onClick={() => {
-                                        if (i !== currentReel) {
-                                          reelApi?.scrollTo(i);
-                                          return;
-                                        }
-                                        const video = activeReelVideoRef.current;
-                                        if (!video) return;
-                                        video.muted = false;
-                                        setActiveReelVideo(i);
-                                        void video.play().catch(() => setActiveReelVideo(null));
-                                      }}
-                                      className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                    >
-                                      <Play className="ml-1 h-6 w-6 fill-current" />
-                                    </button>
                                   ) : null}
                                 </>
                               )}
+                              {!isGlassWaterBottleMuxProduct && i === currentReel ? (
+                                <button
+                                  type="button"
+                                  aria-label={playingReel === i ? `Pause reel ${i + 1}` : `Play reel ${i + 1}`}
+                                  aria-pressed={playingReel === i}
+                                  onPointerDown={(event) => event.stopPropagation()}
+                                  onClick={() => {
+                                    const video = activeReelVideoRef.current;
+                                    if (!video) return;
+                                    if (video.paused) {
+                                      video.muted = false;
+                                      void video.play().catch(() => setPlayingReel(null));
+                                    } else {
+                                      video.pause();
+                                    }
+                                  }}
+                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                >
+                                  {playingReel === i ? (
+                                    <Pause className="h-6 w-6 fill-current" />
+                                  ) : (
+                                    <Play className="ml-1 h-6 w-6 fill-current" />
+                                  )}
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         ))}
