@@ -1,5 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
+import "@videojs/react/video/skin.css";
+import { VideoPlayer, VideoSkin } from "@videojs/react/video";
+import { MuxVideo } from "@videojs/react/media/mux-video";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
@@ -135,10 +138,35 @@ const HONEY_NUT_REEL_MEDIA = [
   },
 ] as const;
 
+// Mux-hosted reel for this one product only — every other product keeps the
+// plain Cloudinary-hosted <video> path above. See product.tsx's MuxVideo
+// branch below, gated on the same slug check.
+const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = [
+  "h5q3b3EKEzQgPUQ002xPb2jmVORrBlvIlbMDejxOSJeY",
+  "cwW02TU2uP1XRUsB02GmCW1YL01PTdR56302suoUJR2kTJQ",
+  "ctMKREyeQESGJu5D56c4tqvDXvzMBVPcU9lkWren66w",
+] as const;
+const GLASS_WATER_BOTTLE_REEL_MEDIA = GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS.map((playbackId) => ({
+  src: `https://stream.mux.com/${playbackId}.m3u8`,
+  poster: `https://image.mux.com/${playbackId}/thumbnail.jpg`,
+}));
+
+// Quantity-bundle pricing for this product only — replaces the plain quantity
+// stepper + single-variant "Select Size" card every other product still uses.
+// `pieces` doubles as the value written into `quantity` state when a tier is
+// picked, so the rest of the checkout/cart/analytics pipeline (which already
+// keys off `quantity`) needs no separate bundle-tier state of its own.
+const GLASS_WATER_BOTTLE_BUNDLE_TIERS = [
+  { pieces: 1, totalPrice: 750, label: "1 Piece" },
+  { pieces: 2, totalPrice: 1400, label: "2 Pieces" },
+] as const;
+
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
   const honeyNutReelMedia = slug === "honey-nut" ? HONEY_NUT_REEL_MEDIA : null;
-  const reelMedia = honeyNutReelMedia ? honeyNutReelMedia : REEL_MEDIA;
+  const isGlassWaterBottleMuxProduct = slug === "glass-water-bottles-with-time-marker";
+  const glassWaterBottleReelMedia = isGlassWaterBottleMuxProduct ? GLASS_WATER_BOTTLE_REEL_MEDIA : null;
+  const reelMedia = honeyNutReelMedia ?? glassWaterBottleReelMedia ?? REEL_MEDIA;
   const reelCount = reelMedia.length;
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
@@ -214,6 +242,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [reelApi]);
   useEffect(() => {
     if (!reelApi) return;
+    // video.js owns play/pause state for the Mux player — an external, direct
+    // .pause() call here would fight its own toggle logic on the next click.
+    // The plain <video> branch has no such state to desync, so this is safe
+    // there and still pauses playback the moment a drag starts.
+    if (isGlassWaterBottleMuxProduct) return;
     const pauseReelsDuringDrag = () => {
       activeReelVideoRef.current?.pause();
     };
@@ -221,7 +254,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     return () => {
       reelApi.off("pointerDown", pauseReelsDuringDrag);
     };
-  }, [reelApi]);
+  }, [reelApi, isGlassWaterBottleMuxProduct]);
   useEffect(() => {
     if (!reelApi) return;
     const syncActiveReel = () => setCurrentReel(reelApi.selectedScrollSnap());
@@ -300,13 +333,36 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     const label = String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
     return label === selectedBundle.title;
   }) || null;
+
+  // For the bundle product, `quantity` doubles as the selected tier's piece
+  // count. `pricedBundle` overrides only the per-unit price used for real
+  // order math (so amount * quantity lands on the tier's exact total, e.g.
+  // 700 * 2 = 1400) — `.title` is left alone so it still names the real
+  // "1000ml" variant. `heroDisplayAmount`/`heroCompareAtAmount` are separate:
+  // the prominent price shown above the bundle picker shows the tier's total
+  // (750 / 1400), not a per-unit figure.
+  const activeGlassBottleTier = isGlassWaterBottleMuxProduct
+    ? GLASS_WATER_BOTTLE_BUNDLE_TIERS.find((tier) => tier.pieces === quantity) ?? GLASS_WATER_BOTTLE_BUNDLE_TIERS[0]
+    : null;
+  const pricedBundle = activeGlassBottleTier
+    ? {
+        ...selectedBundle,
+        amount: activeGlassBottleTier.totalPrice / activeGlassBottleTier.pieces,
+        price: `৳${Math.round(activeGlassBottleTier.totalPrice / activeGlassBottleTier.pieces).toLocaleString()}`,
+      }
+    : selectedBundle;
+  const heroDisplayAmount = activeGlassBottleTier ? activeGlassBottleTier.totalPrice : selectedBundle.amount;
+  const heroCompareAtAmount = activeGlassBottleTier
+    ? activeGlassBottleTier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice
+    : Number(product?.compare_at_price);
+
   const productAnalyticsItem = useMemo(() => toGoogleAnalyticsItem({
     id: selectedVariant?.id ?? product?.id ?? product?.slug ?? slug,
     name: product?.name ?? slug,
     variant: selectedBundle.title === "Default" ? null : selectedBundle.title,
-    price: selectedBundle.amount,
+    price: pricedBundle.amount,
     quantity: 1,
-  }), [product?.id, product?.name, product?.slug, slug, selectedBundle.amount, selectedBundle.title, selectedVariant?.id]);
+  }), [product?.id, product?.name, product?.slug, slug, pricedBundle.amount, selectedBundle.title, selectedVariant?.id]);
   const productImage = product?.image_url || "";
   const merchantAvailabilityKnown = isFetchedAfterMount && isSuccess && merchantProduct !== undefined;
   const merchantProductUnavailable = productMissingFromMerchant || merchantProduct?.available === false;
@@ -317,7 +373,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const displayImage = (product ? getProductImage(product) : "") || productImage;
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
   const isLoading = !merchantAvailabilityKnown && !cachedProduct && !generatedProduct;
-  const compareAtAmount = Number(product?.compare_at_price);
   const detailSections = getProductDetailSections(product);
   const [openSection, setOpenSection] = useState(0);
 
@@ -384,12 +439,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       viewedGoogleItemRef.current = googleViewKey;
       trackGoogleEcommerceEvent("view_item", {
         pageType: "product",
-        value: selectedBundle.amount,
+        value: pricedBundle.amount,
         items: [productAnalyticsItem],
       });
     }
 
-  }, [isLoading, product, productAnalyticsItem, selectedBundle.amount]);
+  }, [isLoading, product, productAnalyticsItem, pricedBundle.amount]);
 
   // SEO: per-product title/meta/OG + JSON-LD so crawlers index real mango
   // products. Unknown slugs get noindex instead of a fake Stepprs fallback.
@@ -417,7 +472,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       setMeta('meta[name="robots"]', "content", "noindex, follow");
       return;
     }
-    const price = Number(selectedBundle.amount) || Number(product.price) || 0;
+    const price = Number(pricedBundle.amount) || Number(product.price) || 0;
     const desc = (product.description || "Angonaloy-আঙ্গনালয়. Fresh, authentic products delivered across Bangladesh.").slice(0, 160);
     const title = `${product.name} | Angonaloy-আঙ্গনালয়`;
     const url = `${siteUrl}/product/${product.slug}`;
@@ -459,7 +514,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       },
     });
     document.head.appendChild(script);
-  }, [isLoading, product, selectedBundle.amount, displayImage, displayGallery]);
+  }, [isLoading, product, pricedBundle.amount, displayImage, displayGallery]);
 
   useEffect(() => {
     if (!galleryApi) return;
@@ -495,16 +550,16 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const orderBundle: OrderDialogBundle | null = product ? {
         title: product.name,
         details: selectedBundle.title,
-        price: selectedBundle.amount * quantity,
+        price: pricedBundle.amount * quantity,
         quantity,
-        unitPrice: selectedBundle.amount,
+        unitPrice: pricedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
         analyticsItems: [{ ...productAnalyticsItem, quantity }],
         captureItems: [{
           productName: product.name,
           variantName: selectedBundle.title,
           quantity,
-          unitPrice: selectedBundle.amount,
+          unitPrice: pricedBundle.amount,
         }],
         items: selectedVariant?.id !== undefined && product.id !== undefined
           ? [{ productId: String(product.id), variantId: String(selectedVariant.id), quantity }]
@@ -644,10 +699,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div className="flex items-center gap-6">
                     <div className="flex items-center font-sans text-2xl font-semibold text-black">
                       <span>৳</span>
-                      <Counter end={selectedBundle.amount} fontSize={24} className="text-black font-semibold !px-0" />
+                      <Counter end={heroDisplayAmount} fontSize={24} className="text-black font-semibold !px-0" />
                     </div>
-                    {Number.isFinite(compareAtAmount) && compareAtAmount > selectedBundle.amount ? (
-                      <span className="text-sm font-semibold text-black/35 line-through">৳{compareAtAmount.toLocaleString()}</span>
+                    {Number.isFinite(heroCompareAtAmount) && heroCompareAtAmount > heroDisplayAmount ? (
+                      <span className="text-sm font-semibold text-black/35 line-through">৳{heroCompareAtAmount.toLocaleString()}</span>
                     ) : null}
                     <div className="h-px flex-grow bg-black/5" />
                   </div>
@@ -659,70 +714,113 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   ) : null}
                 </div>
 
-                <div className="space-y-2.5 md:space-y-3">
-                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
-                    Quantity
-                  </span>
-                  <div ref={quantityControlRef} className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
-                    <button
-                      type="button"
-                      aria-label="Decrease quantity"
-                      disabled={quantity === 1}
-                      onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                      className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-black/20"
-                    >
-                      <Minus className="h-4 w-4" aria-hidden="true" />
-                    </button>
-                    <span
-                      aria-live="polite"
-                      className="flex h-11 min-w-12 items-center justify-center border-x border-black/10 px-3 text-sm font-semibold tabular-nums text-black"
-                    >
-                      {quantity}
+                {isGlassWaterBottleMuxProduct ? (
+                  <div className="space-y-2.5 md:space-y-3">
+                    <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                      Bundle &amp; Save
                     </span>
-                    <button
-                      type="button"
-                      aria-label="Increase quantity"
-                      onClick={() => setQuantity((current) => current + 1)}
-                      className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5"
-                    >
-                      <Plus className="h-4 w-4" aria-hidden="true" />
-                    </button>
+                    <div className="grid grid-cols-2 gap-3">
+                      {GLASS_WATER_BOTTLE_BUNDLE_TIERS.map((tier) => {
+                        const selected = quantity === tier.pieces;
+                        const regularTotal = tier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice;
+                        const savings = regularTotal - tier.totalPrice;
+                        return (
+                          <button
+                            key={tier.pieces}
+                            type="button"
+                            onClick={() => setQuantity(tier.pieces)}
+                            aria-pressed={selected}
+                            className={`relative flex flex-col items-center gap-1 rounded-[12px] border-2 px-4 py-4 text-center transition-all duration-200 ${
+                              selected
+                                ? "border-[#d92c2d] bg-[#d92c2d]/5"
+                                : "border-black/10 bg-white hover:border-black/25"
+                            }`}
+                          >
+                            {savings > 0 ? (
+                              <span className="absolute -top-2.5 right-2 rounded-full bg-[#d92c2d] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.05em] text-white">
+                                Save ৳{savings.toLocaleString()}
+                              </span>
+                            ) : null}
+                            <span className="text-[13px] font-semibold text-black">{tier.label}</span>
+                            <span className="flex items-baseline gap-1.5">
+                              <span className="text-[17px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
+                              {savings > 0 ? (
+                                <span className="text-[11px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
+                              ) : null}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-2.5 md:space-y-3">
-                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
-                    Select Size
-                  </span>
-                  <div
-                    className={bundles.length === 1 ? "inline-flex" : "grid grid-cols-2 gap-2"}
-                    style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth + 7}px` } : undefined}
-                  >
-                    {bundles.map((bundle, idx) => {
-                      const selected = selectedBundleIdx === idx;
-                      return (
+                ) : (
+                  <>
+                    <div className="space-y-2.5 md:space-y-3">
+                      <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                        Quantity
+                      </span>
+                      <div ref={quantityControlRef} className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
                         <button
-                          key={bundle.id}
                           type="button"
-                          onClick={() => setSelectedBundleIdx(idx)}
-                          aria-pressed={selected}
-                          className={`${bundles.length === 1 ? "w-full" : ""} flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
-                            selected
-                              ? "border-black bg-white text-black"
-                              : "border-black/10 bg-white text-black hover:border-black/30"
-                          }`}
+                          aria-label="Decrease quantity"
+                          disabled={quantity === 1}
+                          onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                          className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-black/20"
                         >
-                          <span className="text-[11px] font-medium tracking-[0.04em]">
-                            {bundle.title}
-                          </span>
-                          <span className="mt-0.5 text-[11px] font-medium font-garet">
-                            {bundle.price}
-                          </span>
+                          <Minus className="h-4 w-4" aria-hidden="true" />
                         </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                        <span
+                          aria-live="polite"
+                          className="flex h-11 min-w-12 items-center justify-center border-x border-black/10 px-3 text-sm font-semibold tabular-nums text-black"
+                        >
+                          {quantity}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          onClick={() => setQuantity((current) => current + 1)}
+                          className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5"
+                        >
+                          <Plus className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2.5 md:space-y-3">
+                      <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                        Select Size
+                      </span>
+                      <div
+                        className={bundles.length === 1 ? "inline-flex" : "grid grid-cols-2 gap-2"}
+                        style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth + 7}px` } : undefined}
+                      >
+                        {bundles.map((bundle, idx) => {
+                          const selected = selectedBundleIdx === idx;
+                          return (
+                            <button
+                              key={bundle.id}
+                              type="button"
+                              onClick={() => setSelectedBundleIdx(idx)}
+                              aria-pressed={selected}
+                              className={`${bundles.length === 1 ? "w-full" : ""} flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
+                                selected
+                                  ? "border-black bg-white text-black"
+                                  : "border-black/10 bg-white text-black hover:border-black/30"
+                              }`}
+                            >
+                              <span className="text-[11px] font-medium tracking-[0.04em]">
+                                {bundle.title}
+                              </span>
+                              <span className="mt-0.5 text-[11px] font-medium font-garet">
+                                {bundle.price}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {isUnavailable ? (
                   <div className="rounded-[8px] border border-black/10 bg-white/35 p-4 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/45">
@@ -733,7 +831,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <div className="space-y-3 md:space-y-4">
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <Button
-                      disabled={isUnavailable || selectedBundle.amount <= 0}
+                      disabled={isUnavailable || pricedBundle.amount <= 0}
                       onClick={async () => {
                         if (!(await verifyOrderable())) {
                           return;
@@ -743,7 +841,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           {
                             id: getProductNumericId(product),
                             title: `${product.name} (${selectedBundle.title})`,
-                            price: selectedBundle.price,
+                            price: pricedBundle.price,
                             image: displayImage,
                             analyticsItem: productAnalyticsItem,
                             productUuid: String(product.id ?? ""),
@@ -758,7 +856,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       Add to Cart
                     </Button>
                     <Button
-                      disabled={isUnavailable || selectedBundle.amount <= 0}
+                      disabled={isUnavailable || pricedBundle.amount <= 0}
                       onClick={async () => {
                         if (await verifyOrderable()) {
                           setOrderOpen(true);
@@ -889,7 +987,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 ? "border-black text-black"
                                 : "border-transparent text-black/40"
                             }`}
-                 style={{ fontFamily: "'KaiumSimanto', serif" }}
+                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                           >
                             {item.label}
                           </button>
@@ -950,7 +1048,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <div className="-mx-4 pt-4 mt-4 overflow-hidden bg-brand-ivory md:mx-0 md:mt-0 md:pt-0">
                   <h2
                     className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
-                     style={{ fontFamily: "'KaiumSimanto', serif" }}
                   >
                     আমরা ও আমাদের{" "}
                     <span
@@ -981,52 +1078,81 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         {reelMedia.map(({ src, poster }, i) => (
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
-                              {i === currentReel ? (
-                                <video
-                                  src={src}
-                                  title={`Angonaloy reel ${i + 1}`}
-                                  poster={poster}
-                                  controls={activeReelVideo === i}
-                                  playsInline
-                                  preload="metadata"
-                                  onPlay={() => setActiveReelVideo(i)}
-                                  onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
-                                  ref={(video) => {
-                                    activeReelVideoRef.current = video;
-                                  }}
-                                  className="h-full w-full object-contain bg-black"
-                                />
-                              ) : null}
-                              {activeReelVideo !== i ? (
-                                <img
-                                  src={poster}
-                                  alt=""
-                                  aria-hidden="true"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
-                                />
-                              ) : null}
-                              {activeReelVideo !== i ? (
-                                <button
-                                  type="button"
-                                  aria-label={`Play reel ${i + 1}`}
-                                  onClick={() => {
-                                    if (i !== currentReel) {
-                                      reelApi?.scrollTo(i);
-                                      return;
-                                    }
-                                    const video = activeReelVideoRef.current;
-                                    if (!video) return;
-                                    video.muted = false;
-                                    setActiveReelVideo(i);
-                                    void video.play().catch(() => setActiveReelVideo(null));
-                                  }}
-                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                >
-                                  <Play className="ml-1 h-6 w-6 fill-current" />
-                                </button>
-                              ) : null}
+                              {isGlassWaterBottleMuxProduct ? (
+                                i === currentReel ? (
+                                  <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
+                                    <VideoSkin className="absolute inset-0 h-full w-full">
+                                      <MuxVideo
+                                        src={src}
+                                        playsInline
+                                        preload="metadata"
+                                        className="h-full w-full object-contain bg-black"
+                                        ref={(video) => {
+                                          activeReelVideoRef.current = video;
+                                        }}
+                                      />
+                                    </VideoSkin>
+                                  </VideoPlayer>
+                                ) : (
+                                  <img
+                                    src={poster}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                  />
+                                )
+                              ) : (
+                                <>
+                                  {i === currentReel ? (
+                                    <video
+                                      src={src}
+                                      title={`Angonaloy reel ${i + 1}`}
+                                      poster={poster}
+                                      controls={activeReelVideo === i}
+                                      playsInline
+                                      preload="metadata"
+                                      onPlay={() => setActiveReelVideo(i)}
+                                      onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                      ref={(video) => {
+                                        activeReelVideoRef.current = video;
+                                      }}
+                                      className="h-full w-full object-contain bg-black"
+                                    />
+                                  ) : null}
+                                  {activeReelVideo !== i ? (
+                                    <img
+                                      src={poster}
+                                      alt=""
+                                      aria-hidden="true"
+                                      loading="lazy"
+                                      decoding="async"
+                                      className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                    />
+                                  ) : null}
+                                  {activeReelVideo !== i ? (
+                                    <button
+                                      type="button"
+                                      aria-label={`Play reel ${i + 1}`}
+                                      onClick={() => {
+                                        if (i !== currentReel) {
+                                          reelApi?.scrollTo(i);
+                                          return;
+                                        }
+                                        const video = activeReelVideoRef.current;
+                                        if (!video) return;
+                                        video.muted = false;
+                                        setActiveReelVideo(i);
+                                        void video.play().catch(() => setActiveReelVideo(null));
+                                      }}
+                                      className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                    >
+                                      <Play className="ml-1 h-6 w-6 fill-current" />
+                                    </button>
+                                  ) : null}
+                                </>
+                              )}
                             </div>
                           </div>
                         ))}
