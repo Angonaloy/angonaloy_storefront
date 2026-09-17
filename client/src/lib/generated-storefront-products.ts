@@ -89,7 +89,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "price": 550,
         "available": true
       }
-    ]
+    ],
+    "bundle_offers": []
   },
   {
     "id": "825d1ccf-8326-41a7-b534-68d4910f2f40",
@@ -165,6 +166,22 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         },
         "price": 750,
         "available": true
+      }
+    ],
+    "bundle_offers": [
+      {
+        "id": "single",
+        "label": "1 Piece",
+        "quantity": 1,
+        "total_price": 750,
+        "compare_at_total": 750
+      },
+      {
+        "id": "double",
+        "label": "2 Pieces",
+        "quantity": 2,
+        "total_price": 1400,
+        "compare_at_total": 1500
       }
     ]
   }

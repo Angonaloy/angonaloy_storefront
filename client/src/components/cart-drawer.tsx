@@ -133,7 +133,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                                 <div className="flex items-center justify-between">
                                                      <div className="flex items-center overflow-hidden rounded-[8px] border border-black/10">
                                                         <button
-                                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                            onClick={() => updateQuantity(item.id, item.quantity - (item.quantityStep ?? 1))}
                                                          className="flex h-9 w-9 items-center justify-center transition-all hover:bg-black hover:text-white md:h-10 md:w-10"
                                                         >
                                                             <Minus className="w-3 h-3" />
@@ -142,7 +142,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                                             {item.quantity}
                                                         </span>
                                                         <button
-                                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                            onClick={() => updateQuantity(item.id, item.quantity + (item.quantityStep ?? 1))}
                                                              className="flex h-9 w-9 items-center justify-center transition-all hover:bg-black hover:text-white md:h-10 md:w-10"
                                                         >
                                                             <Plus className="w-3 h-3" />
@@ -263,7 +263,12 @@ export default function CartDrawer() {
                 unitPrice: parseCurrencyAmount(item.price),
             })),
             items: items.every((item) => item.productUuid && item.variantId)
-                ? items.map((item) => ({ productId: item.productUuid!, variantId: item.variantId!, quantity: item.quantity }))
+                ? items.map((item) => ({
+                    productId: item.productUuid!,
+                    variantId: item.variantId!,
+                    quantity: item.quantity,
+                    ...(item.offerId ? { offerId: item.offerId } : {}),
+                }))
                 : undefined,
         };
     }, [items]);

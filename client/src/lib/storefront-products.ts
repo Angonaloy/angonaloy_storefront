@@ -1,11 +1,12 @@
+import { getAngonaloyCatalogApiBase } from "../../../shared/angonaloy-catalog-api.ts";
+
 const storefrontEnv = import.meta.env ?? {};
 
-export const STOREFRONT_ID = storefrontEnv.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
 const PRODUCTION_MERCHANT_SUITE_URL = "https://angonaloy-commerceos.vercel.app";
 const configuredMerchantSuiteUrl = (storefrontEnv.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
 const MERCHANT_SUITE_URL = configuredMerchantSuiteUrl
   || (storefrontEnv.PROD ? PRODUCTION_MERCHANT_SUITE_URL : "");
-export const STOREFRONT_API_BASE = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${STOREFRONT_ID}`;
+export const STOREFRONT_API_BASE = getAngonaloyCatalogApiBase(MERCHANT_SUITE_URL);
 const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 
 // How often the storefront re-checks the Suite for stock/image/price changes.
@@ -43,6 +44,14 @@ export type StorefrontVariant = {
   attributes?: Record<string, string | number | boolean | null>;
 };
 
+export type StorefrontBundleOffer = {
+  id: string;
+  label: string;
+  quantity: number;
+  total_price: number;
+  compare_at_total: number;
+};
+
 export type StorefrontProduct = {
   id?: string | number;
   name: string;
@@ -57,6 +66,7 @@ export type StorefrontProduct = {
   available?: boolean;
   stock_quantity?: number | null;
   variants?: StorefrontVariant[] | null;
+  bundle_offers?: StorefrontBundleOffer[] | null;
 };
 
 export function getProductGallery(product: Pick<StorefrontProduct, "image_urls" | "images" | "image_url">) {

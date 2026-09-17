@@ -25,7 +25,7 @@ const validEnglishOrder = { ...validOrder, phone: "01712345678" };
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  storefrontHandle: "mangolover",
+  storefrontHandle: "angonaloy",
   timeoutSignal: () => new AbortController().signal,
 };
 
@@ -174,7 +174,7 @@ test("uses the public storefront handle endpoint and forwards protection signals
       return new Response(JSON.stringify({ orderRef: "ML-150002", decision: "allow" }), { status: 201 });
     },
   });
-  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
+  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/angonaloy/orders");
   assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
   assert.equal(outboundBody?.customerName, "Test Customer");

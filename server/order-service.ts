@@ -32,6 +32,7 @@ export const orderRequestSchema = z.object({
     productId: z.string().trim().min(1).max(120),
     variantId: z.string().trim().min(1).max(120),
     quantity: z.number().int().min(1).max(100).refine(Number.isSafeInteger),
+    offerId: z.string().trim().min(1).max(80).optional(),
   })).min(1).max(50).optional(),
   shippingZoneId: z.string().trim().min(1).max(120).optional(),
 }).refine(

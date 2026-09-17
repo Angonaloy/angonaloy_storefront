@@ -7,7 +7,8 @@ Make the product reel video itself rounded and make play/pause reliable for both
 ## Behavior
 
 - The outer reel carousel/card has no corner radius.
-- The actual video media has the existing small corner radius.
+- The Video.js/Mux player has no inherited default corner radius.
+- Plain native reels keep the existing small media corner radius.
 - The active reel displays a large centered Play or Pause button.
 - Tapping the centered button toggles the active video between playing and paused.
 - Native/video.js controls remain available after pausing and continue to work independently.
@@ -18,10 +19,11 @@ Make the product reel video itself rounded and make play/pause reliable for both
 
 Update `client/src/pages/product.tsx`:
 
-- Track the currently playing reel with one `playingReel` state value.
-- Use media `onPlay`, `onPlaying`, `onPause`, and `onEnded` events to synchronize that state.
-- Add a shared toggle handler that reads the active media ref and calls `play()` or `pause()` based on `video.paused`.
-- Place the radius on the media/wrapper rather than the carousel item.
+- Track native reel playback with one `playingReel` state value.
+- Use Video.js's store-backed `PlayButton` for the Mux player so its toggle stays synchronized with the Video.js UI and Mux media adapter.
+- Use the native media ref only for the plain `<video>` center toggle.
+- Override Video.js's `--media-border-radius` variable to remove its default `28px` skin radius.
+- Keep the radius on plain native media rather than the carousel item.
 - Remove the extra poster overlays for the active player and leave the player’s poster handling in charge.
 - Ignore carousel pause-on-pointer-down for buttons and video controls.
 

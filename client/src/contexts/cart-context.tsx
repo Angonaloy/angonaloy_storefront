@@ -7,6 +7,8 @@ export interface CartItem {
     productId: number;
     productUuid?: string;
     variantId?: string;
+    offerId?: string;
+    quantityStep?: number;
     title: string;
     price: string;
     image: string;
@@ -17,7 +19,7 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string }, size: string, quantity?: number) => void;
+    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string; offerId?: string; quantityStep?: number }, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
     clearCart: () => void;
@@ -52,11 +54,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }, [items]);
 
     const addToCart = (
-        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string },
+        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string; offerId?: string; quantityStep?: number },
         size: string,
         quantity: number = 1
     ) => {
-        const itemId = `${product.id}-${size}`;
+        const itemId = `${product.id}-${product.variantId ?? "default"}-${product.offerId ?? "default"}`;
 
         setItems(prevItems => {
             const existingItem = prevItems.find(item => item.id === itemId);
@@ -80,7 +82,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                         image: product.image,
                         size,
                         quantity,
-                        analyticsItem: product.analyticsItem
+                        analyticsItem: product.analyticsItem,
+                        productUuid: product.productUuid,
+                        variantId: product.variantId,
+                        offerId: product.offerId,
+                        quantityStep: product.quantityStep,
                     }
                 ];
             }
