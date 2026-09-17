@@ -730,7 +730,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             type="button"
                             onClick={() => setQuantity(tier.pieces)}
                             aria-pressed={selected}
-                            className={`relative flex flex-col items-center gap-0.5 rounded-[10px] border-2 px-3 py-2.5 text-center transition-all duration-200 ${
+                            className={`relative flex flex-col items-center gap-0 rounded-[10px] border-2 px-3 py-2 text-center transition-all duration-200 ${
                               selected
                                 ? "border-[#d92c2d] bg-[#d92c2d]/5"
                                 : "border-black/10 bg-white hover:border-black/25"
@@ -741,11 +741,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 Save ৳{savings.toLocaleString()}
                               </span>
                             ) : null}
-                            <span className="text-[12px] font-semibold text-black">{tier.label}</span>
-                            <span className="flex items-baseline gap-1.5">
-                              <span className="text-[18px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
+                            <span className="text-[12px] font-semibold leading-none text-black">{tier.label}</span>
+                            <span className="flex items-baseline gap-1.5 leading-none">
+                              <span className="text-[18px] font-bold leading-none text-black">৳{tier.totalPrice.toLocaleString()}</span>
                               {savings > 0 ? (
-                                <span className="text-[11px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
+                                <span className="text-[10px] leading-none text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
                               ) : null}
                             </span>
                           </button>
