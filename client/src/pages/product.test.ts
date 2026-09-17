@@ -184,7 +184,7 @@ test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () =
   // poster + tap-to-play + plain <video> combo, untouched.
   assert.match(productSource, /\) : \(\s*<>\s*\{i === currentReel \? \(\s*<video/);
   assert.match(productSource, /grid grid-cols-2 gap-2/);
-  assert.match(productSource, /gap-0 rounded-\[10px\] border-2 px-3 py-2/);
+  assert.match(productSource, /gap-0\.5 rounded-\[10px\] border-2 px-3 py-2\.5/);
   assert.match(productSource, /-top-2 right-1 rounded-full bg-\[#d92c2d\] px-1\.5 py-0\.5 text-\[8px\]/);
   assert.match(productSource, /text-\[12px\] font-semibold/);
   assert.match(productSource, /text-\[18px\] font-bold/);
