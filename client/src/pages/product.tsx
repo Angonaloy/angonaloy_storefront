@@ -719,7 +719,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                       Bundle &amp; Save
                     </span>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       {GLASS_WATER_BOTTLE_BUNDLE_TIERS.map((tier) => {
                         const selected = quantity === tier.pieces;
                         const regularTotal = tier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice;
@@ -730,20 +730,20 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             type="button"
                             onClick={() => setQuantity(tier.pieces)}
                             aria-pressed={selected}
-                            className={`relative flex flex-col items-center gap-1 rounded-[12px] border-2 px-4 py-4 text-center transition-all duration-200 ${
+                            className={`relative flex flex-col items-center gap-0.5 rounded-[10px] border-2 px-3 py-2.5 text-center transition-all duration-200 ${
                               selected
                                 ? "border-[#d92c2d] bg-[#d92c2d]/5"
                                 : "border-black/10 bg-white hover:border-black/25"
                             }`}
                           >
                             {savings > 0 ? (
-                              <span className="absolute -top-2.5 right-2 rounded-full bg-[#d92c2d] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.05em] text-white">
+                              <span className="absolute -top-2 right-1 rounded-full bg-[#d92c2d] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.05em] text-white">
                                 Save ৳{savings.toLocaleString()}
                               </span>
                             ) : null}
-                            <span className="text-[13px] font-semibold text-black">{tier.label}</span>
+                            <span className="text-[12px] font-semibold text-black">{tier.label}</span>
                             <span className="flex items-baseline gap-1.5">
-                              <span className="text-[17px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
+                              <span className="text-[18px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
                               {savings > 0 ? (
                                 <span className="text-[11px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
                               ) : null}
