@@ -66,7 +66,7 @@ export default function OrderDialog({
   onSuccess?: () => void;
 }) {
   const [openInstance, setOpenInstance] = useState(0);
-  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(80);
+  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(null);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
@@ -156,7 +156,7 @@ export default function OrderDialog({
 
     setOrderClosing(false);
     onOpenChange(nextOpen);
-    setDeliveryCharge(80);
+    setDeliveryCharge(null);
     setOrderSubmitted(false);
     setOrderSubmitting(false);
     setOrderError("");
@@ -477,8 +477,8 @@ export default function OrderDialog({
                     />
                   </label>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                  <div className="grid content-start gap-2">
+                  <div className="grid gap-4 md:grid-cols-3 md:gap-2">
+                  <div className="grid content-start gap-2 md:col-span-2">
                       <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Delivery Charge - ডেলিভারি চার্জ
                       </span>
@@ -495,7 +495,7 @@ export default function OrderDialog({
                         </span>
                       </div>
                     ) : (
-                       <div className="grid gap-2 max-md:gap-1.5">
+                        <div className="grid gap-2 max-md:gap-1.5 md:grid-cols-2">
                         {deliveryOptions.map((option) => (
                           <button
                             key={option.label}

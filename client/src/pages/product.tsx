@@ -1,11 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import "@videojs/react/video/skin.css";
+import { PlayButton } from "@videojs/react";
 import { VideoPlayer, VideoSkin } from "@videojs/react/video";
 import { MuxVideo } from "@videojs/react/media/mux-video";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Pause, Play, Plus } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
   // decoders to layers that Embla re-transforms every frame, which is what makes the
   // horizontal drag stutter on real phones but not on a desktop localhost.
-  const [activeReelVideo, setActiveReelVideo] = useState<number | null>(null);
+  const [playingReel, setPlayingReel] = useState<number | null>(null);
   const activeReelVideoRef = useRef<HTMLVideoElement | null>(null);
   const viewedGoogleItemRef = useRef("");
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
@@ -269,8 +270,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   useEffect(() => {
     // Leaving a slide tears its <video> down so no decoder stays attached to an
     // off-screen slide while the track is being dragged.
-    setActiveReelVideo((active) => (active === null || active === currentReel ? active : null));
-  }, [currentReel]);
+    setPlayingReel(null);
+  }, [currentReel, isGlassWaterBottleMuxProduct]);
   const { data: merchantProduct, isFetchedAfterMount, isSuccess, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -719,7 +720,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                       Bundle &amp; Save
                     </span>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       {GLASS_WATER_BOTTLE_BUNDLE_TIERS.map((tier) => {
                         const selected = quantity === tier.pieces;
                         const regularTotal = tier.pieces * GLASS_WATER_BOTTLE_BUNDLE_TIERS[0].totalPrice;
@@ -730,22 +731,22 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             type="button"
                             onClick={() => setQuantity(tier.pieces)}
                             aria-pressed={selected}
-                            className={`relative flex flex-col items-center gap-1 rounded-[12px] border-2 px-4 py-4 text-center transition-all duration-200 ${
+                            className={`relative flex flex-col items-center gap-0.5 rounded-[10px] border-2 px-3 py-2.5 text-center transition-all duration-200 ${
                               selected
                                 ? "border-[#d92c2d] bg-[#d92c2d]/5"
                                 : "border-black/10 bg-white hover:border-black/25"
                             }`}
                           >
                             {savings > 0 ? (
-                              <span className="absolute -top-2.5 right-2 rounded-full bg-[#d92c2d] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.05em] text-white">
+                              <span className="absolute -top-2 right-1 rounded-full bg-[#d92c2d] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.05em] text-white">
                                 Save ৳{savings.toLocaleString()}
                               </span>
                             ) : null}
-                            <span className="text-[13px] font-semibold text-black">{tier.label}</span>
+                            <span className="text-[12px] font-semibold text-black">{tier.label}</span>
                             <span className="flex items-baseline gap-1.5">
-                              <span className="text-[17px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
+                              <span className="text-[18px] font-bold text-black">৳{tier.totalPrice.toLocaleString()}</span>
                               {savings > 0 ? (
-                                <span className="text-[11px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
+                                <span className="text-[10px] text-black/35 line-through">৳{regularTotal.toLocaleString()}</span>
                               ) : null}
                             </span>
                           </button>
@@ -1077,22 +1078,32 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       <div className="flex will-change-transform gap-0 px-0 md:px-6">
                         {reelMedia.map(({ src, poster }, i) => (
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
-                            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
+                            <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
                               {isGlassWaterBottleMuxProduct ? (
                                 i === currentReel ? (
-                                  <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
-                                    <VideoSkin className="absolute inset-0 h-full w-full">
-                                      <MuxVideo
-                                        src={src}
-                                        playsInline
-                                        preload="metadata"
-                                        className="h-full w-full object-contain bg-black"
-                                        ref={(video) => {
-                                          activeReelVideoRef.current = video;
-                                        }}
-                                      />
-                                    </VideoSkin>
-                                  </VideoPlayer>
+                                  <div className="absolute inset-0" onPointerDown={(event) => event.stopPropagation()}>
+                                    <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
+                                      <VideoSkin className="absolute inset-0 h-full w-full [--media-border-radius:0px]">
+                                        <MuxVideo
+                                          src={src}
+                                          playsInline
+                                          preload="metadata"
+                                          onPlay={() => setPlayingReel(i)}
+                                          onPlaying={() => setPlayingReel(i)}
+                                          onPause={() => setPlayingReel((active) => (active === i ? null : active))}
+                                          onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
+                                          className="h-full w-full object-contain bg-black"
+                                          ref={(video) => {
+                                            activeReelVideoRef.current = video;
+                                          }}
+                                        />
+                                        <PlayButton
+                                          className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 [&_.media-button-icon]:h-7 [&_.media-button-icon]:w-7"
+                                          onPointerDown={(event) => event.stopPropagation()}
+                                        />
+                                      </VideoSkin>
+                                    </VideoPlayer>
+                                  </div>
                                 ) : (
                                   <img
                                     src={poster}
@@ -1110,49 +1121,57 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                       src={src}
                                       title={`Angonaloy reel ${i + 1}`}
                                       poster={poster}
-                                      controls={activeReelVideo === i}
+                                      controls
                                       playsInline
                                       preload="metadata"
-                                      onPlay={() => setActiveReelVideo(i)}
-                                      onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                      onPlay={() => setPlayingReel(i)}
+                                      onPlaying={() => setPlayingReel(i)}
+                                      onPause={() => setPlayingReel((active) => (active === i ? null : active))}
+                                      onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
                                       ref={(video) => {
                                         activeReelVideoRef.current = video;
                                       }}
-                                      className="h-full w-full object-contain bg-black"
+                                      onPointerDown={(event) => event.stopPropagation()}
+                                      className="h-full w-full rounded-[6px] object-contain bg-black"
                                     />
                                   ) : null}
-                                  {activeReelVideo !== i ? (
+                                  {i !== currentReel ? (
                                     <img
                                       src={poster}
                                       alt=""
                                       aria-hidden="true"
                                       loading="lazy"
                                       decoding="async"
-                                      className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                      className="pointer-events-none absolute inset-0 h-full w-full rounded-[6px] object-cover"
                                     />
-                                  ) : null}
-                                  {activeReelVideo !== i ? (
-                                    <button
-                                      type="button"
-                                      aria-label={`Play reel ${i + 1}`}
-                                      onClick={() => {
-                                        if (i !== currentReel) {
-                                          reelApi?.scrollTo(i);
-                                          return;
-                                        }
-                                        const video = activeReelVideoRef.current;
-                                        if (!video) return;
-                                        video.muted = false;
-                                        setActiveReelVideo(i);
-                                        void video.play().catch(() => setActiveReelVideo(null));
-                                      }}
-                                      className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                    >
-                                      <Play className="ml-1 h-6 w-6 fill-current" />
-                                    </button>
                                   ) : null}
                                 </>
                               )}
+                              {!isGlassWaterBottleMuxProduct && i === currentReel ? (
+                                <button
+                                  type="button"
+                                  aria-label={playingReel === i ? `Pause reel ${i + 1}` : `Play reel ${i + 1}`}
+                                  aria-pressed={playingReel === i}
+                                  onPointerDown={(event) => event.stopPropagation()}
+                                  onClick={() => {
+                                    const video = activeReelVideoRef.current;
+                                    if (!video) return;
+                                    if (video.paused) {
+                                      video.muted = false;
+                                      void video.play().catch(() => setPlayingReel(null));
+                                    } else {
+                                      video.pause();
+                                    }
+                                  }}
+                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                >
+                                  {playingReel === i ? (
+                                    <Pause className="h-6 w-6 fill-current" />
+                                  ) : (
+                                    <Play className="ml-1 h-6 w-6 fill-current" />
+                                  )}
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         ))}

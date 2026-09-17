@@ -127,7 +127,7 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /REEL_MEDIA = \[/);
   assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
   assert.match(productSource, /<video/);
-  assert.match(productSource, /controls=\{activeReelVideo === i\}/);
+  assert.match(productSource, /controls\s*$/m);
   // Only the active slide mounts a <video>, so a mobile drag moves one cheap layer
   // instead of three decoding video layers.
   assert.match(productSource, /i === currentReel/);
@@ -164,10 +164,12 @@ test("uses native Cloudinary reels only for Honey Nut", () => {
   assert.match(productSource, /reelMedia\.map\(\(\{ src, poster \}, i\) =>/);
   assert.match(productSource, /video\/upload\/so_1,w_480,f_auto,q_auto/);
   assert.match(productSource, /poster=\{poster\}/);
-  assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden rounded-\[6px\] bg-black"/);
+  assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden bg-black"/);
+  assert.match(productSource, /className="h-full w-full rounded-\[6px\] object-contain bg-black"/);
 });
 
 test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () => {
+  assert.match(productSource, /import \{ PlayButton \} from "@videojs\/react";/);
   assert.match(productSource, /import \{ MuxVideo \} from "@videojs\/react\/media\/mux-video";/);
   assert.match(productSource, /const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = \[/);
   assert.match(productSource, /https:\/\/stream\.mux\.com\/\$\{playbackId\}\.m3u8/);
@@ -179,10 +181,17 @@ test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () =
   assert.match(productSource, /import "@videojs\/react\/video\/skin\.css";/);
   assert.match(productSource, /import \{ VideoPlayer, VideoSkin \} from "@videojs\/react\/video";/);
   assert.match(productSource, /<VideoPlayer poster=\{poster\} title=\{`Angonaloy reel \$\{i \+ 1\}`\}>/);
-  assert.match(productSource, /<VideoSkin className="absolute inset-0 h-full w-full">\s*<MuxVideo/);
+  assert.match(productSource, /<VideoSkin className="absolute inset-0 h-full w-full \[--media-border-radius:0px\]">\s*<MuxVideo/);
+  assert.match(productSource, /<PlayButton[\s\S]*?className="absolute left-1\/2 top-1\/2/);
+  assert.match(productSource, /onPlaying=\{\(\) => setPlayingReel\(i\)\}/);
   // Every other product, including Honey Nut, still renders the original
   // poster + tap-to-play + plain <video> combo, untouched.
   assert.match(productSource, /\) : \(\s*<>\s*\{i === currentReel \? \(\s*<video/);
+  assert.match(productSource, /grid grid-cols-2 gap-2/);
+  assert.match(productSource, /gap-0\.5 rounded-\[10px\] border-2 px-3 py-2\.5/);
+  assert.match(productSource, /-top-2 right-1 rounded-full bg-\[#d92c2d\] px-1\.5 py-0\.5 text-\[8px\]/);
+  assert.match(productSource, /text-\[12px\] font-semibold/);
+  assert.match(productSource, /text-\[18px\] font-bold/);
 });
 
 test("navigates reels with arrow keys without hijacking editable controls", () => {
@@ -203,4 +212,14 @@ test("uses the poster while the active native video is loading", () => {
   assert.match(productSource, /preload="metadata"/);
   assert.match(productSource, /poster=\{poster\}/);
   assert.doesNotMatch(productSource, /loadedHoneyNutReel/);
+});
+
+
+test("puts reel radius on media and provides a centered play-pause toggle", () => {
+  assert.match(productSource, /const \[playingReel, setPlayingReel\] = useState<number \| null>\(null\)/);
+  assert.match(productSource, /aria-label=\{playingReel === i \? `Pause reel \$\{i \+ 1\}` : `Play reel \$\{i \+ 1\}`\}/);
+  assert.match(productSource, /video\.paused[\s\S]*?video\.pause\(\)/);
+  assert.match(productSource, /<Pause className/);
+  assert.match(productSource, /<Play className/);
+  assert.match(productSource, /onPointerDown=\{\(event\) => event\.stopPropagation\(\)\}/);
 });
