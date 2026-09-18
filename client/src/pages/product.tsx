@@ -289,8 +289,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     ? null
     : mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
 
-  const glassBottleOffers = isGlassWaterBottleMuxProduct ? product?.bundle_offers ?? [] : [];
-  const isBundleOfferProduct = isGlassWaterBottleMuxProduct && glassBottleOffers.length > 0;
+  const glassBottleOffers = product?.bundle_offers ?? [];
+  const isBundleOfferProduct = glassBottleOffers.length > 0;
 
   useEffect(() => {
     if (!isBundleOfferProduct || glassBottleOffers.some((offer) => offer.quantity === quantity)) return;
