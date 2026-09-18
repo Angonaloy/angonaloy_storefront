@@ -51,6 +51,7 @@ test("assigns every current product to at least one collection", () => {
     "lachcha-semai",
     "glass-water-bottles-with-time-marker",
     "2-in-1-glass-oil-bottle-with-sprayer",
+    "angonaloy-magnetic-selfie-light-with-built-in-mirror",
   ];
 
   assert.deepEqual(
@@ -72,7 +73,7 @@ test("maps Glass Water Bottles to the visible Home Essentials collection", () =>
   assert.deepEqual(homeEssentials.productSlugs, [waterBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([waterBottle]).map(({ slug }) => slug),
-    ["home-essentials", "home-gadgets"],
+    ["home-essentials"],
   );
 });
 
@@ -96,7 +97,7 @@ test("maps Glass Oil Bottle With Sprayer to the visible Kitchen Essentials colle
   assert.deepEqual(kitchenEssentials.productSlugs, [oilBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([oilBottle]).map(({ slug }) => slug),
-    ["kitchen-essentials", "home-gadgets"],
+    ["kitchen-essentials"],
   );
 });
 
@@ -114,8 +115,7 @@ test("ships Home Gadgets category artwork and aggregates household gadgets", () 
   assert.equal(homeGadgets.label, "Home Gadgets");
   assert.equal(homeGadgets.image, "/categories/home-gadgets-20260917-blended.webp");
   assert.deepEqual(homeGadgets.productSlugs, [
-    "glass-water-bottles-with-time-marker",
-    "2-in-1-glass-oil-bottle-with-sprayer",
+    "angonaloy-magnetic-selfie-light-with-built-in-mirror",
   ]);
   assert.equal(
     existsSync(new URL("../../public/categories/home-gadgets-20260917-blended.webp", import.meta.url)),

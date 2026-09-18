@@ -55,8 +55,7 @@ export const FEATURED_COLLECTIONS = [
     label: "Home Gadgets",
     image: "/categories/home-gadgets-20260917-blended.webp",
     productSlugs: [
-      "glass-water-bottles-with-time-marker",
-      "2-in-1-glass-oil-bottle-with-sprayer",
+      "angonaloy-magnetic-selfie-light-with-built-in-mirror",
     ],
   },
   {
