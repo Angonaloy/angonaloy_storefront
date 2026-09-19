@@ -719,42 +719,40 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                  {isBundleOfferProduct ? (
-                  <div className="-mt-3 space-y-2 md:-mt-6 md:space-y-2.5">
-                    <div className="text-center text-[13px] font-bold leading-relaxed text-black">
-                      অফারটি শুধুমাত্র{" "}
-                      <span className="rounded-[4px] bg-[#FBBB14] px-1.5 py-0.5">
-                        ২৪ ঘণ্টার জন্য
-                      </span>{" "}
-                      প্রযোজ্য।
+                  <div className="-mt-3 space-y-2.5 md:-mt-6">
+                    <div className="flex items-center gap-2">
+                      <span aria-hidden="true" className="h-px flex-1 border-t border-dashed border-black/30" />
+                      <p className="shrink-0 text-center text-[12px] font-bold text-black">
+                        নিচের {toBengaliNumeral(glassBottleOffers.length)}টি অপশন থেকে ১টি সিলেক্ট করুন।
+                      </p>
+                      <span aria-hidden="true" className="h-px flex-1 border-t border-dashed border-black/30" />
                     </div>
-                    <div className="grid grid-cols-1 gap-2">
+                    <div className="grid grid-cols-1 gap-2.5">
                       {glassBottleOffers.map((offer) => {
                         const selected = quantity === offer.quantity;
-                        const savings = offer.compare_at_total - offer.total_price;
                         return (
                           <button
                             key={offer.id}
                             type="button"
                             onClick={() => setQuantity(offer.quantity)}
                             aria-pressed={selected}
-                            className={`relative flex items-center justify-between gap-3 rounded-[10px] border-2 px-3 py-2.5 text-left transition-all duration-200 ${
+                            className={`flex items-center gap-3 rounded-[8px] border-2 px-4 py-3 text-left transition-all duration-200 ${
                               selected
-                                ? "border-[#d92c2d] bg-[#d92c2d]/5"
-                                : "border-black/10 bg-white hover:border-black/25"
+                                ? "border-[#d92c2d] bg-[#FFFAEB]"
+                                : "border-[#E9C6C6] bg-white hover:border-[#d92c2d]/50"
                             }`}
                           >
-                            {savings > 0 ? (
-                              <span className="absolute -top-2 right-1 rounded-full bg-[#d92c2d] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.05em] text-white">
-                                Save ৳{savings.toLocaleString()}
-                              </span>
-                            ) : null}
-                             <span className="text-[12px] font-bold text-black">{offer.label}</span>
-                             <span aria-hidden="true" className="h-px min-w-4 flex-1 bg-black/10" />
-                             <span className="flex shrink-0 items-baseline gap-1.5">
-                               <span className="text-[20px] font-extrabold tracking-tight text-black">৳{offer.total_price.toLocaleString()}</span>
-                               {savings > 0 ? (
-                                 <span className="text-[10px] text-black/35 line-through">৳{offer.compare_at_total.toLocaleString()}</span>
-                               ) : null}
+                            <span
+                              aria-hidden="true"
+                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                                selected ? "border-[#d92c2d]" : "border-black/20"
+                              }`}
+                            >
+                              {selected ? <span className="h-3 w-3 rounded-full bg-[#d92c2d]" /> : null}
+                            </span>
+                            <span className="min-w-0 flex-1 text-[13px] font-bold leading-snug text-black">{offer.label}</span>
+                            <span className="shrink-0 text-[16px] font-extrabold tracking-tight text-black">
+                              Tk {Number(offer.total_price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                           </button>
                         );

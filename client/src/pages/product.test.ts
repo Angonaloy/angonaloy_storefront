@@ -193,11 +193,16 @@ test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () =
   // Every other product, including Honey Nut, still renders the original
   // poster + tap-to-play + plain <video> combo, untouched.
   assert.match(productSource, /\) : \(\s*<>\s*\{i === currentReel \? \(\s*<video/);
-  assert.match(productSource, /grid grid-cols-1 gap-2/);
-  assert.match(productSource, /flex items-center justify-between gap-3 rounded-\[10px\] border-2 px-3 py-2\.5/);
-  assert.match(productSource, /-top-2 right-1 rounded-full bg-\[#d92c2d\] px-1\.5 py-0\.5 text-\[8px\]/);
-  assert.match(productSource, /text-\[12px\] font-bold/);
-  assert.match(productSource, /text-\[20px\] font-extrabold/);
+  assert.match(productSource, /grid grid-cols-1 gap-2\.5/);
+  assert.match(productSource, /নিচের \{toBengaliNumeral\(glassBottleOffers\.length\)\}টি অপশন থেকে ১টি সিলেক্ট করুন/);
+  assert.match(productSource, /border-t border-dashed/);
+  assert.match(productSource, /rounded-\[8px\] border-2 px-4 py-3/);
+  assert.match(productSource, /border-\[#d92c2d\] bg-\[#FFFAEB\]/);
+  assert.match(productSource, /h-6 w-6 shrink-0 items-center justify-center rounded-full border-2/);
+  assert.match(productSource, /h-3 w-3 rounded-full bg-\[#d92c2d\]/);
+  assert.match(productSource, /text-\[13px\] font-bold leading-snug/);
+  assert.match(productSource, /text-\[16px\] font-extrabold/);
+  assert.match(productSource, /minimumFractionDigits: 2, maximumFractionDigits: 2/);
 });
 
 test("navigates reels with arrow keys without hijacking editable controls", () => {

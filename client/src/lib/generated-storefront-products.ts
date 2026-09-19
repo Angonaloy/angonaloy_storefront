@@ -2,6 +2,125 @@ import type { StorefrontProduct } from "./storefront-products";
 
 export const generatedStorefrontProducts: StorefrontProduct[] = [
   {
+    "id": "28ddd519-3033-4f51-9e3e-8a276216c407",
+    "name": "Angonaloy Glass Oil Bottle Cooking Oil Dispenser",
+    "slug": "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
+    "description": "Keep your kitchen smarter, cleaner, and more organized with this 750ml Glass Oil Dispenser, featuring a premium glass body, clear measurement scale, stainless steel cap, anti-slip base, and easy-pour design—perfect for convenient, mess-free everyday cooking.",
+    "url": null,
+    "image_url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/960.webp",
+    "images": [
+      {
+        "id": "c26da1b8-1cd3-4955-9275-f453332bfa68",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/960.webp"
+        },
+        "alt_text": "Angonaloy Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "4827392e-eee9-48a3-acc9-158dae3906f4",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/fb40fa11-6504-46be-bc7e-b765e17a843f/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/fb40fa11-6504-46be-bc7e-b765e17a843f/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/fb40fa11-6504-46be-bc7e-b765e17a843f/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/fb40fa11-6504-46be-bc7e-b765e17a843f/960.webp"
+        },
+        "alt_text": "Angonaloy  Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "50ad42d9-93d9-4e13-9e9c-4d0baa419ea1",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/286871e0-d6c5-4cd9-b072-2098b8c4f50d/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/286871e0-d6c5-4cd9-b072-2098b8c4f50d/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/286871e0-d6c5-4cd9-b072-2098b8c4f50d/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/286871e0-d6c5-4cd9-b072-2098b8c4f50d/960.webp"
+        },
+        "alt_text": "Angonaloy  Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "37bc372d-8964-479b-9f23-be5b5a4141c2",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/c83a6e0c-0b23-4875-8021-6d394b7db6a2/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/c83a6e0c-0b23-4875-8021-6d394b7db6a2/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/c83a6e0c-0b23-4875-8021-6d394b7db6a2/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/c83a6e0c-0b23-4875-8021-6d394b7db6a2/960.webp"
+        },
+        "alt_text": "Angonaloy  Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 3,
+        "is_primary": false
+      },
+      {
+        "id": "1ef967da-91ed-4703-832e-7195324a13ef",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/f377e3ea-1ec0-4177-ad47-a7321cb08066/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/f377e3ea-1ec0-4177-ad47-a7321cb08066/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/f377e3ea-1ec0-4177-ad47-a7321cb08066/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/f377e3ea-1ec0-4177-ad47-a7321cb08066/960.webp"
+        },
+        "alt_text": "Angonaloy  Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 4,
+        "is_primary": false
+      },
+      {
+        "id": "51c4d690-e68d-486a-ba78-df45cc3f277e",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/a5eac540-75db-4448-8318-5a9342848436/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/a5eac540-75db-4448-8318-5a9342848436/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/a5eac540-75db-4448-8318-5a9342848436/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/a5eac540-75db-4448-8318-5a9342848436/960.webp"
+        },
+        "alt_text": "Angonaloy  Glass Oil Bottle Cooking Oil Dispenser",
+        "sort_order": 5,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/09bd2e17-599b-4983-9f11-bf6d04e4a9b4/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/fb40fa11-6504-46be-bc7e-b765e17a843f/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/286871e0-d6c5-4cd9-b072-2098b8c4f50d/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/c83a6e0c-0b23-4875-8021-6d394b7db6a2/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/f377e3ea-1ec0-4177-ad47-a7321cb08066/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/28ddd519-3033-4f51-9e3e-8a276216c407/a5eac540-75db-4448-8318-5a9342848436/960.webp"
+    ],
+    "price": 990,
+    "compare_at_price": 1280,
+    "available": true,
+    "variants": [
+      {
+        "id": "1f090b77-7b24-4d01-b9bd-9a99f9cb1c24",
+        "attributes": {
+          "size": "750ml"
+        },
+        "price": 990,
+        "available": true
+      }
+    ],
+    "bundle_offers": [
+      {
+        "id": "offer-fef287c4-d2fd-4cf4-a816-4d769e087666",
+        "label": "৭৫০ মিলি-এর ২ পিস তেলের জার",
+        "quantity": 1,
+        "total_price": 990,
+        "compare_at_total": 990
+      },
+      {
+        "id": "offer-70ea51a2-33f9-432c-adc8-bc7980b5601c",
+        "label": "৭৫০ মিলি-এর ২ পিস তেলের জার",
+        "quantity": 2,
+        "total_price": 1880,
+        "compare_at_total": 1980
+      }
+    ]
+  },
+  {
     "id": "62a67780-7901-4d42-b49d-bd428f637e7b",
     "name": "Angonaloy  Magnetic Selfie Light with Built-In Mirror",
     "slug": "angonaloy-magnetic-selfie-light-with-built-in-mirror",
