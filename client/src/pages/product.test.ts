@@ -124,26 +124,24 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /mr-3[^"`]*md:mr-6/);
   assert.match(productSource, /max-w-none md:max-w-\[480px\]/);
   assert.match(productSource, /basis-\[60vw\][^"`]*md:basis-\[240px\]/);
-  assert.match(productSource, /REEL_MEDIA = \[/);
-  assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
-  assert.match(productSource, /<video/);
+  assert.match(productSource, /GLASS_WATER_BOTTLE_REEL_MEDIA/);
+  assert.match(productSource, /stream\.mux\.com/);
+  assert.match(productSource, /<MuxVideo/);
   assert.match(productSource, /controls\s*$/m);
   // Only the active slide mounts a <video>, so a mobile drag moves one cheap layer
   // instead of three decoding video layers.
   assert.match(productSource, /i === currentReel/);
   assert.match(productSource, /preload="metadata"/);
   assert.doesNotMatch(productSource, /autoPlay=/);
-  assert.match(productSource, /so_1,w_480,f_auto,q_auto/);
+  assert.match(productSource, /image\.mux\.com/);
   assert.match(productSource, /Play className/);
   assert.match(productSource, /activeReelVideoRef/);
   assert.match(productSource, /src=\{poster\}[\s\S]*?pointer-events-none/);
   assert.match(productSource, /loading="lazy"/);
   assert.doesNotMatch(productSource, /video\.load\(\)/);
   assert.match(productSource, /will-change-transform/);
-  assert.match(productSource, /video\.muted = false/);
-  assert.doesNotMatch(productSource, /pointer-events-none md:pointer-events-auto/);
-  assert.match(productSource, /snapsave-app_1C33w5xnV7_hd/);
-  assert.match(productSource, /snapsave-app_1700766014578997_hd/);
+  assert.match(productSource, /h5q3b3EKEzQgPUQ002xPb2jmVORrBlvIlbMDejxOSJeY/);
+  assert.match(productSource, /cwW02TU2uP1XRUsB02GmCW1YL01PTdR56302suoUJR2kTJQ/);
   assert.doesNotMatch(productSource, /snap-center/);
   assert.match(productSource, /\[touch-action:pan-y_pinch-zoom\]/);
   assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
@@ -153,22 +151,20 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.doesNotMatch(productSource, /wistia-player/);
 });
 
-test("uses native Cloudinary reels only for Honey Nut", () => {
-  assert.match(productSource, /const HONEY_NUT_REEL_MEDIA = \[/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__7925\.mp4/);
-  assert.match(productSource, /snapsave-app_1432224402135483_hd\.mp4/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__8e09\.mp4/);
-  assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
-  assert.match(productSource, /const honeyNutReelMedia = slug === "honey-nut" \? HONEY_NUT_REEL_MEDIA : null/);
-  assert.match(productSource, /const reelMedia = honeyNutReelMedia \?\? glassWaterBottleReelMedia \?\? REEL_MEDIA/);
+test("uses shared Mux reels on every product", () => {
+  assert.match(productSource, /const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = \[/);
+  assert.match(productSource, /const isGlassWaterBottleMuxProduct = true/);
+  assert.match(productSource, /const reelMedia = GLASS_WATER_BOTTLE_REEL_MEDIA/);
+  assert.doesNotMatch(productSource, /HONEY_NUT_REEL_MEDIA/);
+  assert.doesNotMatch(productSource, /const REEL_MEDIA = \[/);
+  assert.doesNotMatch(productSource, /slug === "honey-nut"/);
+  assert.doesNotMatch(productSource, /slug === "glass-water-bottles-with-time-marker"/);
   assert.match(productSource, /reelMedia\.map\(\(\{ src, poster \}, i\) =>/);
-  assert.match(productSource, /video\/upload\/so_1,w_480,f_auto,q_auto/);
-  assert.match(productSource, /poster=\{poster\}/);
   assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden bg-black"/);
-  assert.match(productSource, /className="h-full w-full rounded-\[6px\] object-contain bg-black"/);
+  assert.match(productSource, /className="h-full w-full rounded-\[6px\] object-contain bg-black"|className="h-full w-full object-contain bg-black"/);
 });
 
-test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () => {
+test("uses Mux-hosted reels on every product", () => {
   assert.match(productSource, /import \{ PlayButton \} from "@videojs\/react";/);
   assert.match(productSource, /import \{ MuxVideo \} from "@videojs\/react\/media\/mux-video";/);
   assert.match(productSource, /const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = \[/);
@@ -176,7 +172,7 @@ test("uses Mux-hosted reels only for Glass Water Bottles With Time Marker", () =
   assert.match(productSource, /https:\/\/image\.mux\.com\/\$\{playbackId\}\/thumbnail\.jpg/);
   assert.match(
     productSource,
-    /const isGlassWaterBottleMuxProduct = slug === "glass-water-bottles-with-time-marker"/,
+    /const isGlassWaterBottleMuxProduct = true/,
   );
   assert.match(productSource, /import "@videojs\/react\/video\/skin\.css";/);
   assert.match(productSource, /import \{ VideoPlayer, VideoSkin \} from "@videojs\/react\/video";/);

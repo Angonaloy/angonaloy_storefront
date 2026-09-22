@@ -113,35 +113,8 @@ function ProductSkeleton() {
   );
 }
 
-// Poster stills are derived once at module load, and requested at a small width so
-// phones download a thumbnail rather than a full-size frame extraction.
-const REEL_MEDIA = [
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw.mp4",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1C33w5xnV7_hd.mp4",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
-].map((src) => ({
-  src,
-  poster: src.replace("/f_auto,q_auto/", "/so_1,w_480,f_auto,q_auto/").replace(".mp4", ".jpg"),
-}));
-
-const HONEY_NUT_REEL_MEDIA = [
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.jpg",
-  },
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1432224402135483_hd.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/snapsave-app_1432224402135483_hd.jpg",
-  },
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.jpg",
-  },
-] as const;
-
-// Mux-hosted reel for this one product only — every other product keeps the
-// plain Cloudinary-hosted <video> path above. See product.tsx's MuxVideo
-// branch below, gated on the same slug check.
+// Shared "আমরা ও আমাদের সত্যতা" reels — same 3 Mux videos on every
+// product page. See the MuxVideo branch below, now unconditional.
 const GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS = [
   "h5q3b3EKEzQgPUQ002xPb2jmVORrBlvIlbMDejxOSJeY",
   "cwW02TU2uP1XRUsB02GmCW1YL01PTdR56302suoUJR2kTJQ",
@@ -154,10 +127,9 @@ const GLASS_WATER_BOTTLE_REEL_MEDIA = GLASS_WATER_BOTTLE_MUX_PLAYBACK_IDS.map((p
 
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
-  const honeyNutReelMedia = slug === "honey-nut" ? HONEY_NUT_REEL_MEDIA : null;
-  const isGlassWaterBottleMuxProduct = slug === "glass-water-bottles-with-time-marker";
-  const glassWaterBottleReelMedia = isGlassWaterBottleMuxProduct ? GLASS_WATER_BOTTLE_REEL_MEDIA : null;
-  const reelMedia = honeyNutReelMedia ?? glassWaterBottleReelMedia ?? REEL_MEDIA;
+  // Same authenticity reels on every product — no per-product video split.
+  const isGlassWaterBottleMuxProduct = true;
+  const reelMedia = GLASS_WATER_BOTTLE_REEL_MEDIA;
   const reelCount = reelMedia.length;
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
