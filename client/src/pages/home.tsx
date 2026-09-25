@@ -32,6 +32,12 @@ const MARQUEE_PHRASES = [
   "মান নিশ্চিত",
 ] as const;
 
+const WHY_ANGONALOY_BENEFITS = [
+  { icon: Truck, title: "Free shipping over ৳2600", bangla: "৳2600-এর বেশি অর্ডারে ফ্রি শিপিং" },
+  { icon: HandCoins, title: "Cash on delivery", bangla: "ক্যাশ অন ডেলিভারি" },
+  { icon: BadgeCheck, title: "Quality assured", bangla: "মান নিশ্চিত" },
+] as const;
+
 function SectionHeader({
   eyebrow,
   title,
@@ -129,6 +135,20 @@ export default function Home() {
   const [editorialRef, editorialInView] = useReveal();
   const [essentialsRef, essentialsInView] = useReveal();
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
+  const benefitRailRef = useRef<HTMLDivElement>(null);
+  const [activeBenefit, setActiveBenefit] = useState(0);
+
+  const updateActiveBenefit = () => {
+    const rail = benefitRailRef.current;
+    if (!rail?.clientWidth) return;
+    setActiveBenefit(Math.max(0, Math.min(WHY_ANGONALOY_BENEFITS.length - 1, Math.round(rail.scrollLeft / rail.clientWidth))));
+  };
+
+  const goToBenefit = (index: number) => {
+    const rail = benefitRailRef.current;
+    if (!rail) return;
+    rail.scrollTo({ left: index * rail.clientWidth });
+  };
 
   useEffect(() => {
     const grids = [whatsNewGridRef.current];
@@ -246,11 +266,12 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-          className="mx-auto flex max-w-[1200px] flex-col items-center px-4 text-center"
+          className="mx-auto flex max-w-[1200px] flex-col items-center px-1 text-center md:px-4"
         >
-          <h1 className="font-bloop text-[clamp(2.6rem,6.2vw,5.75rem)] font-extrabold leading-[0.95] tracking-[-0.04em]">
-            <span className="bloop-gradient-text">Angonaloy—Made for Home</span>{" "}
-            <span className="mt-1 block font-bloop-serif font-normal tracking-[-0.02em] text-bloop-red">
+          {/* Mobile: each line is sized to span the viewport minus the 4px gutters the image mosaic uses. */}
+          <h1 className="w-full font-bloop text-[length:calc((100vw-12px)*0.0798)] font-extrabold leading-[0.95] tracking-[-0.04em] md:w-auto md:text-[clamp(2.6rem,6.2vw,5.75rem)]">
+            <span className="bloop-gradient-text block whitespace-nowrap md:inline md:whitespace-normal">Angonaloy—Made for Home</span>{" "}
+            <span className="mt-1 block whitespace-nowrap font-bloop-serif text-[length:calc((100vw-12px)*0.1162)] font-normal tracking-[-0.02em] text-bloop-red md:whitespace-normal md:text-[length:1em]">
               and Everyday Living
             </span>
           </h1>
@@ -382,19 +403,41 @@ export default function Home() {
           <motion.h2 variants={reveal} transition={transition} className={`mt-3 text-bloop-purple ${SECTION_HEADING_CLASS_NAME}`}>
             Why Angonaloy
           </motion.h2>
-          <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-3 md:gap-10">
-            {[
-              { icon: Truck, title: "Free shipping over ৳2600", bangla: "৳2600-এর বেশি অর্ডারে ফ্রি শিপিং" },
-              { icon: HandCoins, title: "Cash on delivery", bangla: "ক্যাশ অন ডেলিভারি" },
-              { icon: BadgeCheck, title: "Quality assured", bangla: "মান নিশ্চিত" },
-            ].map(({ icon: Icon, title, bangla }) => (
-              <motion.div key={title} variants={reveal} transition={transition} className="flex flex-col items-center">
+          <div
+            ref={benefitRailRef}
+            onScroll={updateActiveBenefit}
+            role="region"
+            aria-label="Why Angonaloy benefits"
+            tabIndex={0}
+            className="no-scrollbar mt-10 flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth md:mt-14 md:grid md:grid-cols-3 md:gap-10 md:overflow-visible"
+          >
+            {WHY_ANGONALOY_BENEFITS.map(({ icon: Icon, title, bangla }) => (
+              <motion.div key={title} variants={reveal} transition={transition} className="w-full shrink-0 snap-start flex flex-col items-center md:min-w-0">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-bloop-purple text-bloop-lime">
                   <Icon className="h-7 w-7" strokeWidth={1.75} />
                 </span>
                 <p className="mt-4 font-bloop text-[22px] font-bold leading-tight tracking-[-0.03em] text-bloop-purple md:text-[26px]">{title}</p>
                 <p className="mt-1 font-bangla text-[15px] font-medium text-bloop-purple/75">{bangla}</p>
               </motion.div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center md:hidden">
+            {WHY_ANGONALOY_BENEFITS.map(({ title }, index) => (
+              <button
+                key={title}
+                type="button"
+                onClick={() => goToBenefit(index)}
+                aria-label={`Go to benefit ${index + 1}`}
+                aria-current={activeBenefit === index ? "true" : undefined}
+                className="flex h-5 flex-1 items-center"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`block h-[2px] w-full transition-colors duration-300 ${
+                    activeBenefit === index ? "bg-bloop-purple" : "bg-bloop-purple/15"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </motion.div>
