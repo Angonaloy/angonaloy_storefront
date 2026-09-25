@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import "@videojs/react/video/skin.css";
 import { PlayButton } from "@videojs/react";
@@ -6,10 +7,11 @@ import { VideoPlayer, VideoSkin } from "@videojs/react/video";
 import { MuxVideo } from "@videojs/react/media/mux-video";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Pause, Play, Plus } from "lucide-react";
+import { ArrowDownRight, Phone, Minus, MoveLeft, MoveRight, Pause, Play, Plus } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { BagIcon } from "@/components/bag-icon";
 import HomeProductCard from "@/components/home-product-card";
 import RecentlyViewed from "@/components/recently-viewed";
 import { useCart } from "@/contexts/cart-context";
@@ -95,18 +97,28 @@ function formatTimelineDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+// The site header (layout.tsx) is the only sticky <nav>; the announcement bar
+// above it scrolls away, so only the header height is subtracted.
+function getStickyHeaderOffset() {
+  const header = document.querySelector<HTMLElement>("nav.sticky");
+  return (header?.getBoundingClientRect().height ?? 0) + 16;
+}
+
+const PRODUCT_SECTION_IDS = ["product-description", "product-details", "product-reels", "you-may-also-like"] as const;
+
 function ProductSkeleton() {
   return (
-    <div className="min-h-screen bg-brand-ivory">
-      <div className="grid grid-cols-1 lg:grid-cols-12">
-        <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
-          <div className="mx-auto aspect-square w-full max-w-[1080px] animate-pulse rounded-[8px] bg-[#ededed]" />
+    <div className="min-h-screen bg-bloop-cream">
+      <div className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-6 px-4 pb-10 pt-2 md:px-6 md:pt-4 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-10 lg:px-10 xl:gap-16">
+        <div className="min-w-0">
+          <div className="mx-auto aspect-square w-full max-w-[720px] animate-pulse rounded-[20px] bg-bloop-card md:rounded-[28px] lg:max-w-none" />
         </div>
-        <div className="lg:col-span-5 flex flex-col gap-5 bg-brand-ivory p-8 md:p-16">
-          <div className="h-9 w-2/3 animate-pulse rounded bg-[#ededed]" />
-          <div className="h-6 w-1/3 animate-pulse rounded bg-[#ededed]" />
-          <div className="mt-4 h-12 w-1/2 animate-pulse rounded-[4px] bg-[#ededed]" />
-          <div className="mt-8 h-12 w-full animate-pulse rounded-[4px] bg-black/10" />
+        <div className="flex w-full flex-col gap-5">
+          <div className="h-4 w-1/2 animate-pulse rounded-full bg-bloop-card" />
+          <div className="h-10 w-3/4 animate-pulse rounded-full bg-bloop-card" />
+          <div className="h-7 w-1/3 animate-pulse rounded-full bg-bloop-card" />
+          <div className="mt-4 h-11 w-32 animate-pulse rounded-full bg-bloop-card" />
+          <div className="mt-4 h-14 w-full animate-pulse rounded-full bg-bloop-red/20" />
         </div>
       </div>
     </div>
@@ -139,8 +151,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [currentReel, setCurrentReel] = useState(0);
-  const quantityControlRef = useRef<HTMLDivElement>(null);
-  const [quantityControlWidth, setQuantityControlWidth] = useState<number | null>(null);
+  // The mobile mini bar appears once the primary COD button has scrolled up
+  // out of view, and hides again when the button is back on screen.
+  const primaryCtaRef = useRef<HTMLDivElement>(null);
+  const [showMiniBar, setShowMiniBar] = useState(false);
+  const buyBoxRef = useRef<HTMLDivElement>(null);
+  const [buyBoxTop, setBuyBoxTop] = useState<number | undefined>(undefined);
+  const [activeSection, setActiveSection] = useState<string>(PRODUCT_SECTION_IDS[0]);
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
   // decoders to layers that Embla re-transforms every frame, which is what makes the
   // horizontal drag stutter on real phones but not on a desktop localhost.
@@ -161,24 +178,21 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     duration: 35,
     loop: true,
     skipSnaps: false,
+    breakpoints: { "(min-width: 768px)": { active: false } },
   });
-  useLayoutEffect(() => {
-    const quantityControl = quantityControlRef.current;
-    if (!quantityControl) return;
-    const updateWidth = () => setQuantityControlWidth(quantityControl.getBoundingClientRect().width);
-    updateWidth();
-    if (typeof ResizeObserver === "undefined") return;
-    const resizeObserver = new ResizeObserver(updateWidth);
-    resizeObserver.observe(quantityControl);
-    return () => resizeObserver.disconnect();
-  }, []);
   const goReel = (dir: number) => {
-    if (reelApi) {
+    const canSwipeReels = reelApi && !window.matchMedia("(min-width: 768px)").matches;
+    if (canSwipeReels) {
       if (dir < 0) reelApi.scrollPrev();
       if (dir > 0) reelApi.scrollNext();
       return;
     }
     setCurrentReel((i) => Math.min(reelCount - 1, Math.max(0, i + dir)));
+  };
+  const selectReel = (index: number) => {
+    const canSwipeReels = reelApi && !window.matchMedia("(min-width: 768px)").matches;
+    if (canSwipeReels) reelApi.scrollTo(index);
+    else setCurrentReel(index);
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -345,7 +359,17 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
   const isLoading = !merchantAvailabilityKnown && !cachedProduct && !generatedProduct;
   const detailSections = getProductDetailSections(product);
-  const [openSection, setOpenSection] = useState(0);
+  const [openSection, setOpenSection] = useState<number | null>(0);
+  // Low-stock copy only uses live inventory numbers, never the catalog snapshot.
+  const liveStockQuantity = merchantInventory?.inventory
+    ? selectedVariant?.id !== undefined
+      ? merchantInventory.inventory.variants[String(selectedVariant.id)]?.stock_quantity
+      : merchantInventory.inventory.stock_quantity
+    : undefined;
+  const lowStockCount =
+    typeof liveStockQuantity === "number" && liveStockQuantity > 0 && liveStockQuantity <= 10
+      ? liveStockQuantity
+      : null;
 
   const verifyOrderable = async () => {
     if (isUnavailable) {
@@ -507,6 +531,80 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     galleryApi?.scrollTo(idx);
   };
 
+  const hasProduct = Boolean(product);
+  useEffect(() => {
+    const cta = primaryCtaRef.current;
+    if (!cta) return;
+    // A scroll listener (not IntersectionObserver) so jumps past the button,
+    // e.g. via the section anchor links, still toggle the bar.
+    const syncMiniBar = () => setShowMiniBar(cta.getBoundingClientRect().bottom < 0);
+    syncMiniBar();
+    window.addEventListener("scroll", syncMiniBar, { passive: true });
+    window.addEventListener("resize", syncMiniBar);
+    return () => {
+      window.removeEventListener("scroll", syncMiniBar);
+      window.removeEventListener("resize", syncMiniBar);
+    };
+  }, [isLoading, hasProduct]);
+
+  useEffect(() => {
+    const box = buyBoxRef.current;
+    if (!box) return;
+    // Sticky offset for the lg+ buy box. A box taller than the viewport gets a
+    // negative top, so it scrolls naturally until its bottom is visible and only
+    // then sticks — its lower buttons are never hidden.
+    const syncBuyBoxTop = () => {
+      setBuyBoxTop(Math.min(getStickyHeaderOffset(), window.innerHeight - box.offsetHeight - 16));
+    };
+    syncBuyBoxTop();
+    const observer = new ResizeObserver(syncBuyBoxTop);
+    observer.observe(box);
+    window.addEventListener("resize", syncBuyBoxTop);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncBuyBoxTop);
+    };
+  }, [isLoading, hasProduct]);
+
+  useEffect(() => {
+    // Highlights the anchor of the section currently under the sticky header.
+    const syncActiveSection = () => {
+      const offset = getStickyHeaderOffset();
+      let current: string = PRODUCT_SECTION_IDS[0];
+      for (const id of PRODUCT_SECTION_IDS) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top - offset <= 1) current = id;
+      }
+      setActiveSection(current);
+    };
+    syncActiveSection();
+    window.addEventListener("scroll", syncActiveSection, { passive: true });
+    window.addEventListener("resize", syncActiveSection);
+    return () => {
+      window.removeEventListener("scroll", syncActiveSection);
+      window.removeEventListener("resize", syncActiveSection);
+    };
+  }, [isLoading, hasProduct]);
+
+  // Section anchors scroll the window themselves. A native fragment navigation
+  // fires popstate, which App.tsx treats as back/forward and restores the saved
+  // scroll position — snapping the page straight back. replaceState fires no
+  // popstate and no wouter navigation.
+  const scrollToSection = (event: ReactMouseEvent<HTMLAnchorElement>, href: string) => {
+    const section = document.getElementById(href.slice(1));
+    if (!section) return;
+    event.preventDefault();
+    const top = section.getBoundingClientRect().top + window.scrollY - getStickyHeaderOffset();
+    window.scrollTo({ top: Math.max(0, top), left: 0, behavior: shouldReduceMotion ? "auto" : "smooth" });
+    window.history.replaceState(window.history.state, "", href);
+  };
+
+  const openOrderDialog = async () => {
+    if (await verifyOrderable()) {
+      setOrderOpen(true);
+    }
+  };
+
   const today = new Date();
   const processedDate = new Date(today);
   processedDate.setDate(today.getDate() + 1);
@@ -553,12 +651,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   if (!product || !orderBundle) {
     return (
       <Layout>
-        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-brand-ivory px-6 text-center">
-          <h1 className="text-2xl font-semibold text-black">Product not found</h1>
-          <p className="max-w-md text-sm text-black/60">
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-bloop-cream px-6 text-center">
+          <h1 className="font-bloop text-[clamp(2rem,5vw,2.75rem)] font-bold tracking-[-0.03em] text-bloop-red">Product not found</h1>
+          <p className="max-w-md font-bloop-body text-sm text-bloop-ink/70">
             This product is no longer available. Browse fresh mangoes, honey, ghee and more.
           </p>
-          <Link href="/products" className="rounded-[8px] bg-black px-6 py-3 text-[11px] font-bold uppercase tracking-[0.25em] text-white">
+          <Link href="/products" className="bloop-pill border-bloop-red bg-bloop-red px-8 py-3 font-bloop text-[15px] font-bold text-bloop-cream hover:bg-bloop-ink hover:border-bloop-ink">
             Browse products
           </Link>
         </div>
@@ -566,703 +664,703 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     );
   }
 
+  const hasPriceOptions = new Set(bundles.map((bundle) => bundle.amount)).size > 1;
+  const showSizeOptions = !(bundles.length === 1 && selectedBundle.title === "Default");
+  const hasCompareAt = Number.isFinite(heroCompareAtAmount) && heroCompareAtAmount > heroDisplayAmount;
+  const miniBarDetail = activeGlassBottleOffer
+    ? activeGlassBottleOffer.label
+    : selectedBundle.title === "Default"
+      ? null
+      : selectedBundle.title;
+  const anchorLinks = [
+    { href: "#product-description", label: "Description" },
+    ...(detailSections.length ? [{ href: "#product-details", label: "Details" }] : []),
+    { href: "#product-reels", label: "Reels" },
+    ...(relatedProducts.length ? [{ href: "#you-may-also-like", label: "You may also like" }] : []),
+  ];
+
   return (
     <Layout>
-      <div className="min-h-screen bg-brand-ivory">
-          <div className="grid grid-cols-1 lg:grid-cols-12">
-            <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
-              {/* Mobile: carousel with vertical thumbnails on left inside image */}
-              <div className="md:hidden">
-                <div className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-[#f6f6f6]">
-                  {displayGallery.length ? (
-                    <>
-                      <div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
-                        <div className="flex h-full touch-pan-y">
-                          {displayGallery.map((url, idx) => (
-                            <div key={url} className="relative h-full min-w-0 flex-[0_0_100%] overflow-hidden">
-                              <motion.img
-                                src={url}
-                                alt={product.name}
-                                width={1080}
-                                height={1080}
-                                draggable={false}
-                                initial={false}
-                                animate={shouldReduceMotion ? { opacity: 1, scale: 1 } : {
-                                  opacity: activeImage === idx ? 1 : 0.55,
-                                  scale: activeImage === idx ? 1 : 0.96,
-                                }}
-                                whileHover={shouldReduceMotion ? undefined : { scale: activeImage === idx ? 1.035 : 0.98 }}
-                                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                                className="absolute inset-0 h-full w-full select-none object-cover object-center"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {displayGallery.length > 1 ? (
-                        <div className="absolute left-2 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2">
-                          {displayGallery.map((url, idx) => (
-                            <button
-                              key={url}
-                              type="button"
-                              onClick={() => goToImage(idx)}
-                              aria-label={`Go to product image ${idx + 1}`}
-                              className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-[6px] border-2 bg-white shadow-md transition-all ${
-                                activeImage === idx ? "border-black opacity-100" : "border-white/70 opacity-70 hover:opacity-100"
-                              }`}
-                            >
-                              <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
-                    </>
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
-                      No image
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Desktop: Pinterest style — first image big, rest in 2-col grid */}
-              <div className="hidden md:block mx-auto max-w-[1080px]">
+      <div className="min-h-screen overflow-x-clip bg-bloop-cream text-bloop-ink">
+        <div className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-6 px-4 pb-12 pt-2 md:px-6 md:pt-4 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-10 lg:px-10 xl:gap-16">
+          <div className="min-w-0">
+            {/* Mobile: swipe carousel with a thin progress bar */}
+            <div className="md:hidden">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[20px] bg-bloop-card">
                 {displayGallery.length ? (
-                  <>
-                    <div className="overflow-hidden rounded-[8px] bg-[#f6f6f6]">
-                      <img
-                        src={displayGallery[0]}
-                        alt={product.name}
-                        width={1080}
-                        height={1080}
-                        className="h-auto w-full object-cover object-center"
-                      />
+                  <div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
+                    <div className="flex h-full touch-pan-y">
+                      {displayGallery.map((url, idx) => (
+                        <div key={url} className="relative h-full min-w-0 flex-[0_0_100%] overflow-hidden">
+                          <motion.img
+                            src={url}
+                            alt={product.name}
+                            width={1080}
+                            height={1080}
+                            draggable={false}
+                            initial={false}
+                            animate={shouldReduceMotion ? { opacity: 1, scale: 1 } : {
+                              opacity: activeImage === idx ? 1 : 0.55,
+                              scale: activeImage === idx ? 1 : 0.96,
+                            }}
+                            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                            className="absolute inset-0 h-full w-full select-none object-cover object-center"
+                          />
+                        </div>
+                      ))}
                     </div>
-                    {displayGallery.length > 1 ? (
-                      <div className="mt-3 grid grid-cols-2 gap-3">
-                        {displayGallery.slice(1).map((url, idx) => (
-                          <div key={url} className="overflow-hidden rounded-[8px] bg-[#f6f6f6]">
-                            <img
-                              src={url}
-                              alt={`${product.name} ${idx + 2}`}
-                              width={540}
-                              height={540}
-                              loading="lazy"
-                              className="h-auto w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                  </>
+                  </div>
                 ) : (
-                  <div className="flex aspect-square w-full items-center justify-center rounded-[8px] bg-[#f6f6f6] text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
+                  <div className="flex h-full w-full items-center justify-center font-bloop text-[11px] font-bold uppercase tracking-[0.3em] text-bloop-ink/30">
                     No image
                   </div>
                 )}
               </div>
+              {displayGallery.length > 1 ? (
+                <div className="mt-3 flex items-center">
+                  {displayGallery.map((url, idx) => (
+                    <button
+                      key={url}
+                      type="button"
+                      onClick={() => goToImage(idx)}
+                      aria-label={`Go to product image ${idx + 1}`}
+                      aria-current={activeImage === idx ? "true" : undefined}
+                      className="flex h-5 flex-1 items-center"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`block h-[2px] w-full transition-colors duration-300 ${
+                          activeImage === idx ? "bg-bloop-ink" : "bg-bloop-ink/15"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
-            <div
-              className="lg:col-span-5 flex flex-col bg-brand-ivory"
-            >
-              <div className="flex-grow space-y-6 px-4 pb-10 pt-2 md:space-y-10 md:p-16 xl:p-20">
-                <div className="space-y-4 md:space-y-6">
-                  <h1 className="max-w-full break-words font-sans text-2xl font-semibold leading-tight tracking-tight text-black sm:text-3xl md:text-4xl lg:text-[2.75rem]">
-                    {product.name}
-                  </h1>
-
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center font-sans text-2xl font-semibold text-black">
-                      <span>৳</span>
-                      <Counter end={heroDisplayAmount} fontSize={24} className="text-black font-semibold !px-0" />
-                    </div>
-                    {Number.isFinite(heroCompareAtAmount) && heroCompareAtAmount > heroDisplayAmount ? (
-                      <span className="text-sm font-semibold text-black/35 line-through">৳{heroCompareAtAmount.toLocaleString()}</span>
-                    ) : null}
-                    <div className="h-px flex-grow bg-black/5" />
+            {/* Desktop: first image large, the rest in a 2-col grid */}
+            <div className="mx-auto hidden max-w-[720px] md:block lg:max-w-none">
+              {displayGallery.length ? (
+                <>
+                  <div className="overflow-hidden rounded-[28px] bg-bloop-card">
+                    <img
+                      src={displayGallery[0]}
+                      alt={product.name}
+                      width={1080}
+                      height={1080}
+                      className="h-auto w-full object-cover object-center"
+                    />
                   </div>
-
-                  {product.description ? (
-                    <p className="text-xs font-medium leading-[1.8] text-black/60 md:text-sm">
-                      {product.description}
-                    </p>
+                  {displayGallery.length > 1 ? (
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      {displayGallery.slice(1).map((url, idx, rest) => (
+                        <div
+                          key={url}
+                          className={`overflow-hidden rounded-[28px] bg-bloop-card ${
+                            rest.length % 2 === 1 && idx === rest.length - 1 ? "col-span-2" : ""
+                          }`}
+                        >
+                          <img
+                            src={url}
+                            alt={`${product.name} ${idx + 2}`}
+                            width={540}
+                            height={540}
+                            loading="lazy"
+                            className="h-auto w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   ) : null}
+                </>
+              ) : (
+                <div className="flex aspect-square w-full items-center justify-center rounded-[28px] bg-bloop-card font-bloop text-[11px] font-bold uppercase tracking-[0.3em] text-bloop-ink/30">
+                  No image
                 </div>
+              )}
+            </div>
+          </div>
 
-                 {isBundleOfferProduct ? (
-                  <div className="-mt-3 space-y-2.5 md:-mt-6">
-                    <div className="flex items-center gap-2">
-                      <span aria-hidden="true" className="h-px flex-1 border-t border-dashed border-black/30" />
-                      <p className="shrink-0 text-center text-[12px] font-bold text-black">
-                        নিচের {toBengaliNumeral(glassBottleOffers.length)}টি অপশন থেকে ১টি সিলেক্ট করুন।
-                      </p>
-                      <span aria-hidden="true" className="h-px flex-1 border-t border-dashed border-black/30" />
-                    </div>
-                    <div className="grid grid-cols-1 gap-2.5">
-                      {glassBottleOffers.map((offer) => {
-                        const selected = quantity === offer.quantity;
-                        return (
-                          <button
-                            key={offer.id}
-                            type="button"
-                            onClick={() => setQuantity(offer.quantity)}
-                            aria-pressed={selected}
-                            className={`flex items-center gap-3 rounded-[8px] border-2 px-4 py-3 text-left transition-all duration-200 ${
-                              selected
-                                ? "border-[#d92c2d] bg-[#FFFAEB]"
-                                : "border-[#E9C6C6] bg-white hover:border-[#d92c2d]/50"
-                            }`}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                                selected ? "border-[#d92c2d]" : "border-black/20"
-                              }`}
-                            >
-                              {selected ? <span className="h-3 w-3 rounded-full bg-[#d92c2d]" /> : null}
-                            </span>
-                            <span className="min-w-0 flex-1 text-[13px] font-bold leading-snug text-black">{offer.label}</span>
-                            <span className="shrink-0 text-[16px] font-extrabold tracking-tight text-black">
-                              Tk {Number(offer.total_price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-2.5 md:space-y-3">
-                      <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
-                        Quantity
-                      </span>
-                      <div ref={quantityControlRef} className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
-                        <button
-                          type="button"
-                          aria-label="Decrease quantity"
-                          disabled={quantity === 1}
-                          onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                          className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-black/20"
-                        >
-                          <Minus className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                        <span
-                          aria-live="polite"
-                          className="flex h-11 min-w-12 items-center justify-center border-x border-black/10 px-3 text-sm font-semibold tabular-nums text-black"
-                        >
-                          {quantity}
-                        </span>
-                        <button
-                          type="button"
-                          aria-label="Increase quantity"
-                          onClick={() => setQuantity((current) => current + 1)}
-                          className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5"
-                        >
-                          <Plus className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                    </div>
+          {/* Buy box */}
+          <div ref={buyBoxRef} style={{ top: buyBoxTop }} className="min-w-0 lg:sticky lg:self-start">
+            <div className="flex w-full flex-col">
+              <nav aria-label="Breadcrumb" className="font-bloop text-[13px] font-bold text-bloop-ink">
+                <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <li><Link href="/" className="transition-opacity hover:opacity-60">Home</Link></li>
+                  <li aria-hidden="true">/</li>
+                  <li><Link href="/products" className="transition-opacity hover:opacity-60">Products</Link></li>
+                  <li aria-hidden="true">/</li>
+                  <li aria-current="page" className="min-w-0 truncate">{product.name}</li>
+                </ol>
+              </nav>
 
-                    <div className="space-y-2.5 md:space-y-3">
-                      <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
-                        Select Size
-                      </span>
-                      <div
-                        className={bundles.length === 1 ? "inline-flex" : "grid grid-cols-2 gap-2"}
-                        style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth + 7}px` } : undefined}
-                      >
-                        {bundles.map((bundle, idx) => {
-                          const selected = selectedBundleIdx === idx;
-                          return (
-                            <button
-                              key={bundle.id}
-                              type="button"
-                              onClick={() => setSelectedBundleIdx(idx)}
-                              aria-pressed={selected}
-                              className={`${bundles.length === 1 ? "w-full" : ""} flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
-                                selected
-                                  ? "border-black bg-white text-black"
-                                  : "border-black/10 bg-white text-black hover:border-black/30"
-                              }`}
-                            >
-                              <span className="text-[11px] font-medium tracking-[0.04em]">
-                                {bundle.title}
-                              </span>
-                              <span className="mt-0.5 text-[11px] font-medium font-garet">
-                                {bundle.price}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
+              <h1 className="mt-4 break-words font-bloop text-[32px] font-bold leading-[1.05] tracking-[-0.02em] text-bloop-red md:text-[40px]">
+                {product.name}
+              </h1>
 
-                {isUnavailable ? (
-                  <div className="rounded-[8px] border border-black/10 bg-white/35 p-4 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/45">
-                    Unavailable
-                  </div>
+              {product.description ? (
+                // lg+: CSS order moves this below the delivery timeline card.
+                <p className="mt-4 line-clamp-5 font-bloop-body text-[14px] leading-[1.6] text-bloop-ink/80 lg:order-last lg:mt-6">
+                  {product.description}
+                </p>
+              ) : null}
+
+              <div className="mt-5 flex items-center gap-3">
+                <div className={`flex items-center font-bloop text-[26px] font-bold ${hasCompareAt ? "text-bloop-red" : "text-bloop-ink"}`}>
+                  <span>৳</span>
+                  <Counter
+                    end={heroDisplayAmount}
+                    fontSize={26}
+                    className={`font-bloop font-bold !px-0 ${hasCompareAt ? "text-bloop-red" : "text-bloop-ink"}`}
+                  />
+                </div>
+                {hasCompareAt ? (
+                  <span className="font-bloop text-[16px] font-bold text-bloop-ink/35 line-through">৳{heroCompareAtAmount.toLocaleString()}</span>
                 ) : null}
+              </div>
 
-                <div className="space-y-3 md:space-y-4">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <Button
-                      disabled={isUnavailable || pricedBundle.amount <= 0}
-                      onClick={async () => {
-                        if (!(await verifyOrderable())) {
-                          return;
-                        }
-
-                        addToCart(
-                          {
-                            id: getProductNumericId(product),
-                            title: `${product.name} (${selectedBundle.title})`,
-                            price: pricedBundle.price,
-                            image: displayImage,
-                             analyticsItem: productAnalyticsItem,
-                             productUuid: String(product.id ?? ""),
-                             variantId: String(selectedVariant?.id ?? ""),
-                             ...(activeGlassBottleOffer ? {
-                               offerId: activeGlassBottleOffer.id,
-                               quantityStep: activeGlassBottleOffer.quantity,
-                             } : {}),
-                           },
-                          selectedBundle.title,
-                          quantity,
-                        );
-                      }}
-                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] border border-black/20 bg-transparent px-2 text-[10px] font-bold uppercase tracking-[0.4em] text-black transition-all hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Add to Cart
-                    </Button>
-                    <Button
-                      disabled={isUnavailable || pricedBundle.amount <= 0}
-                      onClick={async () => {
-                        if (await verifyOrderable()) {
-                          setOrderOpen(true);
-                        }
-                      }}
-                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#d92c2d] px-2 text-[14px] md:text-[10px] font-bold text-white transition-all hover:bg-[#e5a80f] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      ক্যাশ অন ডেলিভারিতে অর্ডার করুন।
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center gap-3 py-1">
-                    <div className="h-px flex-1 bg-black/10" />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/40">
-                      অথবা
-                    </span>
-                    <div className="h-px flex-1 bg-black/10" />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <a
-                      href="tel:+8801819502705"
-                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#f26b4f] px-2 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#d9573d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f26b4f]/40"
-                    >
-                      <Phone className="h-4 w-4 stroke-[1.5px]" />
-                      ফোনে অর্ডার
-                    </a>
-                    <a
-                      href={`https://wa.me/8801819502705?text=${encodeURIComponent(
-                        `Hello, I'd like to order: ${product.name} (${selectedBundle.title})`,
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#25d366] px-2 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"
-                    >
-                      <img
-                        src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
-                        alt="Whatsapp"
-                        width={16}
-                        height={16}
-                        className="h-4 w-4 brightness-0 invert"
-                      />
-                      হোয়াটসএপ-এ অর্ডার
-                    </a>
-                  </div>
-
-                  <div className="rounded-[8px] border border-black/[0.06] bg-white/20 px-3 py-1.5 md:px-3">
-                    <div className="relative pb-0.5 pt-1.5">
-                       <div className="absolute left-[14%] right-[14%] top-[18px] h-px bg-black/10" />
-                      <div className="relative z-20 grid grid-cols-3 gap-2">
-                        {deliveryTimeline.map((item) => (
-                          <div key={item.title} className="flex flex-col items-center text-center">
-                             <span className="mb-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-ivory text-black">
-                              {item.title === "অর্ডার গ্রহণ" ? (
-                                 <ShoppingBag className="h-5 w-5" weight="Filled" />
-                              ) : item.title === "প্রসেসিং" ? (
-                                 <ClipboardCheck className="h-5 w-5" weight="Filled" />
-                              ) : (
-                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-                                  <path fillRule="evenodd" clipRule="evenodd" d="M1.25 5.5C1.25 3.70508 2.70507 2.25 4.5 2.25H12.5C14.2949 2.25 15.75 3.70507 15.75 5.5V5.75H18.5341C19.4165 5.75 20.2173 6.26571 20.5825 7.06894L22.6761 11.675C22.7213 11.7689 22.7476 11.8737 22.7498 11.9844L22.75 12.0017V16.5C22.75 17.7426 21.7426 18.75 20.5 18.75H19.7388C19.7462 18.8323 19.75 18.9157 19.75 19C19.75 20.5188 18.5188 21.75 17 21.75C15.4812 21.75 14.25 20.5188 14.25 19C14.25 18.9157 14.2538 18.8323 14.2612 18.75H9.73879C9.74621 18.8323 9.75 18.9157 9.75 19C9.75 20.5188 8.51878 21.75 7 21.75C5.48122 21.75 4.25 20.5188 4.25 19C4.25 18.9157 4.25379 18.8323 4.26121 18.75H3.5C2.25736 18.75 1.25 17.7426 1.25 16.5V5.5ZM17 17.75C16.3096 17.75 15.75 18.3096 15.75 19C15.75 19.6904 16.3096 20.25 17 20.25C17.6904 20.25 18.25 19.6904 18.25 19C18.25 18.3096 17.6904 17.75 17 17.75ZM5.75 19C5.75 18.3096 6.30964 17.75 7 17.75C7.69036 17.75 8.25 18.3096 8.25 19C8.25 19.6904 7.69036 20.25 7 20.25C6.30964 20.25 5.75 19.6904 5.75 19ZM15.75 11.25H20.8352L19.2169 7.68965C19.0952 7.4219 18.8282 7.25 18.5341 7.25H15.75V11.25Z" fill="currentColor" />
-                                </svg>
-                              )}
-                            </span>
-                             <span className="font-garet text-[11px] font-normal tracking-[0.03em] text-black/45">
-                              {item.date}
-                            </span>
-                             <span
-                               className="mt-1 block text-[14px] font-normal leading-4 text-black/80"
-                 style={{ fontFamily: "'KaiumSimanto', serif" }}
-                            >
-                              {item.title}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Product Details — compact, scannable list */}
-                 <div className="border border-black/10 bg-white/35 rounded-[8px] p-5 md:p-6">
-                   <div className="mb-6 flex items-baseline gap-2">
-                    <h2
-                       className="text-[23px] font-normal text-black"
-                       style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                    >
-                      বিস্তারিত
-                    </h2>
-                    <span
-                      className="relative inline-block text-[23px] font-normal text-black/65"
-                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                    >
-                      বৈশিষ্ট্য
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 120 60"
-                        preserveAspectRatio="none"
-                        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                        style={{ overflow: "visible" }}
-                      >
-                        <path
-                          d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                          fill="none"
-                          stroke="#FBBB14"
-                          strokeWidth="4.5"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                  </div>
-
-                  <div>
-                    <div
-                      role="tablist"
-                      className="flex gap-1 overflow-x-auto border-b border-black/10"
-                    >
-                      {detailSections.map((item, i) => {
-                        const active = openSection === i;
-                        return (
-                          <button
-                            key={item.label}
-                            type="button"
-                            role="tab"
-                            aria-selected={active}
-                            onClick={() => setOpenSection(i)}
-                             className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-3 text-[17px] transition-colors md:text-[19px] ${
-                              active
-                                ? "border-black text-black"
-                                : "border-transparent text-black/40"
-                            }`}
-                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                          >
-                            {item.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="pt-4">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={openSection}
-                          role="tabpanel"
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              {isBundleOfferProduct ? (
+                <div className="mt-6 space-y-3">
+                  <p className="font-bangla text-[14px] font-semibold text-bloop-ink">
+                    নিচের {toBengaliNumeral(glassBottleOffers.length)}টি অপশন থেকে ১টি সিলেক্ট করুন।
+                  </p>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {glassBottleOffers.map((offer) => {
+                      const selected = quantity === offer.quantity;
+                      return (
+                        <button
+                          key={offer.id}
+                          type="button"
+                          onClick={() => setQuantity(offer.quantity)}
+                          aria-pressed={selected}
+                          className={`flex items-center gap-3 rounded-[20px] border-2 px-4 py-3.5 text-left transition-colors duration-200 ${
+                            selected
+                              ? "border-bloop-red bg-bloop-cream"
+                              : "border-bloop-ink/15 bg-white hover:border-bloop-ink/40"
+                          }`}
                         >
-                          {(() => {
-                            const item = detailSections[openSection];
-                            return (
-                              <div className="space-y-1.5 text-left">
-                                {item.body?.map((paragraph, idx) => (
-                                  <p
-                                    key={idx}
-                                     className="text-[13px] leading-[1.7] tracking-[0.01em] text-black/55"
-                                  >
-                                    {paragraph}
-                                  </p>
-                                ))}
-                                {item.details?.length ? (
-                                    <ul className="-ml-3 max-w-[720px] space-y-1 text-left md:-ml-4">
-                                     {item.details.map((detail, detailIndex) => (
-                                       <li
-                                         key={detail}
-                                          className="grid w-full max-w-full grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
-                                       >
-                                         <span
-                                           className="w-6 text-right font-normal tabular-nums text-brand-gold"
-                                           style={{ fontFamily: "inherit" }}
-                                         >
-                                           {toBengaliNumeral(detailIndex + 1)}.
-                                         </span>
-                                         <span>{detail}</span>
-                                       </li>
-                                     ))}
-                                  </ul>
-                                ) : null}
-                              </div>
-                            );
-                          })()}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
+                          <span
+                            aria-hidden="true"
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                              selected ? "border-bloop-red" : "border-bloop-ink/25"
+                            }`}
+                          >
+                            {selected ? <span className="h-2.5 w-2.5 rounded-full bg-bloop-red" /> : null}
+                          </span>
+                          <span className="min-w-0 flex-1 font-bangla text-[14px] font-semibold leading-snug text-bloop-ink">{offer.label}</span>
+                          <span className="shrink-0 font-bloop text-[16px] font-bold tracking-tight text-bloop-ink">
+                            Tk {Number(offer.total_price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-
-                {/* Reels Section — smooth horizontal carousel */}
-                <div className="-mx-4 pt-4 mt-4 overflow-hidden bg-brand-ivory md:mx-0 md:mt-0 md:pt-0">
-                  <h2
-                    className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
-                  >
-                    আমরা ও আমাদের{" "}
-                    <span
-                      className="relative inline-block"
-                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                    >
-                      সত্যতা
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 120 60"
-                        preserveAspectRatio="none"
-                        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                        style={{ overflow: "visible" }}
-                      >
-                        <path
-                          d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                          fill="none"
-                          stroke="#FBBB14"
-                          strokeWidth="4.5"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                  </h2>
-                  <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
-                    <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
-                      <div className="flex will-change-transform gap-0 px-0 md:px-6">
-                        {reelMedia.map(({ src, poster }, i) => (
-                          <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
-                            <div className="relative aspect-[9/16] w-full overflow-hidden bg-black">
-                              {isGlassWaterBottleMuxProduct ? (
-                                i === currentReel ? (
-                                  <div className="absolute inset-0">
-                                    <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
-                                      <VideoSkin className="absolute inset-0 h-full w-full [--media-border-radius:0px]">
-                                        <MuxVideo
-                                          src={src}
-                                          playsInline
-                                          preload="metadata"
-                                          className="h-full w-full object-contain bg-black"
-                                        />
-                                        <PlayButton
-                                          className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                          render={(props, state) => (
-                                            <button {...props}>
-                                              {state.paused ? (
-                                                <Play className="ml-1 h-7 w-7 fill-current" />
-                                              ) : (
-                                                <Pause className="h-7 w-7 fill-current" />
-                                              )}
-                                            </button>
-                                          )}
-                                        />
-                                      </VideoSkin>
-                                    </VideoPlayer>
-                                  </div>
-                                ) : (
-                                  <img
-                                    src={poster}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
-                                  />
-                                )
-                              ) : (
-                                <>
-                                  {i === currentReel ? (
-                                    <video
-                                      src={src}
-                                      title={`Angonaloy reel ${i + 1}`}
-                                      poster={poster}
-                                      controls
-                                      playsInline
-                                      preload="metadata"
-                                      onPlay={() => setPlayingReel(i)}
-                                      onPlaying={() => setPlayingReel(i)}
-                                      onPause={() => setPlayingReel((active) => (active === i ? null : active))}
-                                      onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
-                                      ref={(video) => {
-                                        activeReelVideoRef.current = video;
-                                      }}
-                                      onPointerDown={(event) => event.stopPropagation()}
-                                      className="h-full w-full rounded-[6px] object-contain bg-black"
-                                    />
-                                  ) : null}
-                                  {i !== currentReel ? (
-                                    <img
-                                      src={poster}
-                                      alt=""
-                                      aria-hidden="true"
-                                      loading="lazy"
-                                      decoding="async"
-                                      className="pointer-events-none absolute inset-0 h-full w-full rounded-[6px] object-cover"
-                                    />
-                                  ) : null}
-                                </>
-                              )}
-                              {!isGlassWaterBottleMuxProduct && i === currentReel ? (
-                                <button
-                                  type="button"
-                                  aria-label={playingReel === i ? `Pause reel ${i + 1}` : `Play reel ${i + 1}`}
-                                  aria-pressed={playingReel === i}
-                                  onPointerDown={(event) => event.stopPropagation()}
-                                  onClick={() => {
-                                    const video = activeReelVideoRef.current;
-                                    if (!video) return;
-                                    if (video.paused) {
-                                      video.muted = false;
-                                      void video.play().catch(() => setPlayingReel(null));
-                                    } else {
-                                      video.pause();
-                                    }
-                                  }}
-                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                >
-                                  {playingReel === i ? (
-                                    <Pause className="h-6 w-6 fill-current" />
-                                  ) : (
-                                    <Play className="ml-1 h-6 w-6 fill-current" />
-                                  )}
-                                </button>
-                              ) : null}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Previous reel"
-                      onClick={() => goReel(-1)}
-                      className="absolute left-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Next reel"
-                      onClick={() => goReel(1)}
-                      className="absolute right-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </Button>
+              ) : showSizeOptions ? (
+                <div className="mt-6">
+                  <p className="font-bloop-body text-[13px] text-bloop-ink">
+                    Size — {selectedBundle.title}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {bundles.map((bundle, idx) => {
+                      const selected = selectedBundleIdx === idx;
+                      return (
+                        <button
+                          key={bundle.id}
+                          type="button"
+                          onClick={() => setSelectedBundleIdx(idx)}
+                          aria-pressed={selected}
+                          className={`inline-flex h-10 items-center gap-1.5 rounded-full border-2 px-4 font-bloop text-[12px] font-bold uppercase tracking-[0.02em] text-bloop-ink transition-colors duration-200 ${
+                            selected ? "border-bloop-ink" : "border-transparent hover:border-bloop-ink/30"
+                          }`}
+                        >
+                          <span>{bundle.title}</span>
+                          {hasPriceOptions ? (
+                            <span className="font-medium normal-case text-bloop-ink/55">{bundle.price}</span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
                   </div>
+                </div>
+              ) : null}
 
-                  <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {Array.from({ length: reelCount }, (_, i) => (
-                      <button
-                        key={i}
-                        aria-label={`Go to reel ${i + 1}`}
-                        onClick={() => {
-                          if (reelApi) {
-                            reelApi.scrollTo(i);
-                          } else {
-                            setCurrentReel(i);
-                          }
-                        }}
-                        className={`h-1.5 rounded-full transition-all ${i === currentReel ? "w-5 bg-black" : "w-1.5 bg-black/25"}`}
-                      />
+              {lowStockCount !== null ? (
+                <div className="mt-6">
+                  <p className="font-bloop text-[13px] font-bold text-bloop-red">Only {lowStockCount} left in stock</p>
+                  <div aria-hidden="true" className="mt-2 h-[2px] w-full bg-bloop-ink" />
+                </div>
+              ) : null}
+
+              {!isBundleOfferProduct ? (
+                <div className="mt-6 inline-flex h-11 w-32 items-center justify-between rounded-full border-2 border-bloop-ink px-1 text-bloop-ink">
+                  <button
+                    type="button"
+                    aria-label="Decrease quantity"
+                    disabled={quantity === 1}
+                    onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                    className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-bloop-ink/5 disabled:cursor-not-allowed disabled:text-bloop-ink/25"
+                  >
+                    <Minus className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <span aria-live="polite" className="font-bloop-body text-[14px] font-semibold tabular-nums">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Increase quantity"
+                    onClick={() => setQuantity((current) => current + 1)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-bloop-ink/5"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+              ) : null}
+
+              {isUnavailable ? (
+                <div className="mt-6 rounded-full bg-bloop-card px-4 py-3 text-center font-bloop text-[12px] font-bold uppercase tracking-[0.2em] text-bloop-ink/50">
+                  Unavailable
+                </div>
+              ) : null}
+
+              <div className="mt-6 space-y-3">
+                <div ref={primaryCtaRef}>
+                  <Button
+                    disabled={isUnavailable || pricedBundle.amount <= 0}
+                    onClick={openOrderDialog}
+                    className="flex h-14 w-full items-center justify-center rounded-full bg-bloop-red px-4 font-bangla text-[17px] font-bold text-bloop-cream shadow-none transition-colors hover:bg-bloop-ink disabled:cursor-not-allowed disabled:opacity-50 md:h-16"
+                  >
+                    ক্যাশ অন ডেলিভারিতে অর্ডার করুন
+                  </Button>
+                </div>
+                <Button
+                  disabled={isUnavailable || pricedBundle.amount <= 0}
+                  onClick={async () => {
+                    if (!(await verifyOrderable())) {
+                      return;
+                    }
+
+                    addToCart(
+                      {
+                        id: getProductNumericId(product),
+                        title: `${product.name} (${selectedBundle.title})`,
+                        price: pricedBundle.price,
+                        image: displayImage,
+                        analyticsItem: productAnalyticsItem,
+                        productUuid: String(product.id ?? ""),
+                        variantId: String(selectedVariant?.id ?? ""),
+                        ...(activeGlassBottleOffer ? {
+                          offerId: activeGlassBottleOffer.id,
+                          quantityStep: activeGlassBottleOffer.quantity,
+                        } : {}),
+                      },
+                      selectedBundle.title,
+                      quantity,
+                    );
+                  }}
+                  className="flex h-12 w-full items-center justify-center rounded-full border-2 border-bloop-red bg-transparent px-4 font-bloop text-[16px] font-bold text-bloop-red shadow-none transition-colors hover:bg-bloop-red hover:text-bloop-cream disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Add to cart
+                </Button>
+
+                <div className="flex items-center gap-3 py-1">
+                  <div className="h-px flex-1 bg-bloop-ink/15" />
+                  <span className="font-bangla text-[13px] font-medium text-bloop-ink/50">অথবা</span>
+                  <div className="h-px flex-1 bg-bloop-ink/15" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <a
+                    href="tel:+8801819502705"
+                    className="bloop-pill h-11 border-bloop-ink px-2 font-bangla text-[14px] text-bloop-ink hover:bg-bloop-ink hover:text-bloop-cream"
+                  >
+                    <Phone className="h-4 w-4 stroke-[1.75px]" aria-hidden="true" />
+                    ফোনে অর্ডার
+                  </a>
+                  <a
+                    href={`https://wa.me/8801819502705?text=${encodeURIComponent(
+                      `Hello, I'd like to order: ${product.name} (${selectedBundle.title})`,
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group bloop-pill h-11 border-bloop-ink px-2 font-bangla text-[14px] text-bloop-ink hover:bg-bloop-ink hover:text-bloop-cream"
+                  >
+                    <img
+                      src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
+                      alt=""
+                      aria-hidden="true"
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 brightness-0 group-hover:invert"
+                    />
+                    হোয়াটসএপ-এ অর্ডার
+                  </a>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-[20px] bg-bloop-card px-3 py-4">
+                <div className="relative">
+                  <div aria-hidden="true" className="absolute left-[18%] right-[18%] top-[10px] h-px bg-bloop-ink/15" />
+                  <div className="relative grid grid-cols-3 gap-2">
+                    {deliveryTimeline.map((item) => (
+                      <div key={item.title} className="flex flex-col items-center text-center">
+                        <span className="mb-1.5 flex h-5 w-8 items-center justify-center bg-bloop-card text-bloop-red">
+                          {item.title === "অর্ডার গ্রহণ" ? (
+                            <ShoppingBag className="h-5 w-5" weight="Filled" />
+                          ) : item.title === "প্রসেসিং" ? (
+                            <ClipboardCheck className="h-5 w-5" weight="Filled" />
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                              <path fillRule="evenodd" clipRule="evenodd" d="M1.25 5.5C1.25 3.70508 2.70507 2.25 4.5 2.25H12.5C14.2949 2.25 15.75 3.70507 15.75 5.5V5.75H18.5341C19.4165 5.75 20.2173 6.26571 20.5825 7.06894L22.6761 11.675C22.7213 11.7689 22.7476 11.8737 22.7498 11.9844L22.75 12.0017V16.5C22.75 17.7426 21.7426 18.75 20.5 18.75H19.7388C19.7462 18.8323 19.75 18.9157 19.75 19C19.75 20.5188 18.5188 21.75 17 21.75C15.4812 21.75 14.25 20.5188 14.25 19C14.25 18.9157 14.2538 18.8323 14.2612 18.75H9.73879C9.74621 18.8323 9.75 18.9157 9.75 19C9.75 20.5188 8.51878 21.75 7 21.75C5.48122 21.75 4.25 20.5188 4.25 19C4.25 18.9157 4.25379 18.8323 4.26121 18.75H3.5C2.25736 18.75 1.25 17.7426 1.25 16.5V5.5ZM17 17.75C16.3096 17.75 15.75 18.3096 15.75 19C15.75 19.6904 16.3096 20.25 17 20.25C17.6904 20.25 18.25 19.6904 18.25 19C18.25 18.3096 17.6904 17.75 17 17.75ZM5.75 19C5.75 18.3096 6.30964 17.75 7 17.75C7.69036 17.75 8.25 18.3096 8.25 19C8.25 19.6904 7.69036 20.25 7 20.25C6.30964 20.25 5.75 19.6904 5.75 19ZM15.75 11.25H20.8352L19.2169 7.68965C19.0952 7.4219 18.8282 7.25 18.5341 7.25H15.75V11.25Z" fill="currentColor" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className="font-bloop-body text-[11px] font-medium text-bloop-ink/50">
+                          {item.date}
+                        </span>
+                        <span className="mt-0.5 block font-bangla text-[14px] font-semibold leading-5 text-bloop-ink">
+                          {item.title}
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Below the fold */}
+        <div className="mx-auto w-full max-w-[1360px] px-4 md:px-6 lg:px-10">
+          <div className="mx-auto max-w-[760px]">
+          <nav aria-label="Product sections" className="no-scrollbar -mx-4 flex gap-x-5 overflow-x-auto whitespace-nowrap px-4 pb-2 pt-6 md:mx-0 md:gap-x-7 md:px-0 md:pt-10">
+            {anchorLinks.map((link) => {
+              const active = activeSection === link.href.slice(1);
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(event) => scrollToSection(event, link.href)}
+                  aria-current={active ? "location" : undefined}
+                  className={`shrink-0 font-bloop text-[16px] font-bold underline decoration-2 underline-offset-[6px] transition-colors hover:opacity-70 md:text-[18px] ${
+                    active ? "text-bloop-ink/70" : "text-bloop-red"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
+          </nav>
+
+          <section id="product-description" className="scroll-mt-24 pt-14 md:pt-20">
+            <p className="font-bloop text-[12px] font-bold uppercase tracking-[0.06em] text-bloop-ink">Product details</p>
+            <h2 className="bloop-gradient-text mt-4 break-words pb-2 font-bloop text-[clamp(40px,8vw,88px)] font-bold leading-[0.95] tracking-[-0.04em]">
+              {product.name}
+            </h2>
+            {/* Text only — no product imagery in the details block. */}
+            <div className="mt-8 max-w-[70ch] font-bloop-body text-[15px] leading-[1.7] text-bloop-ink/85 md:mt-10">
+              {product.description ? (
+                <p className="whitespace-pre-line">{product.description}</p>
+              ) : null}
+            </div>
+          </section>
+
+          {detailSections.length ? (
+            <section id="product-details" aria-label="Product information" className="scroll-mt-24 pt-14 md:pt-20">
+              <div className="border-t border-bloop-ink/15">
+                {detailSections.map((item, i) => {
+                  const open = openSection === i;
+                  return (
+                    <div key={item.label} className="border-b border-bloop-ink/15">
+                      <button
+                        type="button"
+                        id={`product-detail-trigger-${i}`}
+                        aria-expanded={open}
+                        aria-controls={`product-detail-panel-${i}`}
+                        onClick={() => setOpenSection(open ? null : i)}
+                        className="flex w-full items-center justify-between gap-4 py-5 text-left text-bloop-ink transition-opacity hover:opacity-70"
+                      >
+                        <span className="font-bangla text-[17px] font-semibold">{item.label}</span>
+                        {open ? (
+                          <Minus className="h-5 w-5 shrink-0" aria-hidden="true" />
+                        ) : (
+                          <Plus className="h-5 w-5 shrink-0" aria-hidden="true" />
+                        )}
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {open ? (
+                          <motion.div
+                            key="panel"
+                            id={`product-detail-panel-${i}`}
+                            role="region"
+                            aria-labelledby={`product-detail-trigger-${i}`}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: shouldReduceMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <div className="space-y-2 pb-6 text-left">
+                              {item.body?.map((paragraph, idx) => (
+                                <p key={idx} className="font-bloop-body text-[14px] leading-[1.7] text-bloop-ink/75">
+                                  {paragraph}
+                                </p>
+                              ))}
+                              {item.details?.length ? (
+                                <ul className="max-w-[720px] space-y-1 pt-1 text-left">
+                                  {item.details.map((detail, detailIndex) => (
+                                    <li
+                                      key={detail}
+                                      className="grid w-full max-w-full grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-2 font-bloop-body text-[14px] font-medium leading-6 text-bloop-ink/80"
+                                    >
+                                      <span
+                                        className="w-6 text-right font-normal tabular-nums text-bloop-red"
+                                        style={{ fontFamily: "inherit" }}
+                                      >
+                                        {toBengaliNumeral(detailIndex + 1)}.
+                                      </span>
+                                      <span>{detail}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </div>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+          </div>
+
+          {/* Reels Section — smooth horizontal carousel */}
+          <section id="product-reels" className="-mx-4 scroll-mt-24 overflow-hidden pt-14 md:mx-0 md:pt-20">
+            <h2 className="mb-6 px-4 text-center font-bangla text-[clamp(28px,5vw,44px)] font-bold leading-[1.1] text-bloop-red md:mb-8">
+              আমরা ও আমাদের সত্যতা
+            </h2>
+            <div className="relative mx-auto w-full max-w-none md:max-w-[1100px]">
+              <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
+                <div className="flex will-change-transform gap-0 px-0 md:gap-6">
+                  {reelMedia.map(({ src, poster }, i) => (
+                    <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-0 md:basis-[calc((100%_-_3rem)_/_3)]">
+                      <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[20px] bg-black">
+                        {isGlassWaterBottleMuxProduct ? (
+                          i === currentReel ? (
+                            <div className="absolute inset-0">
+                              <VideoPlayer poster={poster} title={`Angonaloy reel ${i + 1}`}>
+                                <VideoSkin className="absolute inset-0 h-full w-full [--media-border-radius:0px]">
+                                  <MuxVideo
+                                    src={src}
+                                    playsInline
+                                    preload="metadata"
+                                    className="h-full w-full object-contain bg-black"
+                                  />
+                                  <PlayButton
+                                    className="absolute left-1/2 top-1/2 z-30 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-bloop-cream/90 text-bloop-ink shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                    render={(props, state) => (
+                                      <button {...props}>
+                                        {state.paused ? (
+                                          <Play className="ml-1 h-7 w-7 fill-current" />
+                                        ) : (
+                                          <Pause className="h-7 w-7 fill-current" />
+                                        )}
+                                      </button>
+                                    )}
+                                  />
+                                </VideoSkin>
+                              </VideoPlayer>
+                            </div>
+                          ) : (
+                            <button type="button" aria-label={`Select reel ${i + 1}`} onClick={() => selectReel(i)} className="absolute inset-0 z-10 h-full w-full">
+                              <img
+                                src={poster}
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                              />
+                            </button>
+                          )
+                        ) : (
+                          <>
+                            {i === currentReel ? (
+                              <video
+                                src={src}
+                                title={`Angonaloy reel ${i + 1}`}
+                                poster={poster}
+                                controls
+                                playsInline
+                                preload="metadata"
+                                onPlay={() => setPlayingReel(i)}
+                                onPlaying={() => setPlayingReel(i)}
+                                onPause={() => setPlayingReel((active) => (active === i ? null : active))}
+                                onEnded={() => setPlayingReel((active) => (active === i ? null : active))}
+                                ref={(video) => {
+                                  activeReelVideoRef.current = video;
+                                }}
+                                onPointerDown={(event) => event.stopPropagation()}
+                                className="h-full w-full object-contain bg-black"
+                              />
+                            ) : null}
+                            {i !== currentReel ? (
+                              <button type="button" aria-label={`Select reel ${i + 1}`} onClick={() => selectReel(i)} className="absolute inset-0 h-full w-full">
+                                <img
+                                  src={poster}
+                                  alt=""
+                                  aria-hidden="true"
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                                />
+                              </button>
+                            ) : null}
+                          </>
+                        )}
+                        {!isGlassWaterBottleMuxProduct && i === currentReel ? (
+                          <button
+                            type="button"
+                            aria-label={playingReel === i ? `Pause reel ${i + 1}` : `Play reel ${i + 1}`}
+                            aria-pressed={playingReel === i}
+                            onPointerDown={(event) => event.stopPropagation()}
+                            onClick={() => {
+                              const video = activeReelVideoRef.current;
+                              if (!video) return;
+                              if (video.paused) {
+                                video.muted = false;
+                                void video.play().catch(() => setPlayingReel(null));
+                              } else {
+                                video.pause();
+                              }
+                            }}
+                            className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-bloop-cream/90 text-bloop-ink shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                          >
+                            {playingReel === i ? (
+                              <Pause className="h-6 w-6 fill-current" />
+                            ) : (
+                              <Play className="ml-1 h-6 w-6 fill-current" />
+                            )}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-5 pb-2 pt-5">
+              <button
+                type="button"
+                aria-label="Previous reel"
+                onClick={() => goReel(-1)}
+                className="flex h-10 w-12 items-center justify-center text-bloop-ink transition-opacity hover:opacity-60"
+              >
+                <MoveLeft className="h-6 w-10" strokeWidth={1.25} aria-hidden="true" />
+              </button>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: reelCount }, (_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`Go to reel ${i + 1}`}
+                    onClick={() => selectReel(i)}
+                    className={`h-1.5 rounded-full transition-all ${i === currentReel ? "w-5 bg-bloop-ink" : "w-1.5 bg-bloop-ink/25"}`}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                aria-label="Next reel"
+                onClick={() => goReel(1)}
+                className="flex h-10 w-12 items-center justify-center text-bloop-ink transition-opacity hover:opacity-60"
+              >
+                <MoveRight className="h-6 w-10" strokeWidth={1.25} aria-hidden="true" />
+              </button>
+            </div>
+          </section>
+        </div>
+
+        {/* You May Also Like Section */}
+        {relatedProducts.length ? (
+          <section id="you-may-also-like" className="w-full scroll-mt-24 pb-12 pt-16 md:pb-20 md:pt-24">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              transition={{ staggerChildren: 0.12 }}
+              className="mx-auto w-full max-w-[1360px] px-4 md:px-6 lg:px-10"
+            >
+              <motion.div variants={reveal} transition={transition} className="mb-8 text-center md:mb-12">
+                <h2 className="font-bloop text-[clamp(40px,6vw,72px)] font-bold leading-[0.95] tracking-[-0.04em] text-bloop-red">
+                  You may also like
+                </h2>
+                <p className="mt-3 font-bangla text-[16px] font-medium text-bloop-ink/70 md:text-[18px]">আমাদের আরও কিছু পণ্য</p>
+              </motion.div>
+
+              <div className="grid grid-cols-2 gap-x-2 gap-y-8 md:gap-x-4 lg:grid-cols-4">
+                {relatedProducts.map((p) => (
+                  <HomeProductCard key={p.slug} product={p} />
+                ))}
+              </div>
+
+              <div className="mt-10 flex justify-center md:mt-14">
+                <Link
+                  href="/products"
+                  className="bloop-pill border-bloop-red bg-bloop-red px-10 py-3 font-bloop text-[15px] font-bold text-bloop-cream hover:border-bloop-ink hover:bg-bloop-ink"
+                >
+                  View all
+                </Link>
+              </div>
+            </motion.div>
+          </section>
+        ) : null}
+
+        <RecentlyViewed products={relatedSource} excludeSlug={product?.slug} />
       </div>
 
-      {/* You May Also Like Section */}
-      <section className="w-full bg-[#f6f6f6] pb-10 md:pb-16 pt-0">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          transition={{ staggerChildren: 0.12 }}
-          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
-        >
+      {/* Mobile sticky mini bar — sits above the site's floating bottom nav.
+          Portaled to <body>: the page-transition wrapper's CSS filter would
+          otherwise become the containing block for position: fixed. */}
+      {typeof document !== "undefined" ? createPortal(
+      <AnimatePresence>
+        {showMiniBar ? (
           <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mb-7 flex items-start justify-between gap-6 md:mb-12"
+            key="product-mini-bar"
+            initial={shouldReduceMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[70] flex items-center gap-3 rounded-[20px] bg-bloop-cream p-2 pr-2.5 shadow-[0_10px_30px_rgba(31,26,23,0.18)] md:hidden"
+            data-testid="product-mini-bar"
           >
-            <motion.h2
-              className="text-[1.4rem] whitespace-nowrap font-normal tracking-[-0.02em] text-black md:text-[clamp(1.9rem,5vw,3rem)] md:whitespace-normal"
+            {displayImage ? (
+              <img src={displayImage} alt="" aria-hidden="true" className="h-12 w-12 shrink-0 rounded-[12px] bg-bloop-card object-cover" />
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-bloop text-[14px] font-bold leading-tight text-bloop-ink">{product.name}</p>
+              <p className="mt-0.5 flex min-w-0 items-center gap-2 text-[12px] leading-tight text-bloop-ink/70">
+                <span className="shrink-0 font-bloop font-bold text-bloop-ink">৳{heroDisplayAmount.toLocaleString()}</span>
+                {miniBarDetail ? <span className="truncate font-bangla">{miniBarDetail}</span> : null}
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="ক্যাশ অন ডেলিভারিতে অর্ডার করুন"
+              disabled={isUnavailable || pricedBundle.amount <= 0}
+              onClick={openOrderDialog}
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-bloop-red text-bloop-cream transition-colors hover:bg-bloop-ink disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <span className="font-medium">আমাদের</span>{" "}
-              <span
-                className="relative inline-block"
-                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-              >
-                আরও কিছু পণ্য
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 120 60"
-                  preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                  style={{ overflow: "visible" }}
-                >
-                  <path
-                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </motion.h2>
-
-            <Link
-              href="/products"
-              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
-            >
-              Discover More
-            </Link>
+              <BagIcon className="h-6 w-6" />
+            </button>
           </motion.div>
-
-          <motion.div
-            transition={{ staggerChildren: 0.08 }}
-            className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4"
-          >
-            {relatedProducts.map((p) => (
-              <HomeProductCard key={p.slug} product={p} />
-            ))}
-          </motion.div>
-        </motion.div>
-      </section>
-
-      <RecentlyViewed products={relatedSource} excludeSlug={product?.slug} />
+        ) : null}
+      </AnimatePresence>,
+      document.body,
+      ) : null}
 
       <OrderDialog open={orderOpen} onOpenChange={setOrderOpen} bundle={orderBundle} />
     </Layout>

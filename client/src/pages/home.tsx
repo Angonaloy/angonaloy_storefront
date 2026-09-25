@@ -1,5 +1,6 @@
 import Layout from "@/components/layout";
 import HomeProductCard from "@/components/home-product-card";
+import CollectionStories from "@/components/collection-stories";
 import RecentlyViewed from "@/components/recently-viewed";
 import {
   fetchStorefrontProducts,
@@ -10,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import { ArrowUpRight, BadgeCheck, HandCoins, Truck } from "lucide-react";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
   getProductsForCollection,
@@ -17,35 +19,48 @@ import {
   getVisibleFeaturedCollections,
 } from "@/lib/featured-collections";
 
-const HERO_CTA_CLASS_NAME =
-  "hero-frosted-cta pointer-events-auto mt-1 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/20 px-6 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-md transition-colors hover:bg-white/30 md:mt-2 md:px-8 md:py-3 md:text-base";
+const SECTION_HEADING_CLASS_NAME =
+  "font-bloop text-[clamp(2.4rem,7vw,4.75rem)] font-extrabold leading-[0.95] tracking-[-0.04em]";
 
-function HighlightedWord({
-  children,
-  className = "",
-  highlightColor = "#FBBB14",
+const MARQUEE_PHRASES = [
+  "Made for Home",
+  "আঙ্গনালয়",
+  "Everyday Living",
+  "ক্যাশ অন ডেলিভারি",
+  "দ্রুত ডেলিভারি",
+  "নিরাপদ পেমেন্ট",
+  "মান নিশ্চিত",
+] as const;
+
+function SectionHeader({
+  eyebrow,
+  title,
+  bangla,
+  href,
+  cta,
 }: {
-  children: string;
-  className?: string;
-  highlightColor?: string;
+  eyebrow: string;
+  title: string;
+  bangla?: string;
+  href: string;
+  cta: string;
 }) {
   return (
-    <motion.span
-      className={`inline ${className}`}
-      style={{
-        backgroundImage: `linear-gradient(${highlightColor}, ${highlightColor})`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "0% 0%",
-        backgroundSize: "100% 100%",
-        boxDecorationBreak: "clone",
-        WebkitBoxDecorationBreak: "clone",
-      }}
-      initial={{ backgroundSize: "0% 100%" }}
-      animate={{ backgroundSize: "100% 100%" }}
-      transition={{ type: "spring", duration: 1, bounce: 0 }}
-    >
-      {children}
-    </motion.span>
+    <div className="mb-8 flex flex-col items-center text-center md:mb-12">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-bloop-ink/70 md:text-[11px]">{eyebrow}</p>
+      <h2 className={`mt-3 ${SECTION_HEADING_CLASS_NAME}`}>
+        <span className="bloop-gradient-text">{title}</span>
+      </h2>
+      {bangla ? (
+        <p className="mt-3 font-bangla text-[15px] font-medium text-bloop-ink/75 md:text-[17px]">{bangla}</p>
+      ) : null}
+      <Link
+        href={href}
+        className="bloop-pill mt-5 border-bloop-red bg-bloop-red px-8 py-2 text-[14px] text-white hover:border-bloop-ink hover:bg-bloop-ink md:text-[15px]"
+      >
+        {cta}
+      </Link>
+    </div>
   );
 }
 
@@ -113,7 +128,6 @@ export default function Home() {
   const [latestDropRef, latestDropInView] = useReveal();
   const [editorialRef, editorialInView] = useReveal();
   const [essentialsRef, essentialsInView] = useReveal();
-  const categoriesRef = useRef<HTMLDivElement>(null);
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -169,6 +183,27 @@ export default function Home() {
     return () => cleanups.forEach((fn) => fn());
   }, []);
 
+  const renderProductGrid = (items: typeof homepageProducts, skeletonCount: number) => (
+    <>
+      {isCatalogLoading
+        ? Array.from({ length: skeletonCount }).map((_, index) => (
+            <div
+              key={index}
+              className="aspect-[4/5] animate-pulse rounded-[20px] bg-bloop-card motion-reduce:animate-none"
+              aria-hidden="true"
+            />
+          ))
+        : isCatalogError && catalogProducts.length === 0
+          ? (
+              <div className="col-span-full rounded-[20px] bg-bloop-card px-6 py-10 text-center">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-bloop-ink/70">Could not load products right now.</p>
+                <p className="mt-2 text-xs text-bloop-ink/50">Please try again shortly.</p>
+              </div>
+            )
+          : items.map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+    </>
+  );
+
   const renderCategorySection = (slug: string) => {
     const collection = visibleFeaturedCollections.find((item) => item.slug === slug);
     if (!collection) return null;
@@ -177,357 +212,274 @@ export default function Home() {
     const [englishLabel, bengaliLabel] = collection.label.split("-");
 
     return (
-      <section key={collection.slug} className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
+      <section key={collection.slug} className="w-full bg-bloop-cream pb-14 pt-6 md:pb-24 md:pt-10">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
         >
-          <div className="mb-7 flex items-center justify-between gap-6 md:mb-12">
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.35rem,3.6vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.5rem,3.9vw,2.35rem)]">
-              <span>{englishLabel}</span>-
-              <HighlightedWord className="font-display italic" highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
-            </h2>
-            <Link
-              href={`/collection/${collection.slug}`}
-              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-            >
-              View All
-            </Link>
-          </div>
+          <SectionHeader
+            eyebrow="Shop by category"
+            title={englishLabel}
+            bangla={bengaliLabel}
+            href={`/collection/${collection.slug}`}
+            cta="View all"
+          />
 
-          <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
-            {isCatalogLoading
-              ? Array.from({ length: Math.min(products.length || 4, 4) }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
-                    aria-hidden="true"
-                  />
-                ))
-              : isCatalogError && catalogProducts.length === 0
-                ? (
-                    <div className="col-span-full border border-black/10 bg-white px-6 py-10 text-center">
-                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
-                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
-                    </div>
-                  )
-                : products.slice(0, 4).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+          <div className="grid grid-cols-2 gap-x-2 gap-y-6 md:gap-x-4 md:gap-y-10 lg:grid-cols-4">
+            {renderProductGrid(products.slice(0, 4), Math.min(products.length || 4, 4))}
           </div>
         </motion.div>
       </section>
     );
   };
 
-  useEffect(() => {
-    const el = categoriesRef.current;
-    if (!el) return;
-
-    let paused = false;
-    const pause = () => { paused = true; };
-    const resume = () => { paused = false; };
-    const advance = () => {
-      if (paused || el.scrollWidth <= el.clientWidth) return;
-      const step = Math.max(el.clientWidth * 0.34, 104);
-      const nextPosition = el.scrollLeft + step;
-      el.scrollTo({ left: nextPosition >= el.scrollWidth - el.clientWidth ? 0 : nextPosition, behavior: "smooth" });
-    };
-    const intervalId = window.setInterval(advance, 2500);
-
-    el.addEventListener("pointerenter", pause);
-    el.addEventListener("pointerleave", resume);
-    el.addEventListener("touchstart", pause, { passive: true });
-    el.addEventListener("touchend", resume, { passive: true });
-
-    return () => {
-      window.clearInterval(intervalId);
-      el.removeEventListener("pointerenter", pause);
-      el.removeEventListener("pointerleave", resume);
-      el.removeEventListener("touchstart", pause);
-      el.removeEventListener("touchend", resume);
-    };
-  }, []);
-
   return (
     <Layout>
+      {/* Collection Stories Section */}
+      <CollectionStories collections={visibleFeaturedCollections} products={homepageProducts} />
+
       {/* Hero Section */}
-      <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-0 pt-2 md:px-0 md:pt-0">
-          <div
-            ref={heroRef}
-            className="relative z-10 aspect-[940/900] w-full overflow-hidden rounded-none bg-white md:aspect-video md:rounded-[6px] md:border md:border-black/10"
-          >
-            <Link href="/products" className="absolute inset-0 block">
-              <img
-                src="/hero-mango-lover.webp?v=3"
-                alt="আঙ্গনালয় — আপনার আঙ্গন থেকে রান্নাঘর, সবকিছুর জন্য একটি সম্পূর্ণ সমাধান"
-                className="h-full w-full object-cover object-top md:hidden"
-              />
-              <img
-                src="/hero-desktop.webp?v=2"
-                alt="আঙ্গনালয় — আপনার আঙ্গন থেকে রান্নাঘর, সবকিছুর জন্য একটি সম্পূর্ণ সমাধান"
-                className="hidden md:block h-full w-full object-cover object-top"
-              />
-            </Link>
-            {/* Foggy gradient bottom blend */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none md:hidden"
-              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 45%, transparent 100%)" }}
-            />
-            <div
-              className="absolute bottom-0 left-0 right-0 hidden h-80 pointer-events-none md:block"
-              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 45%, transparent 100%)" }}
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 p-5 pb-7 text-center md:items-start md:gap-4 md:p-12 md:pb-12 md:text-left">
-              <h1
-                className="text-[2.75rem] font-bold leading-none text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[4.5rem]"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-              >
-                আঙ্গনালয়
-              </h1>
-              <p className="whitespace-nowrap text-[12px] font-medium leading-relaxed text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] md:max-w-[480px] md:whitespace-normal md:text-[15px]">
-                আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান ।
-              </p>
-              <Link
-                href="/products"
-                className={HERO_CTA_CLASS_NAME}
-              >
-                Shop Now - এখনই কিনুন
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="w-full bg-[#f5f5f5] pb-8 pt-8 md:pb-10 md:pt-12">
-        <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            className="text-center"
-          >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)] md:leading-none">
-              <span className="font-medium">আমাদের</span>{" "}
-              <span
-                className="relative inline-block"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
-              >
-                ক্যাটাগরিসমূহ
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 120 60"
-                  preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
-                  style={{ overflow: "visible" }}
-                >
-                  <path
-                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
-            ref={categoriesRef}
-            className="no-scrollbar -mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:mt-10 sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
-          >
-            {visibleFeaturedCollections.map(({ slug, label, image }, index) => {
-              const featuredCategoryLabel = slug === "functional-food" ? "Functional-ফুড" : label;
-              const separator = featuredCategoryLabel.includes("-") ? "-" : " ";
-              const separatorIndex = featuredCategoryLabel.indexOf(separator);
-              const primaryCategoryLabel = featuredCategoryLabel.slice(0, separatorIndex);
-              const secondaryCategoryLabel = featuredCategoryLabel.slice(separatorIndex + 1);
-
-              return (
-                <Link
-                  key={label}
-                  href={`/collection/${slug}`}
-                  className="group flex w-[120px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
-                >
-                  <div className="aspect-square w-[120px] overflow-hidden rounded-full sm:w-[112px]">
-                    <img
-                      src={image}
-                      alt={label}
-                      loading={index < 4 ? "eager" : "lazy"}
-                      fetchPriority={index < 4 ? "high" : "auto"}
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  </div>
-                  <span className="mt-1 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                    <span className="block md:inline">{primaryCategoryLabel}</span>
-                    <span className="hidden md:inline">{separator}</span>
-                    <span className="block md:inline">{secondaryCategoryLabel}</span>
-                  </span>
-                </Link>
-              );
-            })}
-          </motion.div>
-          <div className="mx-auto mt-6 flex w-full items-center gap-3 md:mt-8 md:gap-4" aria-hidden="true">
-            <span className="h-px flex-1 bg-black/10" />
-            <span
-              className="whitespace-nowrap text-[10px] font-medium tracking-[0.12em] text-black/45"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-            >
-              শেষ
+      <section className="w-full bg-bloop-cream pb-1 pt-7 md:pt-10">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mx-auto flex max-w-[1200px] flex-col items-center px-4 text-center"
+        >
+          <h1 className="font-bloop text-[clamp(2.6rem,6.2vw,5.75rem)] font-extrabold leading-[0.95] tracking-[-0.04em]">
+            <span className="bloop-gradient-text">Angonaloy—Made for Home</span>{" "}
+            <span className="mt-1 block font-bloop-serif font-normal tracking-[-0.02em] text-bloop-red">
+              and Everyday Living
             </span>
-            <span className="h-px flex-1 bg-black/10" />
-          </div>
+          </h1>
+          <p className="mt-4 font-bangla text-[15px] font-medium text-bloop-ink/75 md:mt-5 md:text-[18px]">
+            আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান
+          </p>
+          <Link
+            href="/products"
+            className="bloop-pill mt-5 border-bloop-red px-10 py-2 text-[15px] text-bloop-red hover:bg-bloop-red hover:text-white md:mt-7 md:text-base"
+          >
+            Explore
+          </Link>
+        </motion.div>
+
+        {/* Image mosaic */}
+        <div
+          ref={heroRef}
+          className="mt-8 grid grid-cols-2 gap-1 px-1 md:mt-12 md:aspect-[2/1] md:grid-cols-4 md:grid-rows-2"
+        >
+          <Link
+            href="/products"
+            className="group relative col-span-2 block aspect-[4/5] overflow-hidden rounded-[28px] md:row-span-2 md:aspect-auto"
+          >
+            <img
+              src="/hero-desktop.webp?v=2"
+              alt="Angonaloy kitchen essentials on a sunny countertop"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover object-[48%_center] transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-black/45 to-transparent" aria-hidden="true" />
+            <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent" aria-hidden="true" />
+            <p className="absolute inset-x-0 top-6 px-6 text-center font-bloop text-[clamp(2rem,4.2vw,3.75rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-bloop-lime md:top-10">
+              Everything for your kitchen
+            </p>
+            <span className="bloop-pill absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap border-bloop-lime bg-bloop-lime px-6 py-2 text-[14px] text-bloop-ink md:bottom-10 md:text-[15px]">
+              Shop the collection
+            </span>
+          </Link>
+
+          <Link
+            href="/products"
+            className="group relative block aspect-square overflow-hidden rounded-[28px] md:col-start-3 md:row-start-1 md:aspect-auto"
+          >
+            <img
+              src="/pure-ghee-editorial-mobile-20260917.webp"
+              alt="Angonaloy home and kitchen products"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover object-[72%_center] transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" aria-hidden="true" />
+            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center px-2 text-center text-white md:bottom-6">
+              <span className="font-bloop text-[17px] font-bold leading-tight tracking-[-0.02em] md:text-[24px]">Home &amp; Kitchen</span>
+              <span className="mt-1 text-[12px] font-semibold underline decoration-2 underline-offset-4 md:text-[14px]">Explore</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/product/glass-water-bottles-with-time-marker"
+            className="group relative block aspect-square overflow-hidden rounded-[28px] md:col-start-4 md:row-start-1 md:aspect-auto"
+          >
+            <img
+              src="/glass-bottle-editorial-mobile-20260917.webp"
+              alt="Glass Water Bottles With Time Marker"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover object-[40%_center] transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" aria-hidden="true" />
+            <div className="absolute inset-x-0 bottom-4 flex flex-col items-center px-2 text-center text-white md:bottom-6">
+              <span className="font-bloop text-[17px] font-bold leading-tight tracking-[-0.02em] md:text-[24px]">Glass Bottles</span>
+              <span className="mt-1 text-[12px] font-semibold underline decoration-2 underline-offset-4 md:text-[14px]">Shop now</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/collection/top-selling-products"
+            className="group col-span-2 flex aspect-[2/1] flex-col items-center justify-center overflow-hidden rounded-[28px] bg-bloop-lime text-center md:col-start-3 md:row-start-2 md:aspect-auto"
+          >
+            <span className="font-bloop text-[clamp(3rem,7vw,6.5rem)] font-extrabold leading-[0.9] tracking-[-0.04em] text-bloop-purple transition-transform duration-500 group-hover:scale-[1.03]">
+              Best
+              <br />
+              Sellers
+            </span>
+            <span className="mt-3 font-bangla text-[14px] font-semibold text-bloop-purple/80 md:text-[17px]">সেরা বিক্রিত পণ্য</span>
+          </Link>
         </div>
       </section>
 
-      {/* What's New Section */}
-      <section className="w-full overflow-hidden bg-[#f6f6f6] pb-10 pt-4 md:py-16">
+      {/* Best Sellers Section */}
+      <section className="w-full bg-bloop-cream pb-14 pt-16 md:pb-24 md:pt-24">
         <motion.div
           ref={whatsNewRef}
-          className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
           initial="hidden"
           animate={whatsNewInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
         >
-          <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
-          >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)] md:leading-none">
-              <span className="font-medium">সবচেয়ে</span>{" "}
-              <span
-                className="relative inline-block"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
-              >
-                জনপ্রিয় পণ্য
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 120 60"
-                  preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
-                  style={{ overflow: "visible" }}
-                >
-                  <path
-                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </h2>
-            <Link
-              href="/products"
-              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-            >
-              View All
-            </Link>
+          <motion.div variants={reveal} transition={transition}>
+            <SectionHeader
+              eyebrow="Popular choice"
+              title="Best Sellers"
+              bangla="সবচেয়ে জনপ্রিয় পণ্য"
+              href="/collection/top-selling-products"
+              cta="View all"
+            />
           </motion.div>
 
           <motion.div
             ref={whatsNewGridRef}
             transition={{ staggerChildren: 0.08 }}
-            className="mt-8 grid grid-cols-2 gap-2 md:mt-12 md:gap-4 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-x-2 gap-y-6 md:gap-x-4 md:gap-y-10 lg:grid-cols-4"
           >
-            {isCatalogLoading
-              ? Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
-                    aria-hidden="true"
-                  />
-                ))
-              : isCatalogError && catalogProducts.length === 0
-                ? (
-                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
-                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
-                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
-                    </div>
-                  )
-                : topSellingProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+            {renderProductGrid(topSellingProducts.slice(0, 8), 8)}
           </motion.div>
         </motion.div>
       </section>
 
+      {/* Highlights Section */}
+      <section className="w-full overflow-hidden bg-[linear-gradient(90deg,#6CF7B2,#C9F77A,#FFF35C)] pt-14 md:pt-24">
+        <motion.div
+          ref={editorialRef}
+          className="mx-auto max-w-[1200px] px-4 text-center md:px-8"
+          initial="hidden"
+          animate={editorialInView ? "visible" : "hidden"}
+          transition={{ staggerChildren: 0.12 }}
+        >
+          <motion.p variants={reveal} transition={transition} className="text-[10px] font-semibold uppercase tracking-[0.28em] text-bloop-purple/80 md:text-[11px]">
+            Highlights
+          </motion.p>
+          <motion.h2 variants={reveal} transition={transition} className={`mt-3 text-bloop-purple ${SECTION_HEADING_CLASS_NAME}`}>
+            Why Angonaloy
+          </motion.h2>
+          <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-3 md:gap-10">
+            {[
+              { icon: Truck, title: "Free shipping over ৳2600", bangla: "৳2600-এর বেশি অর্ডারে ফ্রি শিপিং" },
+              { icon: HandCoins, title: "Cash on delivery", bangla: "ক্যাশ অন ডেলিভারি" },
+              { icon: BadgeCheck, title: "Quality assured", bangla: "মান নিশ্চিত" },
+            ].map(({ icon: Icon, title, bangla }) => (
+              <motion.div key={title} variants={reveal} transition={transition} className="flex flex-col items-center">
+                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-bloop-purple text-bloop-lime">
+                  <Icon className="h-7 w-7" strokeWidth={1.75} />
+                </span>
+                <p className="mt-4 font-bloop text-[22px] font-bold leading-tight tracking-[-0.03em] text-bloop-purple md:text-[26px]">{title}</p>
+                <p className="mt-1 font-bangla text-[15px] font-medium text-bloop-purple/75">{bangla}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+        <div className="mt-14 overflow-hidden border-t-2 border-bloop-purple/15 py-5 md:mt-20 md:py-7" aria-hidden="true">
+          <div className="bloop-marquee">
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex shrink-0 items-center">
+                {MARQUEE_PHRASES.map((phrase) => (
+                  <span key={phrase} className="flex items-center whitespace-nowrap font-bloop text-[28px] font-extrabold tracking-[-0.03em] text-bloop-purple md:text-[44px]">
+                    <span className={/[ঀ-৿]/.test(phrase) ? "font-bangla" : undefined}>{phrase}</span>
+                    <span className="mx-6 text-bloop-red md:mx-10">✦</span>
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Latest Drop Section */}
-      <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
+      <section className="w-full bg-bloop-cream py-14 md:py-24">
         <motion.div
           ref={latestDropRef}
-          className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
           initial="hidden"
           animate={latestDropInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
         >
-          <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mb-7 flex items-center justify-between gap-6 md:mb-12"
-          >
-            <motion.h2
-              className="font-inter-28pt-semibold text-[clamp(1.4rem,4vw,2.15rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.9rem,5.2vw,2.8rem)]"
-            >
-              <span className="font-medium">আমাদের</span>{" "}
-              <span
-                className="relative inline-block"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif", fontWeight: 400 }}
-              >
-                নতুন পণ্য
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 120 60"
-                  preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[220%] w-[145%] -translate-x-1/2 -translate-y-1/2"
-                  style={{ overflow: "visible" }}
-                >
-                  <path
-                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </motion.h2>
-
-            <Link
+          <motion.div variants={reveal} transition={transition}>
+            <SectionHeader
+              eyebrow="Just in"
+              title="New Arrivals"
+              bangla="আমাদের নতুন পণ্য"
               href="/products"
-              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-            >
-              See More
-            </Link>
+              cta="See more"
+            />
           </motion.div>
 
           <motion.div
             transition={{ staggerChildren: 0.08 }}
-            className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4"
+            className="grid grid-cols-2 gap-x-2 gap-y-6 md:gap-x-4 md:gap-y-10 lg:grid-cols-4"
           >
-            {isCatalogLoading
-              ? Array.from({ length: 4 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
-                    aria-hidden="true"
-                  />
-                ))
-              : isCatalogError && catalogProducts.length === 0
-                ? (
-                    <div className="col-span-full border border-black/10 bg-white px-6 py-10 text-center">
-                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
-                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
-                    </div>
-                  )
-                : homepageProducts.slice(0, 4).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+            {renderProductGrid(homepageProducts.slice(0, 4), 4)}
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* Shop By Category Section */}
+      <section className="w-full bg-bloop-cream pb-14 md:pb-24">
+        <div className="mx-auto max-w-[1200px] px-4 md:px-8">
+          <p className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-bloop-ink/70 md:text-[11px]">
+            Shop by category
+          </p>
+          <ul className="mt-6 border-t border-bloop-red/20 md:mt-10">
+            {visibleFeaturedCollections.map((collection) => {
+              const [englishLabel, bengaliLabel] = collection.label.split("-");
+              return (
+                <li key={collection.slug} className="border-b border-bloop-red/20">
+                  <Link
+                    href={`/collection/${collection.slug}`}
+                    className="group flex items-center justify-between gap-4 py-4 md:py-6"
+                  >
+                    <span className="min-w-0">
+                      <span className="block font-bloop text-[clamp(2rem,6.4vw,5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-bloop-red transition-colors group-hover:text-bloop-orange">
+                        {englishLabel}
+                      </span>
+                      {bengaliLabel ? (
+                        <span className="mt-1 block font-bangla text-[14px] font-medium text-bloop-ink/60 md:text-[16px]">{bengaliLabel}</span>
+                      ) : null}
+                    </span>
+                    <ArrowUpRight className="h-7 w-7 shrink-0 text-bloop-red transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 md:h-12 md:w-12" strokeWidth={1.5} />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-8 flex justify-center md:mt-12">
+            <Link
+              href="/products"
+              className="bloop-pill border-bloop-red px-10 py-2 text-[15px] text-bloop-red hover:bg-bloop-red hover:text-white"
+            >
+              View all
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Category Section: Homemade */}
@@ -540,49 +492,39 @@ export default function Home() {
       {renderCategorySection("honey")}
 
       {/* Editorial Section */}
-      <section className="w-full bg-[#f6f6f6]">
-        <motion.div
-          ref={editorialRef}
-          className="w-full"
-          initial="hidden"
-          animate={editorialInView ? "visible" : "hidden"}
-          transition={{ staggerChildren: 0.12 }}
-        >
-          <div className="relative w-full overflow-hidden">
+      <section className="w-full bg-bloop-purple px-3 py-10 md:px-8 md:py-16">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-8 md:grid-cols-2 md:gap-12">
+          <Link
+            href="/products"
+            aria-label="Explore Angonaloy home and kitchen products"
+            className="group block overflow-hidden rounded-[28px]"
+          >
+            <picture>
+              <source media="(min-width: 768px)" srcSet="/pure-ghee-editorial-desktop-20260917.webp" />
+              <img
+                src="/pure-ghee-editorial-mobile-20260917.webp"
+                alt="Explore all Angonaloy products"
+                loading="lazy"
+                className="block aspect-square w-full object-cover object-[70%_center] transition-transform duration-700 group-hover:scale-[1.03] md:aspect-[4/3]"
+              />
+            </picture>
+          </Link>
+          <div className="flex flex-col items-center px-2 pb-4 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-bloop-lime/80 md:text-[11px]">Angonaloy home &amp; kitchen</p>
+            <h2 className={`mt-4 bg-[linear-gradient(90deg,#6CF7B2,#E8F78F)] bg-clip-text text-transparent ${SECTION_HEADING_CLASS_NAME}`}>
+              For the Heart of Home
+            </h2>
+            <p className="mt-5 max-w-md font-bangla text-[16px] font-medium leading-relaxed text-bloop-cream/85 md:text-[18px]">
+              ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।
+            </p>
             <Link
               href="/products"
-              aria-label="Explore Angonaloy home and kitchen products"
-              className="group relative block w-full"
+              className="bloop-pill mt-7 border-bloop-lime bg-bloop-lime px-10 py-2 text-[15px] text-bloop-purple hover:border-bloop-cream hover:bg-bloop-cream"
             >
-              <picture>
-                <source media="(min-width: 768px)" srcSet="/pure-ghee-editorial-desktop-20260917.webp" />
-                <img
-                  src="/pure-ghee-editorial-mobile-20260917.webp"
-                  alt="Explore all Angonaloy products"
-                  loading="lazy"
-                  className="block w-full object-cover"
-                />
-              </picture>
-              <div className="pointer-events-none absolute inset-0 flex items-start justify-center bg-gradient-to-b from-black/40 via-black/10 to-transparent p-8 text-center md:items-center md:justify-start md:bg-none md:p-12 lg:p-16">
-                <div className="max-w-[24rem] text-center text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:max-w-[28rem] md:text-left">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.38em] text-white md:text-[10px]">ANGONALOY HOME &amp; KITCHEN</p>
-                  <h2 className="mt-3 font-inter-28pt-semibold text-[clamp(1.45rem,4.5vw,2.5rem)] leading-[0.98] tracking-[-0.03em] text-white">
-                    FOR THE HEART OF HOME
-                  </h2>
-                  <p
-                    className="mt-3 max-w-sm text-sm leading-relaxed text-white md:text-base"
-                    style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                  >
-                    ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।
-                  </p>
-                  <span className={HERO_CTA_CLASS_NAME}>
-                    EXPLORE HOME &amp; KITCHEN
-                  </span>
-                </div>
-              </div>
+              Explore
             </Link>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* Category Section: Oil & Ghee */}
@@ -592,44 +534,44 @@ export default function Home() {
       {renderCategorySection("jaggery")}
 
       {/* Essentials Section */}
-      <section className="w-full bg-[#f6f6f6]">
+      <section className="w-full bg-bloop-cream px-1 pb-14 md:pb-24">
         <motion.div
           ref={essentialsRef}
-          className="w-full"
           initial="hidden"
           animate={essentialsInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
+          className="grid overflow-hidden rounded-[28px] bg-bloop-lime md:grid-cols-2"
         >
-          <div className="relative w-full overflow-hidden">
+          <motion.div variants={reveal} transition={transition} className="order-2 flex flex-col items-center justify-center px-6 py-10 text-center md:order-1 md:px-12">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-bloop-purple/80 md:text-[11px]">Everyday essentials</p>
+            <h2 className={`mt-4 text-bloop-purple ${SECTION_HEADING_CLASS_NAME}`}>
+              Hydrate with Intention
+            </h2>
+            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-bloop-ink/80 md:text-base">
+              A beautiful daily ritual for home, work, and everywhere in between.
+            </p>
             <Link
               href="/product/glass-water-bottles-with-time-marker"
-              aria-label="View Glass Water Bottles With Time Marker"
-              className="block w-full"
+              className="bloop-pill mt-7 border-bloop-red bg-bloop-red px-8 py-2 text-[15px] text-white hover:border-bloop-purple hover:bg-bloop-purple"
             >
-              <picture>
-                <source media="(min-width: 768px)" srcSet="/glass-bottle-editorial-desktop-20260917.webp" />
-                <img
-                  src="/glass-bottle-editorial-mobile-20260917.webp"
-                  alt="Glass Water Bottles With Time Marker"
-                  loading="lazy"
-                  className="block w-full object-cover"
-                />
-              </picture>
-              <div className="absolute inset-0 flex items-end justify-start bg-gradient-to-t from-black/40 via-black/10 to-transparent p-5 pb-8 md:bg-none md:p-12 md:pb-14">
-                <div className="max-w-[21rem] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] md:max-w-[27rem]">
-                  <h2 className="font-inter-28pt-semibold text-[clamp(1.7rem,5vw,3rem)] leading-[0.95] tracking-[-0.04em]">
-                    HYDRATE WITH INTENTION
-                  </h2>
-                  <p className="mt-3 max-w-sm text-sm leading-relaxed text-white md:text-base">
-                    A beautiful daily ritual for home, work, and everywhere in between.
-                  </p>
-                  <span className={HERO_CTA_CLASS_NAME}>
-                    SHOP GLASS BOTTLES
-                  </span>
-                </div>
-              </div>
+              Shop glass bottles
             </Link>
-          </div>
+          </motion.div>
+          <Link
+            href="/product/glass-water-bottles-with-time-marker"
+            aria-label="View Glass Water Bottles With Time Marker"
+            className="group order-1 block overflow-hidden md:order-2"
+          >
+            <picture>
+              <source media="(min-width: 768px)" srcSet="/glass-bottle-editorial-desktop-20260917.webp" />
+              <img
+                src="/glass-bottle-editorial-mobile-20260917.webp"
+                alt="Glass Water Bottles With Time Marker"
+                loading="lazy"
+                className="block aspect-square h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] md:aspect-[4/3]"
+              />
+            </picture>
+          </Link>
         </motion.div>
       </section>
 

@@ -39,6 +39,28 @@ export const FEATURED_COLLECTIONS = [
     productSlugs: ["katimon-mango"],
   },
   {
+    slug: "new-essentials",
+    label: "New Essentials",
+    image: "",
+    productSlugs: [
+      "glass-water-bottles-with-time-marker",
+      "2-in-1-glass-oil-bottle-with-sprayer",
+      "glass-honey-dispenser-jar",
+      "angonaloy-magnetic-selfie-light-with-built-in-mirror",
+    ],
+  },
+  {
+    slug: "best-sellers",
+    label: "Best Sellers",
+    image: "",
+    productSlugs: [
+      "stainless-steel-oil-strainer-pot",
+      "angonaloy-air-fryer-basket-for-oven",
+      "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
+      "glass-honey-dispenser-jar",
+    ],
+  },
+  {
     slug: "home-essentials",
     label: "Home Essentials",
     image: "/categories/home-essentials-1-320.webp",
@@ -128,8 +150,11 @@ export function getProductsForCollection(
   products: StorefrontProduct[],
   collection: Pick<FeaturedCollection, "productSlugs">,
 ) {
-  const assignedSlugs = new Set(collection.productSlugs);
-  return products.filter((product) => assignedSlugs.has(product.slug));
+  const productsBySlug = new Map(products.map((product) => [product.slug, product]));
+  return collection.productSlugs.flatMap((slug) => {
+    const product = productsBySlug.get(slug);
+    return product ? [product] : [];
+  });
 }
 
 export function getTopSellingProducts(products: StorefrontProduct[]) {

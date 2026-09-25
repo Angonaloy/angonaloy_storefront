@@ -2,6 +2,192 @@ import type { StorefrontProduct } from "./storefront-products";
 
 export const generatedStorefrontProducts: StorefrontProduct[] = [
   {
+    "id": "8230fe52-f948-4d44-b10a-2023b64938c3",
+    "name": "Stainless Steel Oil Strainer Pot",
+    "slug": "stainless-steel-oil-strainer-pot",
+    "description": "Stainless Steel Oil Filter Pot 950ml\n\nরান্নার পর ব্যবহৃত তেল আর ফেলে দিতে হবে না। এই Oil Filter Pot দিয়ে সহজেই তেল ছেঁকে সংরক্ষণ করুন এবং প্রয়োজন হলে আবার ব্যবহার করুন।\n\n🫗 Fine Mesh Filter — খাবারের ছোট কণা আলাদা করতে সাহায্য করে\n🥄 Easy Pouring Spout — সহজে তেল ঢালা যায়\n🛡️ Lid Included — তেল ঢেকে রাখা যায়\n✨ Stainless Steel Body — Durable & easy to clean\n♻️ Oil Reuse — ব্যবহৃত তেল সংরক্ষণে সুবিধাজনক",
+    "url": null,
+    "image_url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/960.webp",
+    "images": [
+      {
+        "id": "8f7d9eee-1a5c-4ef0-a072-7a92b0b0643e",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/960.webp"
+        },
+        "alt_text": "Stainless Steel Oil Strainer Pot",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "b9b1b63c-510b-46dd-8829-64722a26cd26",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/bebf30f8-d3f2-48ce-aa47-f85cc5bbe4c6/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/bebf30f8-d3f2-48ce-aa47-f85cc5bbe4c6/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/bebf30f8-d3f2-48ce-aa47-f85cc5bbe4c6/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/bebf30f8-d3f2-48ce-aa47-f85cc5bbe4c6/960.webp"
+        },
+        "alt_text": "Stainless Steel Oil Strainer Pot",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "2bc02c7d-ff3b-49b2-8a78-21410b57232f",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/3c51d36a-3b0c-473c-b0b5-977bf2234bb1/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/3c51d36a-3b0c-473c-b0b5-977bf2234bb1/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/3c51d36a-3b0c-473c-b0b5-977bf2234bb1/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/3c51d36a-3b0c-473c-b0b5-977bf2234bb1/960.webp"
+        },
+        "alt_text": "Stainless Steel Oil Strainer Pot",
+        "sort_order": 3,
+        "is_primary": false
+      },
+      {
+        "id": "b227d0ef-3a4f-4d75-86be-85f54c6d5d3c",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/107de30b-a7f6-4ade-9f0a-18695201e8a7/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/107de30b-a7f6-4ade-9f0a-18695201e8a7/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/107de30b-a7f6-4ade-9f0a-18695201e8a7/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/107de30b-a7f6-4ade-9f0a-18695201e8a7/960.webp"
+        },
+        "alt_text": "Stainless Steel Oil Strainer Pot",
+        "sort_order": 4,
+        "is_primary": false
+      },
+      {
+        "id": "54c95921-3e76-476e-8b6f-d11d5e4558ec",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/c68ea44a-a4c2-413a-9324-06a8a14723d9/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/c68ea44a-a4c2-413a-9324-06a8a14723d9/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/c68ea44a-a4c2-413a-9324-06a8a14723d9/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/c68ea44a-a4c2-413a-9324-06a8a14723d9/960.webp"
+        },
+        "alt_text": "Stainless Steel Oil Strainer Pot",
+        "sort_order": 5,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/cabe2e8f-0fdb-48f4-b250-69eb76044b55/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/bebf30f8-d3f2-48ce-aa47-f85cc5bbe4c6/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/3c51d36a-3b0c-473c-b0b5-977bf2234bb1/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/107de30b-a7f6-4ade-9f0a-18695201e8a7/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/8230fe52-f948-4d44-b10a-2023b64938c3/c68ea44a-a4c2-413a-9324-06a8a14723d9/960.webp"
+    ],
+    "price": 580,
+    "compare_at_price": 750,
+    "available": true,
+    "variants": [
+      {
+        "id": "8d86d17f-a181-4962-8030-d81af213d408",
+        "attributes": {
+          "size": "950ml"
+        },
+        "price": 580,
+        "available": true
+      }
+    ],
+    "bundle_offers": []
+  },
+  {
+    "id": "aa41e1cd-d4f2-4572-b245-fe805696f308",
+    "name": "Angonaloy Air Fryer Basket",
+    "slug": "angonaloy-air-fryer-basket-for-oven",
+    "description": "Air Fryer Crisping Basket & Tray Set 🍟✨\n\nMake your air-fryer cooking crispier, cleaner & more convenient. The reusable crisping basket helps hot air circulate around your food for more even cooking, while the tray catches excess oil and crumbs.\n\n🔥 Crispy Cooking\n♻️ Reusable Design\n🧼 Dishwasher Safe\n✅ PFOA/PFOS Free\n🍗 Perfect for Fries, Chicken, Vegetables & More\n\nLess mess. Better crisp. Easier cooking.",
+    "url": null,
+    "image_url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/960.webp",
+    "images": [
+      {
+        "id": "84501540-c87f-41f5-914b-4813d131ec61",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "62ac4199-64ca-412b-a70d-8c42ee14605f",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/60e117cf-3866-4ee8-9bfa-4b3a32c4569b/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/60e117cf-3866-4ee8-9bfa-4b3a32c4569b/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/60e117cf-3866-4ee8-9bfa-4b3a32c4569b/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/60e117cf-3866-4ee8-9bfa-4b3a32c4569b/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket for Oven",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "c9e13b10-affc-462d-b723-114c0e8b0703",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/350d7fcc-7c6e-4a09-8d42-85b25bfb7bef/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/350d7fcc-7c6e-4a09-8d42-85b25bfb7bef/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/350d7fcc-7c6e-4a09-8d42-85b25bfb7bef/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/350d7fcc-7c6e-4a09-8d42-85b25bfb7bef/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket for Oven",
+        "sort_order": 3,
+        "is_primary": false
+      },
+      {
+        "id": "1abc4f20-8ff4-49b8-b7ec-e7ed2967f908",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/9ac31978-e422-4b0a-8883-043a7f3b45ec/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/9ac31978-e422-4b0a-8883-043a7f3b45ec/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/9ac31978-e422-4b0a-8883-043a7f3b45ec/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/9ac31978-e422-4b0a-8883-043a7f3b45ec/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket for Oven",
+        "sort_order": 4,
+        "is_primary": false
+      },
+      {
+        "id": "d66e7384-a7c2-41fc-b86a-dd7cab1ecec9",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/bdd9ecc9-c62e-4e33-9002-5a131ca0213c/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/bdd9ecc9-c62e-4e33-9002-5a131ca0213c/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/bdd9ecc9-c62e-4e33-9002-5a131ca0213c/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/bdd9ecc9-c62e-4e33-9002-5a131ca0213c/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket for Oven",
+        "sort_order": 5,
+        "is_primary": false
+      },
+      {
+        "id": "59790c99-e6ff-4163-bceb-1937b2fa2cd4",
+        "url": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/d653b192-67fa-42a5-89bc-7f16820537e2/960.webp",
+        "sources": {
+          "320": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/d653b192-67fa-42a5-89bc-7f16820537e2/320.webp",
+          "640": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/d653b192-67fa-42a5-89bc-7f16820537e2/640.webp",
+          "960": "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/d653b192-67fa-42a5-89bc-7f16820537e2/960.webp"
+        },
+        "alt_text": "Angonaloy Air Fryer Basket for Oven",
+        "sort_order": 6,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/23dbca6a-e743-45ae-b95e-0d8c0aeaca10/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/60e117cf-3866-4ee8-9bfa-4b3a32c4569b/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/350d7fcc-7c6e-4a09-8d42-85b25bfb7bef/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/9ac31978-e422-4b0a-8883-043a7f3b45ec/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/bdd9ecc9-c62e-4e33-9002-5a131ca0213c/960.webp",
+      "https://wsjbzpefeusnwhvwqqjb.supabase.co/storage/v1/object/public/product-images/788e9ec4-8df2-4529-ac42-214ed3fafbc4/aa41e1cd-d4f2-4572-b245-fe805696f308/d653b192-67fa-42a5-89bc-7f16820537e2/960.webp"
+    ],
+    "price": 1680,
+    "compare_at_price": 1990,
+    "available": true,
+    "variants": [],
+    "bundle_offers": []
+  },
+  {
     "id": "28ddd519-3033-4f51-9e3e-8a276216c407",
     "name": "Angonaloy Glass Oil Bottle Cooking Oil Dispenser",
     "slug": "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
@@ -502,16 +688,16 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "bundle_offers": [
       {
         "id": "single",
-        "label": "৭৫০ মিলি-এর ১ পিস গ্লাস পানির বোতল",
+        "label": "১০০০ মিলি-এর ১ পিস গ্লাস পানির বোতল",
         "quantity": 1,
-        "total_price": 750,
+        "total_price": 700,
         "compare_at_total": 750
       },
       {
         "id": "double",
-        "label": "৭৫০ মিলি-এর ২ পিস গ্লাস পানির বোতল",
+        "label": "১০০০ মিলি-এর ২ পিস গ্লাস পানির বোতল",
         "quantity": 2,
-        "total_price": 1400,
+        "total_price": 1350,
         "compare_at_total": 1500
       }
     ]

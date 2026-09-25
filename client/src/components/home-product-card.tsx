@@ -41,42 +41,42 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
       className={`group flex min-w-0 flex-col ${className}`}
     >
       <Link href={`/product/${product.slug}`} className="block flex-1">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] bg-bloop-card">
           {image ? (
             <img
               src={image}
               alt={product.name}
               loading="lazy"
-              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+            <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-bloop-ink/30">
               No image
             </div>
           )}
+          {hasDiscount && product.available !== false ? (
+            <span className="absolute left-3 top-3 rounded-full bg-bloop-red px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white md:text-[10px]">
+              Sale
+            </span>
+          ) : null}
           {product.available === false && (
-            <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+            <span className="absolute left-3 top-3 rounded-full bg-bloop-cream/90 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em] text-bloop-ink md:text-[10px]">
               Sold out
             </span>
           )}
         </div>
 
-        <div className="space-y-2 pl-0 pr-0 pb-4 pt-3 md:pl-0 md:pr-0 md:pb-5">
-          <h3 className="line-clamp-1 min-h-[1.2em] text-[13px] font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[1.2em] md:text-[15px] md:tracking-[0.08em]">
+        <div className="flex flex-col items-center px-1 pb-3 pt-3 text-center md:pb-4">
+          <h3 className="line-clamp-2 min-h-[2.6em] text-[14px] font-semibold leading-[1.3] text-bloop-ink md:text-[15px]">
             {product.name}
           </h3>
-          <div className="mt-2 flex flex-nowrap items-center gap-x-1">
-            <span className="shrink-0 text-lg font-bold text-[#f26b4f] md:text-2xl">
+          <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-2">
+            <span className={`text-[15px] font-bold md:text-[17px] ${hasDiscount ? "text-bloop-red" : "text-bloop-ink"}`}>
               {formatCardAmount(currentPrice)}
             </span>
             {hasDiscount ? (
-              <span className="shrink-0 text-sm text-black/75 line-through md:text-base">
+              <span className="text-[13px] text-bloop-ink/45 line-through md:text-[14px]">
                 {formatCardAmount(compareAtPrice)}
-              </span>
-            ) : null}
-            {hasDiscount ? (
-              <span className="ml-1 inline-flex shrink-0 whitespace-nowrap rounded-[6px] bg-[#d92c2d] px-2.5 py-1 text-[10px] font-medium text-white">
-                Save {formatCardAmount(compareAtPrice - currentPrice)}
               </span>
             ) : null}
           </div>
@@ -105,10 +105,10 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
             "Default",
           );
         }}
-        className="add-to-cart-button mt-auto flex w-full cursor-pointer items-center justify-center gap-2 border border-black/15 bg-[#d92c2d] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d92c2d]"
+        className="add-to-cart-button mt-auto flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-bloop-red px-3 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-bloop-red md:text-[14px]"
       >
         <BagIcon className="add-to-cart-icon h-4 w-4 text-white" />
-        Add to Cart
+        Add to cart
       </button>
     </motion.article>
   );

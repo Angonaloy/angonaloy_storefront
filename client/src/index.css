@@ -54,6 +54,18 @@
   --font-modern: 'Space Grotesk', sans-serif;
   --font-garet: 'Garet', 'Space Grotesk', 'Inter', sans-serif;
   --font-garet-book: 'GaretBook', sans-serif;
+  --color-bloop-cream: #FFFBF1;
+  --color-bloop-card: #F6F1E4;
+  --color-bloop-red: #D92C2D;
+  --color-bloop-orange: #F08A3C;
+  --color-bloop-purple: #4B2E83;
+  --color-bloop-lime: #E8F78F;
+  --color-bloop-yellow: #F6C84C;
+  --color-bloop-ink: #1F1A17;
+  --font-bloop: 'Bricolage Grotesque', 'Inter', sans-serif;
+  --font-bloop-body: 'DM Sans', 'Inter', sans-serif;
+  --font-bloop-serif: 'DM Serif Display', serif;
+  --font-bangla: 'Anek Bangla', 'Hind Siliguri', sans-serif;
 }
 
 :root {
@@ -70,7 +82,7 @@
 
   html,
   body {
-    background-color: #d92c2d;
+    background-color: var(--color-bloop-cream);
   }
 
   body {
@@ -82,16 +94,48 @@
   @apply border-border;
 }
 
-.hero-frosted-cta {
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  background-color: rgb(255 255 255 / 0.2);
-  border-color: rgb(255 255 255 / 0.5);
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+.bloop-gradient-text {
+  background-image: linear-gradient(90deg, var(--color-bloop-red) 0%, var(--color-bloop-red) 35%, var(--color-bloop-orange) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
-.hero-frosted-cta:hover {
-  background-color: rgb(255 255 255 / 0.3);
+.bloop-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border-width: 2px;
+  border-style: solid;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+@keyframes bloop-marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.bloop-marquee {
+  display: flex;
+  width: max-content;
+  animation: bloop-marquee-scroll 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bloop-marquee {
+    animation-play-state: paused;
+  }
 }
 
 .katimon-hero-button {

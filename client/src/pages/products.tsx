@@ -64,8 +64,8 @@ export default function ProductsPage() {
           </div>
         )}
 
-        <RecentlyViewed products={products ?? generatedStorefrontProducts} />
       </div>
+      <RecentlyViewed products={products ?? generatedStorefrontProducts} />
     </Layout>
   );
 }

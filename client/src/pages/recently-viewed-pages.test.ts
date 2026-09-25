@@ -13,6 +13,6 @@ test("renders Recently Viewed on the homepage", () => {
 test("renders Recently Viewed on the all-products page without replacing its catalog", () => {
   assert.match(productsSource, /import RecentlyViewed from "@\/components\/recently-viewed"/);
   assert.match(productsSource, /<RecentlyViewed products=\{products \?\? generatedStorefrontProducts\} \/>/);
-  assert.match(productsSource, /<HomeProductCard product=\{merged\}/);
-  assert.match(productsSource, /mergeInventory\(product, inventory\?\.inventory\)/);
+  assert.match(productsSource, /<StorefrontProductCard key=\{product\.slug\} product=\{product\} index=\{index\} \/>/);
+  assert.match(productsSource, /<\/div>\s*<RecentlyViewed products=\{products \?\? generatedStorefrontProducts\} \/>/);
 });
