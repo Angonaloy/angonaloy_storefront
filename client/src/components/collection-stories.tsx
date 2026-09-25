@@ -98,7 +98,7 @@ function preloadImage(src: string) {
 
 function CloseIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px]" fill="currentColor">
       <path d={BLOOP_CLOSE_PATH} />
     </svg>
   );

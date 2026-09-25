@@ -48,10 +48,10 @@ function cartUnitPrice(price: string) {
     return Number.isNaN(amount) ? 0 : amount;
 }
 
-// Bloop drawer close glyph (24×24, filled).
+// Bloop drawer close glyph, kept smaller than its 44px touch target.
 function CartCloseIcon() {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
             <path d="M20.707 4.70697L19.293 3.29297L12 10.586L4.707 3.29297L3.293 4.70697L10.586 12L3.293 19.293L4.707 20.707L12 13.414L19.293 20.707L20.707 19.293L13.414 12L20.707 4.70697Z" />
         </svg>
     );
