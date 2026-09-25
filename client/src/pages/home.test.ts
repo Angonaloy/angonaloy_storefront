@@ -43,9 +43,12 @@ test("renders the Bloop headline as the page h1 with gradient grotesk and serif 
   const heroSource = sectionBetween("{/* Hero Section */}", "{/* Image mosaic */}");
 
   assert.equal((homeSource.match(/<h1/g) ?? []).length, 1);
-  assert.match(heroSource, /<h1 className="font-bloop [^"]*leading-\[0\.95\] tracking-\[-0\.04em\]"/);
-  assert.match(heroSource, /<span className="bloop-gradient-text">Angonaloy—Made for Home<\/span>/);
-  assert.match(heroSource, /font-bloop-serif[^"]*text-bloop-red">\s*and Everyday Living/);
+  assert.match(heroSource, /className="mx-auto flex max-w-\[1200px\] flex-col items-center px-1 text-center md:px-4"/);
+  assert.match(heroSource, /<h1 className="w-full font-bloop [^"]*leading-\[0\.95\] tracking-\[-0\.04em\][^"]*"/);
+  // Mobile lines are fitted to the viewport so their side gaps match the image mosaic's gutters.
+  assert.match(heroSource, /text-\[length:calc\(\(100vw-12px\)\*0\.0798\)\][^"]*md:text-\[clamp\(2\.6rem,6\.2vw,5\.75rem\)\]/);
+  assert.match(heroSource, /<span className="bloop-gradient-text block whitespace-nowrap md:inline md:whitespace-normal">Angonaloy—Made for Home<\/span>/);
+  assert.match(heroSource, /whitespace-nowrap font-bloop-serif text-\[length:calc\(\(100vw-12px\)\*0\.1162\)\][^"]*text-bloop-red[^"]*md:text-\[length:1em\]">\s*and Everyday Living/);
   assert.match(heroSource, /font-bangla[^>]*>\s*আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান/);
   assert.match(heroSource, /href="\/products"[\s\S]*bloop-pill[^"]*border-bloop-red[\s\S]*Explore/);
 });
@@ -95,12 +98,25 @@ test("uses only existing site claims in the highlights band and a reduced-motion
 
   assert.match(highlightsSource, /bg-\[linear-gradient\(90deg,#6CF7B2,#C9F77A,#FFF35C\)\]/);
   assert.match(highlightsSource, /Why Angonaloy/);
-  assert.match(highlightsSource, /Free shipping over ৳2600/);
-  assert.match(highlightsSource, /ক্যাশ অন ডেলিভারি/);
-  assert.match(highlightsSource, /মান নিশ্চিত/);
+  assert.match(homeSource, /Free shipping over ৳2600/);
+  assert.match(homeSource, /ক্যাশ অন ডেলিভারি/);
+  assert.match(homeSource, /মান নিশ্চিত/);
+  assert.match(highlightsSource, /WHY_ANGONALOY_BENEFITS\.map/);
   assert.match(highlightsSource, /className="bloop-marquee"/);
   assert.match(highlightsSource, /aria-hidden="true"/);
   assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\) \{\s*\.bloop-marquee \{\s*animation-play-state: paused;/);
+});
+
+test("lets mobile shoppers swipe the Why Angonaloy benefits while desktop keeps its grid", () => {
+  const highlightsSource = sectionBetween("{/* Highlights Section */}", "{/* Latest Drop Section */}");
+
+  assert.match(highlightsSource, /aria-label="Why Angonaloy benefits"[\s\S]*?tabIndex=\{0\}/);
+  assert.match(highlightsSource, /no-scrollbar[^\"]*snap-x snap-mandatory[^\"]*overflow-x-auto[^\"]*motion-safe:scroll-smooth[^\"]*md:grid md:grid-cols-3[^\"]*md:overflow-visible/);
+  assert.match(highlightsSource, /key=\{title\}[^>]*className="w-full shrink-0 snap-start flex flex-col items-center md:min-w-0"/);
+  assert.match(highlightsSource, /ref=\{benefitRailRef\}[^>]*onScroll=\{updateActiveBenefit\}/);
+  assert.match(highlightsSource, /md:hidden[\s\S]*?aria-label=\{`Go to benefit \$\{index \+ 1\}`\}[\s\S]*?aria-current=\{activeBenefit === index \? "true" : undefined\}/);
+  assert.match(highlightsSource, /h-\[2px\] w-full transition-colors duration-300[\s\S]*?activeBenefit === index \? "bg-bloop-purple" : "bg-bloop-purple\/15"/);
+  assert.match(homeSource, /const goToBenefit = \(index: number\) => \{[\s\S]*?rail\.scrollTo\(\{ left: index \* rail\.clientWidth \}\)/);
 });
 
 test("renders New Arrivals from the newest catalog products", () => {

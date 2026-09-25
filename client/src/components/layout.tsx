@@ -745,9 +745,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Bloop-style Footer */}
       <footer className="bg-[#DB2828] px-[17px] pb-14 pt-12 text-[#FFFDF3] md:px-12 md:pb-20 md:pt-[100px]">
-        <div className="grid grid-cols-1 md:grid-cols-12 md:gap-x-5">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-x-12 lg:gap-x-16">
           {/* Logo */}
-          <div className="md:col-span-4">
+          <div>
             <Link asChild href="/">
               <a aria-label="Angonaloy home" className="inline-block transition-opacity hover:opacity-80">
                 <span
@@ -763,8 +763,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </p>
           </div>
 
-          {/* Big links */}
-          <ul className="mt-8 font-bloop text-[25px] font-bold leading-[38px] tracking-[-0.015em] md:col-span-4 md:mt-0 md:text-[43px] md:leading-[58px]">
+          {/* Product links */}
+          <div className="mt-10 md:mt-0">
+          <h2 className="font-bloop text-[20px] font-bold leading-[1.2] md:pt-[3px] md:text-[28px] md:leading-[1.1]">Shop</h2>
+          <ul className="mt-[27px] font-bloop-body text-[14px] font-medium leading-[32px] tracking-[-0.005em] md:mt-[30px] md:text-[15.4px]">
             <li>
               <Link asChild href="/products">
                 <a className="transition-opacity hover:opacity-80">Explore Products</a>
@@ -778,11 +780,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </li>
             ))}
           </ul>
+          </div>
 
           {/* Small link columns */}
-          <div className="mt-10 grid grid-cols-1 gap-y-8 md:col-span-4 md:mt-0 md:grid-cols-4 md:gap-x-5 md:gap-y-0">
             {([["Information", INFORMATION_LINKS], ["Support", SUPPORT_LINKS]] as const).map(([heading, links]) => (
-              <div key={heading} className="md:col-span-2">
+              <div key={heading} className="mt-10 md:mt-0">
                 <h2 className="font-bloop text-[20px] font-bold leading-[1.2] md:pt-[3px] md:text-[28px] md:leading-[1.1]">{heading}</h2>
                 <ul className="mt-[27px] font-bloop-body text-[14px] font-medium leading-[32px] tracking-[-0.005em] md:mt-[30px] md:text-[15.4px]">
                   {links.map(([label, href]) => (
@@ -795,18 +797,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </ul>
               </div>
             ))}
-          </div>
         </div>
 
         <div className="mt-9 h-px bg-[#FFFDF3]/25 md:mt-[54px]" />
 
         {/* Bottom Bar */}
-        <div className="grid grid-cols-1 gap-y-4 pt-[35px] font-bloop-body text-[14px] font-medium leading-[21px] md:grid-cols-12 md:items-start md:gap-x-5 md:pt-[53px] md:text-[15.4px] md:leading-[23px]">
-          <div className="md:col-span-4">
+        <div className="grid grid-cols-1 gap-y-4 pt-[35px] font-bloop-body text-[14px] font-medium leading-[21px] md:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))] md:gap-x-12 lg:gap-x-16 md:items-start md:pt-[53px] md:text-[15.4px] md:leading-[23px]">
+          <div>
             <p>© 2026 Angonaloy-আঙ্গনালয়</p>
             <p>All rights reserved</p>
           </div>
-          <p className="md:col-span-4">
+          <p className="md:col-span-2">
             Designed &amp; Developed by{" "}
             <a
               href="https://api.whatsapp.com/send/?phone=8801733670129"
@@ -815,7 +816,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               Arc Labs Corporation
             </a>
           </p>
-          <div className="-ml-[10px] -mt-[10px] flex items-start md:col-span-4 md:ml-0 md:justify-self-end">
+          <div className="-ml-[10px] -mt-[10px] flex items-start">
             <a href="https://www.facebook.com/angonaloyofficial" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center transition-opacity hover:opacity-80">
               <FooterFacebookIcon />
             </a>

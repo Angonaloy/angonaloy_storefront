@@ -301,7 +301,8 @@ test("places the tagline beneath the footer logo and stacks Support after Inform
   assert.ok(logoIndex >= 0 && logoIndex < taglineIndex && taglineIndex < linksIndex);
   assert.ok(taglineIndex < bottomBarIndex);
   assert.equal((footerSource.match(/<BrandTagline \/>/g) ?? []).length, 1);
-  assert.match(footerSource, /<div className="mt-10 grid grid-cols-1[^\"]*md:grid-cols-4/);
+  // Brand column plus three equal link columns (Shop, Information, Support).
+  assert.match(footerSource, /<div className="grid grid-cols-1 md:grid-cols-\[minmax\(0,1\.5fr\)_repeat\(3,minmax\(0,1fr\)\)\]/);
   assert.match(footerSource, /\[\["Information", INFORMATION_LINKS\], \["Support", SUPPORT_LINKS\]\]/);
 });
 
@@ -339,8 +340,8 @@ test("renders the compact Bloop-style footer", () => {
   assert.match(footerSource, /bg-\[#DB2828\][^"]*text-\[#FFFDF3\]/);
   assert.match(footerSource, /text-\[#F9D05E\]/);
   assert.match(footerSource, /IhtishamDeshlipi/);
-  assert.match(footerSource, /md:grid-cols-12/);
-  assert.match(footerSource, /font-bloop text-\[25px\] font-bold[^"]*md:text-\[43px\] md:leading-\[58px\]/);
+  assert.match(footerSource, /md:grid-cols-\[minmax\(0,1\.5fr\)_repeat\(3,minmax\(0,1fr\)\)\]/);
+  assert.match(footerSource, /md:text-\[28px\] md:leading-\[1\.1\]">Shop<\/h2>/);
   assert.match(footerSource, />Explore Products<\/a>/);
   assert.match(footerSource, /visibleCollections\.map/);
   assert.match(footerSource, /font-bloop-body/);
@@ -392,10 +393,10 @@ test("keeps the Arc Labs Corporation developer credit linked in the footer", () 
 
 test("aligns the footer bottom bar into three desktop columns while stacking on mobile", () => {
   const bottomBar = layoutSource.slice(layoutSource.indexOf("{/* Bottom Bar */}"), layoutSource.indexOf("</footer>"));
-  assert.match(bottomBar, /grid grid-cols-1[^\"]*md:grid-cols-12[^\"]*md:items-start/);
-  assert.match(bottomBar, /<div className="md:col-span-4">\s*<p>© 2026 Angonaloy-আঙ্গনালয়<\/p>\s*<p>All rights reserved<\/p>\s*<\/div>/);
-  assert.match(bottomBar, /<p className="md:col-span-4">\s*Designed &amp; Developed by/);
-  assert.match(bottomBar, /className="-ml-\[10px\] -mt-\[10px\] flex items-start md:col-span-4[^\"]*md:justify-self-end"/);
+  assert.match(bottomBar, /grid grid-cols-1[^\"]*md:grid-cols-\[minmax\(0,1\.5fr\)_repeat\(3,minmax\(0,1fr\)\)\][^\"]*md:items-start/);
+  assert.match(bottomBar, /<div>\s*<p>© 2026 Angonaloy-আঙ্গনালয়<\/p>\s*<p>All rights reserved<\/p>\s*<\/div>/);
+  assert.match(bottomBar, /<p className="md:col-span-2">\s*Designed &amp; Developed by/);
+  assert.match(bottomBar, /className="-ml-\[10px\] -mt-\[10px\] flex items-start"/);
 });
 
 test("never nests an <a> inside wouter's <Link> (which already renders an anchor)", () => {
