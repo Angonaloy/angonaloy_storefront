@@ -54,47 +54,19 @@ export default function RecentlyViewed({ products, excludeSlug, className = "" }
   };
 
   return (
-    <section className={`w-full bg-[#f6f6f6] py-10 md:py-16 ${className}`}>
+    <section className={`w-full -mb-20 bg-bloop-cream pb-8 pt-0 md:mb-0 md:py-24 ${className}`}>
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="mx-auto max-w-[1500px] px-2.5 md:px-8 xl:px-12"
+        className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
       >
-        <div className="mb-7 flex items-center justify-between gap-4 md:mb-12">
-          <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-            <span>RECENTLY</span>{" "}
-            <span
-              className="inline-block bg-[#FBBB14] px-1"
-              aria-label="Recently Viewed"
-            >
-              VIEWED
-            </span>
+        <div className="mb-8 text-center md:mb-12">
+          <h2 className="font-bloop text-[clamp(2.4rem,7vw,4.75rem)] font-extrabold leading-[0.95] tracking-[-0.04em]">
+            <span className="bloop-gradient-text">Recently viewed</span>
           </h2>
-
-          <div className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
-              aria-label="Previous recently viewed products"
-              aria-controls="recently-viewed-products"
-              onClick={() => scrollByPage(-1)}
-              disabled={!canScrollLeft}
-              className="flex h-9 w-9 items-center justify-center border border-black/20 text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black md:h-11 md:w-11"
-            >
-              <ChevronLeft aria-hidden="true" size={18} strokeWidth={1.25} />
-            </button>
-            <button
-              type="button"
-              aria-label="Next recently viewed products"
-              aria-controls="recently-viewed-products"
-              onClick={() => scrollByPage(1)}
-              disabled={!canScrollRight}
-              className="flex h-9 w-9 items-center justify-center border border-black/20 text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black md:h-11 md:w-11"
-            >
-              <ChevronRight aria-hidden="true" size={18} strokeWidth={1.25} />
-            </button>
-          </div>
+          <p className="mt-3 font-bangla text-[15px] font-medium text-bloop-ink/75 md:text-[17px]">আপনি সম্প্রতি দেখেছেন</p>
         </div>
 
         <div
@@ -109,6 +81,28 @@ export default function RecentlyViewed({ products, excludeSlug, className = "" }
               className="min-w-0 shrink-0 basis-[calc((100%_-_0.5rem)_/_2)] snap-start md:basis-[calc((100%_-_3rem)_/_4)]"
             />
           ))}
+        </div>
+        <div className="mt-8 flex items-center justify-center gap-3 md:mt-12">
+          <button
+            type="button"
+            aria-label="Previous recently viewed products"
+            aria-controls="recently-viewed-products"
+            onClick={() => scrollByPage(-1)}
+            disabled={!canScrollLeft}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-bloop-red text-white transition-colors hover:bg-bloop-ink disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-bloop-red"
+          >
+            <ChevronLeft aria-hidden="true" size={20} strokeWidth={1.75} />
+          </button>
+          <button
+            type="button"
+            aria-label="Next recently viewed products"
+            aria-controls="recently-viewed-products"
+            onClick={() => scrollByPage(1)}
+            disabled={!canScrollRight}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-bloop-red text-white transition-colors hover:bg-bloop-ink disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-bloop-red"
+          >
+            <ChevronRight aria-hidden="true" size={20} strokeWidth={1.75} />
+          </button>
         </div>
       </motion.div>
     </section>

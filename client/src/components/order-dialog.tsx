@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
@@ -27,6 +26,27 @@ const deliveryOptions = [
 const freeDeliveryThreshold = 2600;
 
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
+
+// Bloop checkout pieces: Bricolage uppercase labels, cream pill-radius fields, 20px option cards.
+const fieldLabelClass = "font-bloop text-[13px] font-bold uppercase tracking-[0.015em] text-[#333333]";
+const fieldLabelBanglaClass = "font-bangla text-[15px] font-semibold normal-case tracking-normal";
+const fieldInputClass = "w-full rounded-[14px] border-2 border-[#333333]/20 bg-bloop-cream px-4 font-bloop-body text-[16px] text-[#333333] outline-none transition-colors placeholder:text-[#333333]/40 focus:border-[#333333]";
+const optionCardClass = "rounded-[20px] border-2 px-4 py-3 text-left text-[#333333] transition-colors duration-200";
+const optionCardSelectedClass = "border-[#DB2828] bg-[#FFF6D6]";
+const optionCardIdleClass = "border-[#333333]/15 bg-transparent hover:border-[#333333]/40";
+
+function OptionRadioDot({ selected }: { selected: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+        selected ? "border-[#DB2828]" : "border-[#333333]/25"
+      }`}
+    >
+      {selected ? <span className="h-2.5 w-2.5 rounded-full bg-[#DB2828]" /> : null}
+    </span>
+  );
+}
 
 export type OrderDialogBundle = {
   title: string;
@@ -281,7 +301,7 @@ export default function OrderDialog({
         <DialogContent
           forceMount
           onOpenAutoFocus={(event) => event.preventDefault()}
-          className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-3 sm:p-4 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-[#f6f6f6] md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden md:[&>button]:flex md:[&>button]:rounded-[8px] flex flex-col z-[100]"
+          className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-3 sm:p-4 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-bloop-cream md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden flex flex-col z-[100]"
         >
           <AnimatePresence
             initial={true}
@@ -301,21 +321,24 @@ export default function OrderDialog({
                   scale: 0.96,
                   transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
                 }}
-                className={`relative flex w-full h-full md:h-auto max-md:rounded-[12px] bg-white md:bg-[#f6f6f6] max-md:shadow-2xl overflow-y-auto overflow-x-hidden z-[10] ${
+                className={`relative flex w-full h-full md:h-auto max-md:rounded-[12px] bg-bloop-cream text-[#333333] max-md:shadow-2xl overflow-y-auto overflow-x-hidden z-[10] ${
                   orderSubmitted
                     ? "min-h-[calc(100dvh-1.5rem)] flex-col items-center justify-center p-6 md:min-h-[560px] md:p-10"
                     : "flex-col p-6 md:p-10"
                 }`}
               >
-                <div className="absolute top-4 right-4 z-50 md:hidden">
-                  <Button variant="ghost" size="icon" onClick={() => resetDialog(false)} className="rounded-full hover:bg-black/5 text-black border-none h-10 w-10">
-                    <X className="w-5 h-5" />
-                  </Button>
+                <div className="absolute top-4 right-4 z-50 md:top-6 md:right-6">
+                  <button type="button" onClick={() => resetDialog(false)} aria-label="Close" className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#333333] text-white transition-opacity hover:opacity-85">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+                      <path d="M20.707 4.70697L19.293 3.29297L12 10.586L4.707 3.29297L3.293 4.70697L10.586 12L3.293 19.293L4.707 20.707L12 13.414L19.293 20.707L20.707 19.293L13.414 12L20.707 4.70697Z" />
+                    </svg>
+                  </button>
                 </div>
-              <DialogHeader className={orderSubmitted ? "sr-only" : "items-center pb-2 text-center"}>
-                <DialogTitle className="text-3xl md:text-4xl font-semibold tracking-tight leading-none text-black">
+              <DialogHeader className={orderSubmitted ? "sr-only" : "items-center space-y-1 px-12 pb-2 pt-1 text-center"}>
+                <DialogTitle className="font-bloop text-[28px] font-bold leading-[1.1] tracking-[-0.015em] text-[#DB2828] md:text-[36px]">
                   Place Order
                 </DialogTitle>
+                <p className="font-bangla text-[16px] font-semibold text-[#333333]/70">অর্ডার করুন</p>
               </DialogHeader>
 
               {orderSubmitted ? (
@@ -341,7 +364,7 @@ export default function OrderDialog({
                         transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
                       },
                     }}
-                    className="mx-auto mb-7 block h-px w-16 origin-center bg-black/15"
+                    className="mx-auto mb-7 block h-[3px] w-16 origin-center rounded-full bg-[#F9D05E]"
                   />
                   <motion.h3
                     variants={{
@@ -353,9 +376,9 @@ export default function OrderDialog({
                         transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
                       },
                     }}
-                    className="font-sans text-3xl font-semibold tracking-[-0.04em] text-black md:text-4xl"
+                    className="font-bloop text-[32px] font-bold leading-[1.1] tracking-[-0.015em] text-[#DB2828] md:text-[40px]"
                   >
-                    Order Confirmed - অর্ডার কনফার্ম
+                    Order Confirmed - <span className="font-bangla">অর্ডার কনফার্ম</span>
                   </motion.h3>
                   <motion.p
                     variants={{
@@ -366,7 +389,7 @@ export default function OrderDialog({
                         transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] },
                       },
                     }}
-                    className="mx-auto mt-4 max-w-sm text-[15px] font-medium leading-7 tracking-[-0.02em] text-black/55"
+                    className="mx-auto mt-4 max-w-sm font-bloop-body text-[15px] leading-7 text-[#333333]/70"
                   >
                     Our studio team will contact you shortly to confirm delivery and payment. - আমাদের টিম শীঘ্রই ডেলিভারি ও পেমেন্ট কনফার্ম করতে যোগাযোগ করবে।
                   </motion.p>
@@ -383,18 +406,18 @@ export default function OrderDialog({
                     className="mt-7 flex flex-col items-center gap-6"
                   >
                     {orderRef && (
-                      <div className="inline-flex flex-col items-center gap-1 rounded-[8px] border border-black/10 bg-black/[0.03] px-6 py-3">
-                        <span className="text-[11px] font-medium tracking-[-0.01em] text-black/45">
-                          Order Number - অর্ডার নম্বর
+                      <div className="inline-flex flex-col items-center gap-1 rounded-[20px] bg-bloop-card px-8 py-4">
+                        <span className={fieldLabelClass}>
+                          Order Number - <span className={fieldLabelBanglaClass}>অর্ডার নম্বর</span>
                         </span>
-                        <span className="font-sans text-sm font-semibold tracking-[-0.02em] text-black">
+                        <span className="font-bloop text-[22px] font-bold tracking-[-0.01em] text-[#DB2828]">
                           {orderRef}
                         </span>
                       </div>
                     )}
                     <Button
                       onClick={() => resetDialog(false)}
-                      className="h-auto rounded-[8px] bg-black px-7 py-3 text-[13px] font-semibold tracking-[-0.02em] text-white shadow-none hover:bg-black/80"
+                      className="h-12 rounded-full bg-[#DB2828] px-10 font-bloop text-[16px] font-bold text-[#FFFDF3] shadow-none transition-colors hover:bg-[#B40000]"
                     >
                       Close - বন্ধ
                     </Button>
@@ -409,47 +432,47 @@ export default function OrderDialog({
                   className="mt-6 space-y-6"
                   noValidate
                 >
-                  <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
-                    <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
+                  <div className="flex items-center gap-4 rounded-[20px] bg-bloop-card p-4">
+                    <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-[12px] bg-bloop-cream p-2 md:h-20 md:w-20">
                       <img
                         src={bundle.images[0].src}
                         alt={bundle.images[0].alt}
                         className="h-full w-full object-contain mix-blend-multiply"
                       />
-                      <div className="absolute -top-2 -right-2 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm">
+                      <div className="absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#F9D05E] px-1 font-bloop text-[12px] font-bold leading-none text-[#B40000] ring-2 ring-bloop-card">
                         {bundleQuantity}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-[14px] md:text-[15px] font-semibold text-black leading-tight">
+                      <h3 className="font-bloop text-[16px] font-bold leading-[1.25] text-[#333333]">
                         {bundle.title}
                       </h3>
-                      <p className="mt-1 text-[11px] md:text-[12px] text-black/60">
+                      <p className="mt-1 font-bloop-body text-[13px] text-[#333333]/70">
                         {bundle.details}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-[14px] md:text-[15px] font-bold text-black block">
+                      <span className="block font-bloop text-[16px] font-bold text-[#333333] md:text-[18px]">
                         ৳{bundle.price.toLocaleString()}
                       </span>
                     </div>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <label className="space-y-2">
-                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
-                        Name - নাম
+                    <label className="grid gap-2">
+                      <span className={fieldLabelClass}>
+                        Name - <span className={fieldLabelBanglaClass}>নাম</span>
                       </span>
                       <input
                         required
                         name="name"
-                        className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
+                        className={`h-[52px] ${fieldInputClass}`}
                         placeholder="Your name"
                       />
                     </label>
-                    <label className="space-y-2">
-                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
-                        Phone - ফোন
+                    <label className="grid gap-2">
+                      <span className={fieldLabelClass}>
+                        Phone - <span className={fieldLabelBanglaClass}>ফোন</span>
                       </span>
                       <input
                         required
@@ -458,39 +481,40 @@ export default function OrderDialog({
                         inputMode="numeric"
                         pattern="[0-9]{11}"
                         maxLength={11}
-                        className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
+                        className={`h-[52px] ${fieldInputClass}`}
                         placeholder="01XXXXXXXXX"
                       />
                     </label>
                   </div>
 
-                  <label className="block space-y-2">
-                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
-                        Address - ঠিকানা
+                  <label className="grid gap-2">
+                      <span className={fieldLabelClass}>
+                        Address - <span className={fieldLabelBanglaClass}>ঠিকানা</span>
                       </span>
                     <textarea
                       required
                       name="address"
                       rows={2}
-                      className="w-full resize-none rounded-[8px] border border-black/15 bg-white/70 px-4 py-3 text-[16px] font-normal max-md:text-[13px] outline-none transition-colors focus:border-black max-md:rounded-[8px]"
+                      className={`resize-none py-3 ${fieldInputClass}`}
                         placeholder="House, road, area, city - বাড়ি, রাস্তা, এলাকা, শহর"
                     />
                   </label>
 
                   <div className="grid gap-4 md:grid-cols-3 md:gap-2">
                   <div className="grid content-start gap-2 md:col-span-2">
-                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
-                        Delivery Charge - ডেলিভারি চার্জ
+                      <span className={fieldLabelClass}>
+                        Delivery Charge - <span className={fieldLabelBanglaClass}>ডেলিভারি চার্জ</span>
                       </span>
                     {qualifiesForFreeDelivery ? (
-                      <div className="border border-brand-gold/40 bg-white max-md:bg-white/10 p-4">
-                          <span className="block text-[10px] font-bold text-black">
-                            Free Delivery - ফ্রি ডেলিভারি
+                      <div className={`${optionCardClass} ${optionCardSelectedClass}`}>
+                          <span className="flex items-center gap-3 font-bloop text-[13px] font-bold uppercase tracking-[0.015em]">
+                            <OptionRadioDot selected />
+                            <span>Free Delivery - <span className={fieldLabelBanglaClass}>ফ্রি ডেলিভারি</span></span>
                           </span>
-                        <span className="mt-2 block font-garet text-2xl font-bold text-brand-gold">
+                        <span className="mt-2 block font-bloop text-[24px] font-bold leading-none text-[#DB2828]">
                           ৳0
                         </span>
-                        <span className="mt-3 block text-[9px] leading-5 text-black/45">
+                        <span className="mt-2 block font-bloop-body text-[12px] leading-5 text-[#333333]/60">
                           Applied automatically for orders over ৳2600
                         </span>
                       </div>
@@ -501,16 +525,15 @@ export default function OrderDialog({
                             key={option.label}
                             type="button"
                             onClick={() => setDeliveryCharge(option.charge)}
-                           className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all md:h-[88px] ${
-                              deliveryCharge === option.charge
-                                ? "border-brand-gold border-[1.5px] bg-brand-gold/5 rounded-[8px]"
-                                : "border-black/15 bg-transparent hover:border-black/30 rounded-[8px]"
+                           className={`${optionCardClass} grid grid-cols-[auto_1fr_auto] items-center gap-x-3 md:h-[108px] md:grid-cols-[auto_1fr] md:content-between ${
+                              deliveryCharge === option.charge ? optionCardSelectedClass : optionCardIdleClass
                             }`}
                           >
-                           <span className="block text-[10px] font-bold max-md:text-[9px]">
-                             {option.label} - {option.bn}
+                            <OptionRadioDot selected={deliveryCharge === option.charge} />
+                           <span className="font-bloop text-[13px] font-bold uppercase leading-[1.3] tracking-[0.015em]">
+                             {option.label} - <span className={fieldLabelBanglaClass}>{option.bn}</span>
                            </span>
-                            <span className="mt-2 block font-garet text-2xl font-bold max-md:mt-1 max-md:text-xl">
+                            <span className="font-bloop text-[24px] font-bold leading-none md:col-span-2">
                               ৳{option.charge}
                             </span>
                           </button>
@@ -520,9 +543,9 @@ export default function OrderDialog({
                   </div>
 
                   <div className="grid content-start gap-2">
-                    <span className="text-[13px] md:text-[14px] font-semibold text-black">
-                      Payment Method - পেমেন্ট পদ্ধতি
-                    </span>
+                    <span className={fieldLabelClass}>
+                        Payment Method - <span className={fieldLabelBanglaClass}>পেমেন্ট পদ্ধতি</span>
+                      </span>
                     <div className="grid gap-2 md:h-full">
                       {[
                         { value: "cash_on_delivery" as const, label: "Cash on Delivery", bn: "ক্যাশ অন ডেলিভারি" },
@@ -531,14 +554,13 @@ export default function OrderDialog({
                           key={option.value}
                           type="button"
                           onClick={() => setPaymentMethod(option.value)}
-                            className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all md:h-[88px] ${
-                            paymentMethod === option.value
-                              ? "border-brand-gold border-[1.5px] bg-brand-gold/5 rounded-[8px]"
-                              : "border-black/15 bg-transparent hover:border-black/30 rounded-[8px]"
+                            className={`${optionCardClass} flex items-center gap-3 md:h-[108px] ${
+                            paymentMethod === option.value ? optionCardSelectedClass : optionCardIdleClass
                           }`}
                         >
-                           <span className="flex min-h-9 items-center justify-center text-center text-[10px] font-bold">
-                             {option.label} - {option.bn}
+                            <OptionRadioDot selected={paymentMethod === option.value} />
+                           <span className="font-bloop text-[13px] font-bold uppercase leading-[1.3] tracking-[0.015em]">
+                             {option.label} - <span className={fieldLabelBanglaClass}>{option.bn}</span>
                            </span>
                         </button>
                       ))}
@@ -549,7 +571,7 @@ export default function OrderDialog({
                   </div>
 
                   {orderError && (
-                    <div className="border border-red-500/30 bg-red-50 px-4 py-3 text-[10px] leading-5 text-black">
+                    <div className="rounded-[14px] border-2 border-[#DB2828] bg-[#DB2828]/5 px-4 py-3 font-bloop-body text-[14px] font-medium leading-5 text-[#DB2828]">
                       {orderError}
                     </div>
                   )}
@@ -557,27 +579,27 @@ export default function OrderDialog({
                   {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
                   <TurnstileChallenge onToken={setTurnstileToken} />
 
-                  <div className="bg-black/5 rounded-[12px] p-5">
-                    <div className="flex justify-between text-[11px] text-black/60 font-medium">
-                      <span>Items - আইটেম</span>
-                      <span className="font-semibold text-black">৳{bundle.price.toLocaleString()}</span>
+                  <div className="rounded-[20px] bg-bloop-card p-5">
+                    <div className="flex justify-between font-bloop-body text-[14px] text-[#333333]/70">
+                      <span>Items - <span className="font-bangla">আইটেম</span></span>
+                      <span className="font-semibold text-[#333333]">৳{bundle.price.toLocaleString()}</span>
                     </div>
-                    <div className="mt-4 flex justify-between text-[11px] text-black/60 font-medium">
-                      <span>Delivery - ডেলিভারি</span>
-                      <span className="font-semibold text-black">
+                    <div className="mt-3 flex justify-between font-bloop-body text-[14px] text-[#333333]/70">
+                      <span>Delivery - <span className="font-bangla">ডেলিভারি</span></span>
+                      <span className="font-semibold text-[#333333]">
                         {deliveryCharge === null ? "Select - সিলেক্ট" : deliveryCharge === 0 ? "Free - ফ্রি" : `৳${deliveryCharge}`}
                       </span>
                     </div>
-                    <div className="mt-5 flex items-end justify-between gap-4 border-t border-black/10 pt-5">
-                        <span className="text-[12px] font-bold text-black">
-                          Total - মোট
+                    <div className="mt-4 flex items-center justify-between gap-4 border-t border-[#333333]/15 pt-4">
+                        <span className="shrink-0 whitespace-nowrap font-bloop text-[20px] font-bold text-[#333333]">
+                          Total - <span className="font-bangla">মোট</span>
                         </span>
                       {deliveryCharge === null ? (
-                        <span className="max-w-[220px] text-right text-[10px] leading-5 font-semibold text-red-600">
+                        <span className="max-w-[220px] text-right font-bloop-body text-[12px] font-semibold leading-5 text-[#DB2828]">
                           Please select a delivery charge - ডেলিভারি চার্জ সিলেক্ট করুন
                         </span>
                       ) : (
-                        <span className="text-4xl font-semibold tracking-tight text-black leading-none">
+                        <span className="font-bloop text-[20px] font-bold leading-none text-[#DB2828]">
                           ৳{(bundle.price + deliveryCharge).toLocaleString()}
                         </span>
                       )}
@@ -586,7 +608,7 @@ export default function OrderDialog({
 
                   <Button
                     disabled={orderSubmitting}
-                    className="h-14 w-full rounded-[8px] bg-[#d92c2d] text-white text-[13px] font-bold hover:bg-black transition-all disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-14 w-full rounded-full bg-[#DB2828] font-bloop text-[17px] font-bold text-[#FFFDF3] shadow-none transition-colors hover:bg-[#B40000] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
                   </Button>

@@ -4,255 +4,169 @@ import { test } from "node:test";
 
 const homeSource = readFileSync(new URL("./home.tsx", import.meta.url), "utf8");
 
-test("renders category sections after Latest Drop", () => {
-  const latestDropIndex = homeSource.indexOf("Latest Drop Section");
-  const homemadeIndex = homeSource.indexOf('renderCategorySection("homemade")');
+const sectionBetween = (startMarker: string, endMarker: string) =>
+  homeSource.slice(homeSource.indexOf(startMarker), homeSource.indexOf(endMarker));
 
-  assert.notEqual(latestDropIndex, -1);
-  assert.notEqual(homemadeIndex, -1);
-  assert.ok(homemadeIndex > latestDropIndex);
-  assert.match(homeSource, /getProductsForCollection/);
-  assert.match(homeSource, /collection\.label/);
-});
-
-test("renders the Top Selling Products section after the hero", () => {
-  const heroIndex = homeSource.indexOf("Hero Section");
-  const topSellingIndex = homeSource.indexOf("What's New Section");
-  const latestDropIndex = homeSource.indexOf("Latest Drop Section");
-
-  assert.notEqual(heroIndex, -1);
-  assert.notEqual(topSellingIndex, -1);
-  assert.notEqual(latestDropIndex, -1);
-  assert.ok(topSellingIndex > heroIndex);
-  assert.ok(topSellingIndex < latestDropIndex);
-  assert.match(homeSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(homeSource, /জনপ্রিয় পণ্য/);
-  assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
-});
-
-test("styles the Featured Categories heading like the product page circled title", () => {
-  assert.doesNotMatch(homeSource, /FEATURED CATEGORIES/);
-  assert.match(homeSource, /<span className="font-medium">আমাদের<\/span>/);
-  assert.match(homeSource, /ক্যাটাগরিসমূহ/);
-  assert.match(homeSource, /IhtishamDeshlipi/);
-  assert.match(homeSource, /M14,32 C9,15 48,6 72,8/);
-  assert.match(homeSource, /h-\[220%\] w-\[145%\]/);
-  assert.match(homeSource, /text-\[clamp\(1\.4rem,4vw,2.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
-  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
-});
-
-test("removes the requested homepage sections while keeping the editorial features", () => {
-  assert.doesNotMatch(homeSource, /Just Arrived Section/);
-  assert.doesNotMatch(homeSource, /Special Collections Section/);
-  assert.match(homeSource, /Editorial Section/);
-  assert.match(homeSource, /Essentials Section/);
-});
-
-test("interleaves populated bilingual category sections with the editorial features", () => {
-  const belowLatest = homeSource.slice(homeSource.indexOf("Latest Drop Section"));
+test("orders the Bloop homepage sections from collection stories to recently viewed", () => {
   const order = [
+    "{/* Collection Stories Section */}",
+    "{/* Hero Section */}",
+    "{/* Image mosaic */}",
+    "{/* Best Sellers Section */}",
+    "{/* Highlights Section */}",
+    "{/* Latest Drop Section */}",
+    "{/* Shop By Category Section */}",
     'renderCategorySection("homemade")',
     'renderCategorySection("functional-food")',
     'renderCategorySection("honey")',
-    "Editorial Section",
+    "{/* Editorial Section */}",
     'renderCategorySection("oil-and-ghee")',
     'renderCategorySection("jaggery")',
-    "Essentials Section",
+    "{/* Essentials Section */}",
     'renderCategorySection("semai")',
     'renderCategorySection("nuts-and-seeds")',
+    "<RecentlyViewed products={homepageProducts} />",
   ];
 
   let previous = -1;
   for (const marker of order) {
-    const index = belowLatest.indexOf(marker);
+    const index = homeSource.indexOf(marker, previous + 1);
     assert.ok(index > previous, `${marker} should follow the previous homepage section`);
     previous = index;
   }
 
-  assert.match(homeSource, /getProductsForCollection/);
-  assert.match(homeSource, /visibleFeaturedCollections/);
-  assert.match(homeSource, /collection\.label/);
-  assert.match(homeSource, /HomeProductCard/);
+  assert.doesNotMatch(homeSource, /Just Arrived Section/);
+  assert.doesNotMatch(homeSource, /Special Collections Section/);
 });
 
-test("uses left-right category headers with underlined View All links and four products", () => {
-  const categorySource = homeSource.slice(
-    homeSource.indexOf("const renderCategorySection"),
-    homeSource.indexOf("  useEffect(() => {\n    const el = categoriesRef.current"),
-  );
+test("renders the Bloop headline as the page h1 with gradient grotesk and serif lines", () => {
+  const heroSource = sectionBetween("{/* Hero Section */}", "{/* Image mosaic */}");
 
-  assert.match(categorySource, /className="mb-7 flex items-center justify-between gap-6/);
-  assert.match(categorySource, /href=\{`\/collection\/\$\{collection\.slug\}`\}/);
-  assert.match(categorySource, /View All/);
-  assert.match(categorySource, /border-b-2 border-black/);
-  assert.match(categorySource, /products\.slice\(0, 4\)\.map/);
-  assert.match(categorySource, /collection\.label/);
- });
-
-test("renders responsive linked editorial image sections without old copy", () => {
-  const editorialSource = homeSource.slice(
-    homeSource.indexOf("{/* Editorial Section */}"),
-    homeSource.indexOf("{/* Category Section: Oil & Ghee */}"),
-  );
-  const essentialsSource = homeSource.slice(
-    homeSource.indexOf("{/* Essentials Section */}"),
-    homeSource.indexOf("{/* Category Section: Semai */}"),
-  );
-
-  assert.match(editorialSource, /href="\/products"/);
-  assert.match(editorialSource, /pure-ghee-editorial-mobile-20260917\.webp/);
-  assert.match(editorialSource, /pure-ghee-editorial-desktop-20260917\.webp/);
-  assert.match(editorialSource, /<picture>/);
-  assert.match(editorialSource, /<span className=\{HERO_CTA_CLASS_NAME\}>/);
-  assert.doesNotMatch(editorialSource, /group-hover:bg-white\/30/);
-  assert.match(editorialSource, /FOR THE HEART OF HOME/);
-  assert.match(editorialSource, /ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।/);
-  assert.match(editorialSource, /EXPLORE HOME &amp; KITCHEN/);
-  assert.match(editorialSource, /absolute inset-0 flex items-start justify-center bg-gradient-to-b from-black\/40 via-black\/10 to-transparent p-8 text-center md:items-center md:justify-start md:bg-none md:p-12 lg:p-16/);
-  assert.match(editorialSource, /bg-gradient-to-b from-black\/40 via-black\/10 to-transparent p-8 text-center md:items-center md:justify-start md:bg-none md:p-12/);
-  assert.match(editorialSource, /drop-shadow-\[0_2px_12px_rgba\(0,0,0,0\.6\)\]/);
-  assert.match(homeSource, /const HERO_CTA_CLASS_NAME =/);
-  assert.match(homeSource, /hero-frosted-cta/);
-  assert.match(homeSource, /backdrop-blur-md/);
-  assert.doesNotMatch(editorialSource, /curated-edit-bg-mobile\.webp|curated-edit-bg\.webp/);
-  assert.doesNotMatch(editorialSource, /Shop Now|absolute inset-0 bg-black\/35|rounded-\[16px\] border border-white\/35 bg-black\/20/);
-  assert.match(essentialsSource, /href="\/product\/glass-water-bottles-with-time-marker"/);
-  assert.match(essentialsSource, /glass-bottle-editorial-mobile-20260917\.webp/);
-  assert.match(essentialsSource, /glass-bottle-editorial-desktop-20260917\.webp/);
-  assert.match(essentialsSource, /<picture>/);
-  assert.match(essentialsSource, /HYDRATE WITH INTENTION/);
-  assert.match(essentialsSource, /A beautiful daily ritual for home, work, and everywhere in between\./);
-  assert.match(essentialsSource, /SHOP GLASS BOTTLES/);
-  assert.match(essentialsSource, /absolute inset-0 flex items-end justify-start bg-gradient-to-t from-black\/40 via-black\/10 to-transparent p-5 pb-8 md:bg-none md:p-12 md:pb-14/);
-  assert.match(essentialsSource, /drop-shadow-\[0_2px_12px_rgba\(0,0,0,0\.6\)\]/);
-  assert.match(essentialsSource, /<span className=\{HERO_CTA_CLASS_NAME\}>/);
-  assert.doesNotMatch(essentialsSource, /essentials-bg-mobile\.webp|essentials-bg\.webp|BLACK SEED/);
+  assert.equal((homeSource.match(/<h1/g) ?? []).length, 1);
+  assert.match(heroSource, /<h1 className="font-bloop [^"]*leading-\[0\.95\] tracking-\[-0\.04em\]"/);
+  assert.match(heroSource, /<span className="bloop-gradient-text">Angonaloy—Made for Home<\/span>/);
+  assert.match(heroSource, /font-bloop-serif[^"]*text-bloop-red">\s*and Everyday Living/);
+  assert.match(heroSource, /font-bangla[^>]*>\s*আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান/);
+  assert.match(heroSource, /href="\/products"[\s\S]*bloop-pill[^"]*border-bloop-red[\s\S]*Explore/);
 });
 
-test("links Featured Categories to their collection pages", () => {
-  assert.match(homeSource, /getVisibleFeaturedCollections/);
-  assert.match(homeSource, /visibleFeaturedCollections\.map/);
-  assert.match(homeSource, /href=\{`\/collection\/\$\{slug\}`\}/);
+test("builds the rounded image mosaic from existing brand assets and hrefs", () => {
+  const mosaicSource = sectionBetween("{/* Image mosaic */}", "{/* Best Sellers Section */}");
+
+  assert.match(mosaicSource, /grid grid-cols-2 gap-1 px-1 [^"]*md:grid-cols-4 md:grid-rows-2/);
+  assert.equal((mosaicSource.match(/rounded-\[28px\]/g) ?? []).length, 4);
+  assert.match(mosaicSource, /src="\/hero-desktop\.webp\?v=2"/);
+  assert.match(mosaicSource, /Everything for your kitchen/);
+  assert.match(mosaicSource, /bg-bloop-lime[^"]*"[\s\S]*Shop the collection/);
+  assert.match(mosaicSource, /pure-ghee-editorial-mobile-20260917\.webp/);
+  assert.match(mosaicSource, /glass-bottle-editorial-mobile-20260917\.webp/);
+  assert.match(mosaicSource, /href="\/product\/glass-water-bottles-with-time-marker"/);
+  assert.match(mosaicSource, /href="\/collection\/top-selling-products"[\s\S]*bg-bloop-lime[\s\S]*Best[\s\S]*Sellers/);
+  assert.match(mosaicSource, /object-cover/);
+  assert.doesNotMatch(homeSource, /hero1\.webp/);
+});
+
+test("replaces the category bubbles with live-catalog collection story rings", () => {
+  const storiesSource = sectionBetween("{/* Collection Stories Section */}", "{/* Hero Section */}");
+
+  assert.match(homeSource, /import CollectionStories from "@\/components\/collection-stories";/);
+  assert.match(storiesSource, /<CollectionStories collections=\{visibleFeaturedCollections\} products=\{homepageProducts\} \/>/);
+  assert.doesNotMatch(homeSource, /Category Bubbles Section/);
+  assert.doesNotMatch(homeSource, /border-\[3px\] border-bloop-orange/);
+  assert.doesNotMatch(homeSource, /react-insta-stories/);
+  assert.doesNotMatch(homeSource, /image: "\/categories\//);
   assert.doesNotMatch(homeSource, /const categories = \[/);
 });
 
-test("lays visible Featured Categories in one desktop row", () => {
-  const categoriesSection = homeSource.slice(
-    homeSource.indexOf("{/* Categories Section */}"),
-    homeSource.indexOf("{/* What's New Section */}"),
-  );
+test("renders Best Sellers with an eyebrow, gradient heading and eight top sellers", () => {
+  const bestSellersSource = sectionBetween("{/* Best Sellers Section */}", "{/* Highlights Section */}");
 
-  assert.match(
-    categoriesSection,
-    /sm:grid-cols-4[\s\S]*lg:flex[\s\S]*lg:overflow-visible/,
-  );
+  assert.match(bestSellersSource, /eyebrow="Popular choice"/);
+  assert.match(bestSellersSource, /title="Best Sellers"/);
+  assert.match(bestSellersSource, /bangla="সবচেয়ে জনপ্রিয় পণ্য"/);
+  assert.match(bestSellersSource, /href="\/collection\/top-selling-products"/);
+  assert.match(bestSellersSource, /renderProductGrid\(topSellingProducts\.slice\(0, 8\), 8\)/);
+  assert.match(bestSellersSource, /grid grid-cols-2 [^"]*lg:grid-cols-4/);
 });
 
-test("centers Featured Categories on desktop", () => {
-  const categoriesSection = homeSource.slice(
-    homeSource.indexOf("{/* Categories Section */}"),
-    homeSource.indexOf("{/* What's New Section */}"),
-  );
+test("uses only existing site claims in the highlights band and a reduced-motion-safe marquee", () => {
+  const highlightsSource = sectionBetween("{/* Highlights Section */}", "{/* Latest Drop Section */}");
+  const cssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
-  assert.match(categoriesSection, /lg:flex lg:justify-center/);
+  assert.match(highlightsSource, /bg-\[linear-gradient\(90deg,#6CF7B2,#C9F77A,#FFF35C\)\]/);
+  assert.match(highlightsSource, /Why Angonaloy/);
+  assert.match(highlightsSource, /Free shipping over ৳2600/);
+  assert.match(highlightsSource, /ক্যাশ অন ডেলিভারি/);
+  assert.match(highlightsSource, /মান নিশ্চিত/);
+  assert.match(highlightsSource, /className="bloop-marquee"/);
+  assert.match(highlightsSource, /aria-hidden="true"/);
+  assert.match(cssSource, /@media \(prefers-reduced-motion: reduce\) \{\s*\.bloop-marquee \{\s*animation-play-state: paused;/);
 });
 
-test("uses larger 120px category imagery with matching mobile tap targets", () => {
-  const categoriesSection = homeSource.slice(
-    homeSource.indexOf("{/* Categories Section */}"),
-    homeSource.indexOf("{/* What's New Section */}"),
-  );
+test("renders New Arrivals from the newest catalog products", () => {
+  const latestDropSource = sectionBetween("{/* Latest Drop Section */}", "{/* Shop By Category Section */}");
 
-  assert.match(categoriesSection, /group flex w-\[120px\][\s\S]*sm:w-auto/);
-  assert.match(categoriesSection, /aspect-square w-\[120px\][\s\S]*sm:w-\[112px\]/);
+  assert.match(latestDropSource, /title="New Arrivals"/);
+  assert.match(latestDropSource, /আমাদের নতুন পণ্য/);
+  assert.match(latestDropSource, /See more/);
+  assert.match(latestDropSource, /renderProductGrid\(homepageProducts\.slice\(0, 4\), 4\)/);
+  assert.match(latestDropSource, /grid grid-cols-2 gap-x-2 gap-y-6 md:gap-x-4 md:gap-y-10 lg:grid-cols-4/);
 });
 
-test("uses the shorter Functional Food title only in Featured Categories", () => {
-  const categoriesSection = homeSource.slice(
-    homeSource.indexOf("{/* Categories Section */}"),
-    homeSource.indexOf("{/* What's New Section */}"),
-  );
+test("lists visible collections as large stacked links", () => {
+  const listSource = sectionBetween("{/* Shop By Category Section */}", "{/* Category Section: Homemade */}");
 
-  assert.match(categoriesSection, /Functional-ফুড/);
-  assert.doesNotMatch(categoriesSection, /Functional Food-ফুড/);
-  assert.doesNotMatch(categoriesSection, /Functional Food-ফাংশনাল ফুড/);
-  assert.match(categoriesSection, /alt=\{label\}/);
+  assert.match(listSource, /Shop by category/);
+  assert.match(listSource, /visibleFeaturedCollections\.map\(\(collection\) =>/);
+  assert.match(listSource, /href=\{`\/collection\/\$\{collection\.slug\}`\}/);
+  assert.match(listSource, /font-bloop text-\[clamp\(2rem,6\.4vw,5rem\)\][^"]*text-bloop-red/);
+  assert.match(listSource, /border-b border-bloop-red\/20/);
+  assert.match(listSource, /View all/);
 });
 
-test("labels the product section Top Selling Products without a purchase CTA", () => {
-  const whatsNewSource = homeSource.slice(
-    homeSource.indexOf("What's New Section"),
-    homeSource.indexOf("Latest Drop Section"),
-  );
+test("renders category sections with the shared heading and four products", () => {
+  const categorySource = sectionBetween("const renderCategorySection", "  return (\n    <Layout>");
 
-  assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(whatsNewSource, /জনপ্রিয় পণ্য/);
-  assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
-  assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
-  assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
+  assert.match(categorySource, /getProductsForCollection\(homepageProducts, collection\)/);
+  assert.match(categorySource, /collection\.label\.split\("-"\)/);
+  assert.match(categorySource, /<SectionHeader/);
+  assert.match(categorySource, /href=\{`\/collection\/\$\{collection\.slug\}`\}/);
+  assert.match(categorySource, /cta="View all"/);
+  assert.match(categorySource, /renderProductGrid\(products\.slice\(0, 4\), Math\.min\(products\.length \|\| 4, 4\)\)/);
 });
 
-test("styles the Top Selling Products heading as a modern food feature", () => {
-  const whatsNewSource = homeSource.slice(
-    homeSource.indexOf("What's New Section"),
-    homeSource.indexOf("Latest Drop Section"),
-  );
+test("renders the purple and lime editorial blocks with existing images and links", () => {
+  const editorialSource = sectionBetween("{/* Editorial Section */}", "{/* Category Section: Oil & Ghee */}");
+  const essentialsSource = sectionBetween("{/* Essentials Section */}", "{/* Category Section: Semai */}");
 
-  assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
-  assert.match(whatsNewSource, /<span className="font-medium">সবচেয়ে<\/span>/);
-  assert.match(whatsNewSource, /জনপ্রিয় পণ্য/);
-  assert.match(whatsNewSource, /IhtishamDeshlipi/);
-  assert.match(whatsNewSource, /M14,32 C9,15 48,6 72,8/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.4rem,4vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
-  assert.match(whatsNewSource, /View All/);
-  assert.match(whatsNewSource, /border-b-2 border-black/);
-  assert.doesNotMatch(whatsNewSource, /BEST SELLERS/);
-  assert.doesNotMatch(whatsNewSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয় পণ্য/);
+  assert.match(editorialSource, /bg-bloop-purple/);
+  assert.match(editorialSource, /href="\/products"/);
+  assert.match(editorialSource, /<picture>/);
+  assert.match(editorialSource, /pure-ghee-editorial-mobile-20260917\.webp/);
+  assert.match(editorialSource, /pure-ghee-editorial-desktop-20260917\.webp/);
+  assert.match(editorialSource, /rounded-\[28px\]/);
+  assert.match(editorialSource, /For the Heart of Home/);
+  assert.match(editorialSource, /ঘর ও রান্নাঘরের প্রতিদিনের জন্য বেছে নেওয়া সুন্দর, দরকারি জিনিস।/);
+  assert.match(editorialSource, /bloop-pill[^"]*bg-bloop-lime[\s\S]*Explore/);
+  assert.doesNotMatch(editorialSource, /curated-edit-bg-mobile\.webp|curated-edit-bg\.webp/);
+
+  assert.match(essentialsSource, /rounded-\[28px\] bg-bloop-lime/);
+  assert.match(essentialsSource, /href="\/product\/glass-water-bottles-with-time-marker"/);
+  assert.match(essentialsSource, /<picture>/);
+  assert.match(essentialsSource, /glass-bottle-editorial-mobile-20260917\.webp/);
+  assert.match(essentialsSource, /glass-bottle-editorial-desktop-20260917\.webp/);
+  assert.match(essentialsSource, /Hydrate with Intention/);
+  assert.match(essentialsSource, /A beautiful daily ritual for home, work, and everywhere in between\./);
+  assert.match(essentialsSource, /Shop glass bottles/);
+  assert.doesNotMatch(essentialsSource, /essentials-bg-mobile\.webp|essentials-bg\.webp|BLACK SEED/);
 });
 
-test("styles Latest Drop as a compact newly-added catalog section", () => {
-  const latestDropSource = homeSource.slice(
-    homeSource.indexOf("Latest Drop Section"),
-    homeSource.indexOf("Category Section: Homemade"),
-  );
-
-  assert.match(latestDropSource, /<span className="font-medium">আমাদের<\/span>/);
-  assert.match(latestDropSource, /নতুন পণ্য/);
-  assert.doesNotMatch(latestDropSource, /NEWLY ADDED/);
-  assert.match(latestDropSource, /See More/);
-  assert.match(latestDropSource, /homepageProducts\.slice\(0, 4\)\.map/);
-  assert.match(latestDropSource, /grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4/);
-});
-
-test("renders the Newly Added title in Bengali only with circled style", () => {
-  const latestDropSource = homeSource.slice(
-    homeSource.indexOf("Latest Drop Section"),
-    homeSource.indexOf("Category Section: Homemade"),
-  );
-
-  assert.match(latestDropSource, /<span className="font-medium">আমাদের<\/span>/);
-  assert.match(latestDropSource, /নতুন পণ্য/);
-  assert.match(latestDropSource, /IhtishamDeshlipi/);
-  assert.match(latestDropSource, /M14,32 C9,15 48,6 72,8/);
-  assert.doesNotMatch(latestDropSource, /NEWLY ADDED/);
-  assert.doesNotMatch(latestDropSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
-  assert.match(latestDropSource, /text-\[clamp\(1\.4rem,4vw,2.15rem\)\][^"]*md:text-\[clamp\(1\.9rem,5\.2vw,2\.8rem\)\]/);
-});
-
-test("uses circled Bengali for section titles and highlight for category labels", () => {
-  assert.match(homeSource, /<HighlightedWord className="font-display italic" highlightColor="#FBBB14">\{bengaliLabel\}<\/HighlightedWord>/);
-  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>সবচেয়ে জনপ্রিয় পণ্য/);
-  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের নতুন পণ্য/);
-  assert.doesNotMatch(homeSource, /HighlightedWord[^>]*>আমাদের ক্যাটাগরিসমূহ/);
-});
-
-test("uses a reduced type scale across homepage section headings", () => {
-  const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
-
-  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 1);
-  assert.doesNotMatch(homeSource, /text-\[1\.65rem\]/);
-  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
-  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
+test("removes the old highlight, scribble and frosted CTA treatments", () => {
+  assert.doesNotMatch(homeSource, /HighlightedWord/);
+  assert.doesNotMatch(homeSource, /M14,32 C9,15 48,6 72,8/);
+  assert.doesNotMatch(homeSource, /HERO_CTA_CLASS_NAME/);
+  assert.doesNotMatch(homeSource, /hero-frosted-cta/);
+  assert.doesNotMatch(homeSource, /categoriesRef/);
 });
 
 test("loads every homepage product section from the public catalog", () => {
@@ -270,60 +184,31 @@ test("loads every homepage product section from the public catalog", () => {
   assert.doesNotMatch(homeSource, /const justArrivedProducts = \[/);
   assert.doesNotMatch(homeSource, /const specialProducts = \[/);
   assert.match(homeSource, /import HomeProductCard from "@\/components\/home-product-card"/);
-  assert.match(homeSource, /topSellingProducts\.slice\(0, 6\)\.map/);
-  assert.match(homeSource, /homepageProducts\.slice\(0, 4\)\.map/);
-  assert.match(homeSource, /products\.slice\(0, 4\)\.map/);
+  assert.match(homeSource, /topSellingProducts\.slice\(0, 8\)/);
+  assert.match(homeSource, /homepageProducts\.slice\(0, 4\)/);
+  assert.match(homeSource, /products\.slice\(0, 4\)/);
   assert.match(homeSource, /product\.compare_at_price == null && snapshotProduct\?\.compare_at_price != null/);
   assert.match(homeSource, /renderCategorySection\("homemade"\)/);
   assert.match(homeSource, /renderCategorySection\("honey"\)/);
   assert.match(homeSource, /renderCategorySection\("oil-and-ghee"\)/);
   assert.match(homeSource, /renderCategorySection\("semai"\)/);
   assert.match(homeSource, /renderCategorySection\("nuts-and-seeds"\)/);
-  assert.doesNotMatch(homeSource, /Just Arrived Section/);
-  assert.doesNotMatch(homeSource, /Special Collections Section/);
+});
+
+test("keeps loading skeletons and the catalog error state in every product grid", () => {
+  const gridSource = sectionBetween("const renderProductGrid", "const renderCategorySection");
+
+  assert.match(gridSource, /isCatalogLoading/);
+  assert.match(gridSource, /aspect-\[4\/5\] animate-pulse rounded-\[20px\] bg-bloop-card motion-reduce:animate-none/);
+  assert.match(gridSource, /isCatalogError && catalogProducts\.length === 0/);
+  assert.match(gridSource, /Could not load products right now\./);
+  assert.match(gridSource, /items\.map\(\(product\) => <HomeProductCard key=\{product\.id \|\| product\.slug\} product=\{product\} \/>\)/);
 });
 
 test("uses the generated catalog while the live catalog revalidates", () => {
   assert.match(homeSource, /generatedStorefrontProducts/);
   assert.match(homeSource, /initialData: generatedStorefrontProducts/);
   assert.match(homeSource, /initialDataUpdatedAt: 0/);
-});
-
-test("prioritizes early live category images with lightweight thumbnails", () => {
-  assert.match(homeSource, /visibleFeaturedCollections\.map\(\(\{ slug, label, image \}, index\) =>/);
-  assert.match(homeSource, /src=\{image\}/);
-  assert.match(homeSource, /loading=\{index < 4 \? "eager" : "lazy"\}/);
-  assert.match(homeSource, /fetchPriority=\{index < 4 \? "high" : "auto"\}/);
-  assert.doesNotMatch(homeSource, /image: "\/categories\//);
-});
-
-test("uses the Angonaloy hero poster", () => {
-  assert.match(homeSource, /src="\/hero-mango-lover\.webp\?v=3"/);
-  assert.match(homeSource, /src="\/hero-desktop\.webp\?v=2"/);
-  assert.doesNotMatch(homeSource, /hero1\.webp/);
-});
-
-test("renders a shorter edge-to-edge Angonaloy hero on mobile", () => {
-  assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="relative w-full px-0 pt-2 md:px-0 md:pt-0"/);
-  assert.match(homeSource, /className="relative z-10 aspect-\[940\/900\] w-full overflow-hidden rounded-none bg-white md:aspect-video md:rounded-\[6px\] md:border md:border-black\/10"/);
-  assert.match(homeSource, /className="h-full w-full object-cover object-top md:hidden"/);
-  assert.match(homeSource, /className="hidden md:block h-full w-full object-cover object-top"/);
-  assert.doesNotMatch(homeSource, /-bottom-2 (left|right)-2\.5 top-0 z-30 w-px/);
-  assert.doesNotMatch(homeSource, /(left-\[2px\] right-\[2px\] top-2|bottom-0 left-\[2px\] right-\[2px\]) z-30 h-px/);
-  assert.doesNotMatch(homeSource, /inset-x-0 top-4 z-30 h-px/);
-  assert.match(homeSource, /Foggy gradient bottom blend/);
-  assert.match(homeSource, /<h1/);
-  assert.match(homeSource, /আঙ্গনালয়/);
-  assert.match(homeSource, /আপনার ঘর ও জীবনযাত্রার জন্য একটি সম্পূর্ণ সমাধান/);
-  assert.match(homeSource, /backdrop-blur-md/);
-  assert.match(homeSource, /Shop Now - এখনই কিনুন/);
-  assert.match(homeSource, /md:text-\[4\.5rem\]/);
-  assert.match(homeSource, /md:pb-12/);
-  assert.match(homeSource, /inset-x-0 bottom-0 z-20 flex flex-col items-center/);
-  assert.doesNotMatch(homeSource, /SS26 STATEMENT PIECES/);
-  assert.doesNotMatch(homeSource, /Bold by/);
-  assert.doesNotMatch(homeSource, /Discover New Arrival/);
 });
 
 test("uses subtle fade-and-lift Framer animations on homepage sections", () => {

@@ -9,11 +9,13 @@ import {
   getTopSellingProducts,
   getProductsForCollection,
   getVisibleFeaturedCollections,
-} from "./featured-collections";
+} from "./featured-collections.ts";
 
-test("defines the twelve homepage collections", () => {
+test("defines the fourteen homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
     "fresh-mango",
+    "new-essentials",
+    "best-sellers",
     "home-essentials",
     "kitchen-essentials",
     "home-gadgets",
@@ -52,6 +54,10 @@ test("assigns every current product to at least one collection", () => {
     "glass-water-bottles-with-time-marker",
     "2-in-1-glass-oil-bottle-with-sprayer",
     "angonaloy-magnetic-selfie-light-with-built-in-mirror",
+    "glass-honey-dispenser-jar",
+    "stainless-steel-oil-strainer-pot",
+    "angonaloy-air-fryer-basket-for-oven",
+    "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
   ];
 
   assert.deepEqual(
@@ -73,7 +79,7 @@ test("maps Glass Water Bottles to the visible Home Essentials collection", () =>
   assert.deepEqual(homeEssentials.productSlugs, [waterBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([waterBottle]).map(({ slug }) => slug),
-    ["home-essentials"],
+    ["new-essentials", "home-essentials"],
   );
 });
 
@@ -97,7 +103,7 @@ test("maps Glass Oil Bottle With Sprayer to the visible Kitchen Essentials colle
   assert.deepEqual(kitchenEssentials.productSlugs, [oilBottle.slug]);
   assert.deepEqual(
     getVisibleFeaturedCollections([oilBottle]).map(({ slug }) => slug),
-    ["kitchen-essentials"],
+    ["new-essentials", "kitchen-essentials"],
   );
 });
 
@@ -255,4 +261,67 @@ test("resolves Top Selling Products without exposing it as a Featured Category",
   assert.equal(getCollection("top-selling-products")?.slug, "top-selling-products");
   assert.equal(getFeaturedCollection("top-selling-products"), null);
   assert.doesNotMatch(FEATURED_COLLECTIONS.map(({ slug }) => slug).join(" "), /top-selling-products/);
+});
+
+test("defines New Essentials and Best Sellers without category artwork", () => {
+  const newEssentials = getFeaturedCollection("new-essentials");
+  const bestSellers = getFeaturedCollection("best-sellers");
+
+  assert.ok(newEssentials);
+  assert.ok(bestSellers);
+  assert.equal(newEssentials.label, "New Essentials");
+  assert.equal(bestSellers.label, "Best Sellers");
+  assert.equal(newEssentials.image, "");
+  assert.equal(bestSellers.image, "");
+  assert.deepEqual(newEssentials.productSlugs, [
+    "glass-water-bottles-with-time-marker",
+    "2-in-1-glass-oil-bottle-with-sprayer",
+    "glass-honey-dispenser-jar",
+    "angonaloy-magnetic-selfie-light-with-built-in-mirror",
+  ]);
+  assert.deepEqual(bestSellers.productSlugs, [
+    "stainless-steel-oil-strainer-pot",
+    "angonaloy-air-fryer-basket-for-oven",
+    "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
+    "glass-honey-dispenser-jar",
+  ]);
+});
+
+test("returns collection products in productSlugs order, not catalog order", () => {
+  const catalog = [
+    { slug: "glass-honey-dispenser-jar", name: "Glass Honey Dispenser Jar" },
+    { slug: "angonaloy-glass-oil-bottle-cooking-oil-dispenser", name: "Glass Oil Dispenser" },
+    { slug: "angonaloy-air-fryer-basket-for-oven", name: "Air Fryer Basket" },
+    { slug: "stainless-steel-oil-strainer-pot", name: "Oil Strainer Pot" },
+  ];
+
+  assert.deepEqual(
+    getProductsForCollection(catalog, getFeaturedCollection("best-sellers")!).map(({ slug }) => slug),
+    [
+      "stainless-steel-oil-strainer-pot",
+      "angonaloy-air-fryer-basket-for-oven",
+      "angonaloy-glass-oil-bottle-cooking-oil-dispenser",
+      "glass-honey-dispenser-jar",
+    ],
+  );
+});
+
+test("orders visible story collections New Essentials, Best Sellers, then the category collections", () => {
+  const catalog = [
+    { slug: "stainless-steel-oil-strainer-pot", name: "Oil Strainer Pot" },
+    { slug: "angonaloy-air-fryer-basket-for-oven", name: "Air Fryer Basket" },
+    { slug: "angonaloy-glass-oil-bottle-cooking-oil-dispenser", name: "Glass Oil Dispenser" },
+    { slug: "angonaloy-magnetic-selfie-light-with-built-in-mirror", name: "Selfie Light" },
+    { slug: "glass-honey-dispenser-jar", name: "Glass Honey Dispenser Jar" },
+    { slug: "2-in-1-glass-oil-bottle-with-sprayer", name: "Oil Sprayer" },
+    { slug: "glass-water-bottles-with-time-marker", name: "Glass Water Bottles" },
+  ];
+
+  assert.deepEqual(getVisibleFeaturedCollections(catalog).map(({ slug }) => slug), [
+    "new-essentials",
+    "best-sellers",
+    "home-essentials",
+    "kitchen-essentials",
+    "home-gadgets",
+  ]);
 });
