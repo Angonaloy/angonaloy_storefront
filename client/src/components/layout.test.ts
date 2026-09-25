@@ -6,6 +6,7 @@ const layoutSource = readFileSync(new URL("./layout.tsx", import.meta.url), "utf
 
 test("renders the Bloop-style rotating announcement bar", () => {
   assert.match(layoutSource, /<AnnouncementBar \/>/);
+  assert.match(layoutSource, /className="sticky top-0 z-50 flex h-10[^\"]*md:static/);
   assert.match(layoutSource, /h-10[^"]*bg-\[#F9D05E\][^"]*font-bloop[^"]*text-\[12px\] font-bold uppercase tracking-\[0\.015em\] text-\[#B40000\] sm:h-11[^"]*sm:text-\[13px\]/);
   assert.match(layoutSource, /aria-label="Store announcements"/);
   assert.match(layoutSource, /aria-label="Previous announcement"/);
@@ -17,6 +18,12 @@ test("renders the Bloop-style rotating announcement bar", () => {
   assert.match(layoutSource, /over ৳2600/);
   assert.match(layoutSource, /<span className="font-bangla">দ্রুত ডেলিভারি<\/span> — Fast delivery/);
   assert.match(layoutSource, /<span className="font-bangla">ক্যাশ অন ডেলিভারি<\/span> — Cash on delivery/);
+});
+
+test("uses smaller X glyphs in the menu and search popups without shrinking their buttons", () => {
+  assert.match(layoutSource, /function DrawerCloseIcon\(\)[\s\S]*?className="h-5 w-5" aria-hidden="true"/);
+  assert.match(layoutSource, /aria-label="Close menu" className="flex h-11 w-11/);
+  assert.match(layoutSource, /aria-label="Close search" className="flex h-11 w-11/);
 });
 
 test("hides the mobile navigation dock at the document bottom with Framer Motion", () => {
@@ -148,7 +155,7 @@ test("renders the Bloop-style header row with a centred wordmark", () => {
   const navEnd = layoutSource.indexOf("{/* Mobile bottom navigation */}");
   const navSource = layoutSource.slice(navStart, navEnd);
 
-  assert.match(navSource, /className="sticky top-0 z-50 w-full bg-bloop-cream text-\[#DB2828\]"/);
+  assert.match(navSource, /className="sticky top-10 z-50 w-full bg-bloop-cream text-\[#DB2828\] sm:top-11 md:top-0"/);
   assert.doesNotMatch(navSource, /backdrop-blur|border-b|shadow/);
   assert.match(navSource, /relative flex h-14 items-center justify-between px-4 md:h-\[82px\] md:px-\[49px\]/);
   assert.match(navSource, /absolute left-1\/2 top-1\/2 -translate-x-1\/2 -translate-y-1\/2/);

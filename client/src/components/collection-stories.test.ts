@@ -8,6 +8,11 @@ const packageJson = JSON.parse(readFileSync(new URL("../../../package.json", imp
 const sectionBetween = (startMarker: string, endMarker: string) =>
   storiesSource.slice(storiesSource.indexOf(startMarker), storiesSource.indexOf(endMarker));
 
+test("keeps the stories close target large while reducing the X glyph", () => {
+  assert.match(storiesSource, /function CloseIcon\(\)[\s\S]*?className="h-\[18px\] w-\[18px\]"/);
+  assert.match(storiesSource, /aria-label="Close stories"\s+className="[^"]*h-11 w-11/);
+});
+
 test("depends on react-insta-stories and only imports it lazily", () => {
   assert.ok(packageJson.dependencies["react-insta-stories"], "react-insta-stories should be a runtime dependency");
   assert.match(storiesSource, /const ReactInstaStories = lazy\(\(\) => import\("react-insta-stories"\)\);/);

@@ -291,6 +291,8 @@ test("adds Bloop breadcrumb, anchor links, gradient product-details title and a 
 });
 
 test("section anchors smooth-scroll the window below the sticky header without a fragment navigation", () => {
+  assert.match(productSource, /window\.matchMedia\("\(max-width: 767px\)"\)\.matches/);
+  assert.match(productSource, /\[aria-label="Store announcements"\]/);
   assert.match(productSource, /onClick=\{\(event\) => scrollToSection\(event, link\.href\)\}/);
   assert.match(productSource, /const scrollToSection = \(event: ReactMouseEvent<HTMLAnchorElement>, href: string\) => \{[\s\S]*?event\.preventDefault\(\);/);
   assert.match(productSource, /section\.getBoundingClientRect\(\)\.top \+ window\.scrollY - getStickyHeaderOffset\(\)/);

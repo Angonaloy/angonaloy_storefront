@@ -97,11 +97,14 @@ function formatTimelineDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-// The site header (layout.tsx) is the only sticky <nav>; the announcement bar
-// above it scrolls away, so only the header height is subtracted.
+// On mobile the announcement bar stays above the sticky header; on desktop
+// only the header sticks.
 function getStickyHeaderOffset() {
   const header = document.querySelector<HTMLElement>("nav.sticky");
-  return (header?.getBoundingClientRect().height ?? 0) + 16;
+  const announcement = window.matchMedia("(max-width: 767px)").matches
+    ? document.querySelector<HTMLElement>('[aria-label="Store announcements"]')
+    : null;
+  return (header?.getBoundingClientRect().height ?? 0) + (announcement?.getBoundingClientRect().height ?? 0) + 16;
 }
 
 const PRODUCT_SECTION_IDS = ["product-description", "product-details", "product-reels", "you-may-also-like"] as const;

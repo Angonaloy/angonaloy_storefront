@@ -23,6 +23,7 @@ const deliveryOptions = [
   { label: "Outside Dhaka", bn: "ঢাকার বাইরে", charge: 120 },
 ];
 
+const defaultDeliveryCharge = deliveryOptions[1].charge;
 const freeDeliveryThreshold = 2600;
 
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
@@ -86,7 +87,9 @@ export default function OrderDialog({
   onSuccess?: () => void;
 }) {
   const [openInstance, setOpenInstance] = useState(0);
-  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(null);
+  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(
+    bundle?.price != null && bundle.price >= freeDeliveryThreshold ? 0 : defaultDeliveryCharge
+  );
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
@@ -151,8 +154,8 @@ export default function OrderDialog({
   }, [open, bundle, bundleQuantity, bundleUnitPrice]);
 
   useEffect(() => {
-    if (open && qualifiesForFreeDelivery) {
-      setDeliveryCharge(0);
+    if (open) {
+      setDeliveryCharge(qualifiesForFreeDelivery ? 0 : defaultDeliveryCharge);
     }
   }, [open, qualifiesForFreeDelivery]);
 
@@ -176,7 +179,7 @@ export default function OrderDialog({
 
     setOrderClosing(false);
     onOpenChange(nextOpen);
-    setDeliveryCharge(null);
+    setDeliveryCharge(qualifiesForFreeDelivery ? 0 : defaultDeliveryCharge);
     setOrderSubmitted(false);
     setOrderSubmitting(false);
     setOrderError("");
@@ -301,7 +304,7 @@ export default function OrderDialog({
         <DialogContent
           forceMount
           onOpenAutoFocus={(event) => event.preventDefault()}
-          className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-3 sm:p-4 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-bloop-cream md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden flex flex-col z-[100]"
+          className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-2 sm:p-3 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-bloop-cream md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden flex flex-col z-[100]"
         >
           <AnimatePresence
             initial={true}
@@ -323,13 +326,13 @@ export default function OrderDialog({
                 }}
                 className={`relative flex w-full h-full md:h-auto max-md:rounded-[12px] bg-bloop-cream text-[#333333] max-md:shadow-2xl overflow-y-auto overflow-x-hidden z-[10] ${
                   orderSubmitted
-                    ? "min-h-[calc(100dvh-1.5rem)] flex-col items-center justify-center p-6 md:min-h-[560px] md:p-10"
-                    : "flex-col p-6 md:p-10"
+                    ? "min-h-[calc(100dvh-1rem)] flex-col items-center justify-center px-3 py-6 sm:min-h-[calc(100dvh-1.5rem)] sm:px-4 md:min-h-[560px] md:p-10"
+                    : "flex-col px-3 py-6 sm:px-4 md:p-10"
                 }`}
               >
                 <div className="absolute top-4 right-4 z-50 md:top-6 md:right-6">
                   <button type="button" onClick={() => resetDialog(false)} aria-label="Close" className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#333333] text-white transition-opacity hover:opacity-85">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
                       <path d="M20.707 4.70697L19.293 3.29297L12 10.586L4.707 3.29297L3.293 4.70697L10.586 12L3.293 19.293L4.707 20.707L12 13.414L19.293 20.707L20.707 19.293L13.414 12L20.707 4.70697Z" />
                     </svg>
                   </button>

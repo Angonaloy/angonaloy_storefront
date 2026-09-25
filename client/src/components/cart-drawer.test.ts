@@ -34,6 +34,7 @@ test("renders the empty-cart Continue Shopping action as a Bloop red pill", () =
 });
 
 test("uses the Bloop header, line items and footer", () => {
+  assert.match(cartDrawerSource, /function CartCloseIcon\(\)[\s\S]*?className="h-5 w-5" aria-hidden="true"/);
   assert.match(cartDrawerSource, /aria-label="Close cart"[\s\S]*?className="flex h-11 w-11[^"]*rounded-\[12px\] bg-\[#333333\] text-white/);
   assert.match(cartDrawerSource, /d="M20\.707 4\.70697L19\.293 3\.29297/);
   assert.match(cartDrawerSource, /<span>Product<\/span>\s*<span>Total<\/span>/);

@@ -106,7 +106,7 @@ const MENU_SOCIAL_LINKS = [
 // Bloop drawer close glyph (24×24, filled).
 function DrawerCloseIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
       <path d="M20.707 4.70697L19.293 3.29297L12 10.586L4.707 3.29297L3.293 4.70697L10.586 12L3.293 19.293L4.707 20.707L12 13.414L19.293 20.707L20.707 19.293L13.414 12L20.707 4.70697Z" />
     </svg>
   );
@@ -227,7 +227,7 @@ function AnnouncementBar() {
     <div
       role="region"
       aria-label="Store announcements"
-      className="relative flex h-10 items-center overflow-hidden bg-[#F9D05E] px-1 font-bloop text-[12px] font-bold uppercase tracking-[0.015em] text-[#B40000] sm:h-11 sm:px-[30px] sm:text-[13px]"
+      className="sticky top-0 z-50 flex h-10 items-center overflow-hidden bg-[#F9D05E] px-1 font-bloop text-[12px] font-bold uppercase tracking-[0.015em] text-[#B40000] sm:h-11 sm:px-[30px] sm:text-[13px] md:static"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -409,7 +409,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Announcement Bar */}
       <AnnouncementBar />
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full bg-bloop-cream text-[#DB2828]">
+      <nav className="sticky top-10 z-50 w-full bg-bloop-cream text-[#DB2828] sm:top-11 md:top-0">
         <div className="relative flex h-14 items-center justify-between px-4 md:h-[82px] md:px-[49px]">
           <div className="flex items-center gap-4 md:gap-10">
             <button type="button" aria-label="Open menu" onClick={openMenu} className="flex h-6 w-6 shrink-0 items-center justify-center transition-opacity hover:opacity-70 xl:hidden">

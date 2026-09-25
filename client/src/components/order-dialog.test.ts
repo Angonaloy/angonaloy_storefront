@@ -4,10 +4,17 @@ import { test } from "node:test";
 
 const orderDialogSource = readFileSync(new URL("./order-dialog.tsx", import.meta.url), "utf8");
 
-test("requires a paid delivery option to be selected", () => {
-  assert.match(orderDialogSource, /useState<number \| null>\(null\)/);
-  assert.match(orderDialogSource, /setDeliveryCharge\(null\)/);
+test("preselects Outside Dhaka unless the order qualifies for free delivery", () => {
+  assert.match(orderDialogSource, /\{ label: "Outside Dhaka", bn: "ঢাকার বাইরে", charge: 120 \}/);
+  assert.match(orderDialogSource, /const defaultDeliveryCharge = deliveryOptions\[1\]\.charge/);
+  assert.match(orderDialogSource, /useState<number \| null>\(\s*bundle\?\.price != null && bundle\.price >= freeDeliveryThreshold \? 0 : defaultDeliveryCharge\s*\)/);
+  assert.match(orderDialogSource, /setDeliveryCharge\(qualifiesForFreeDelivery \? 0 : defaultDeliveryCharge\)/);
   assert.match(orderDialogSource, /if \(deliveryCharge === null\)/);
+});
+
+test("uses more of the mobile dialog width without changing desktop padding", () => {
+  assert.match(orderDialogSource, /max-md:w-full[^\"]*p-2 sm:p-3[^\"]*md:p-0/);
+  assert.match(orderDialogSource, /"flex-col px-3 py-6 sm:px-4 md:p-10"/);
 });
 
 test("aligns delivery and payment choices into three desktop columns without changing mobile stacking", () => {
@@ -29,6 +36,7 @@ test("restyles the order form in the Bloop language while keeping its popup moti
   assert.match(orderDialogSource, /<DialogTitle className="font-bloop text-\[28px\] font-bold[^"]*text-\[#DB2828\] md:text-\[36px\]">\s*Place Order/);
   assert.match(orderDialogSource, /font-bangla[^"]*">অর্ডার করুন<\/p>/);
   assert.match(orderDialogSource, /onClick=\{\(\) => resetDialog\(false\)\} aria-label="Close" className="flex h-11 w-11[^"]*rounded-\[12px\] bg-\[#333333\] text-white/);
+  assert.match(orderDialogSource, /aria-label="Close"[\s\S]*?<svg[^>]*className="h-5 w-5" aria-hidden="true"/);
   assert.match(orderDialogSource, /d="M20\.707 4\.70697L19\.293 3\.29297/);
 
   // Summary card, yellow quantity badge, pill-radius fields and 20px option cards.
